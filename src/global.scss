@@ -1,0 +1,53 @@
+ion-header {
+  /* safe area vairables */
+  --ion-safe-area-top: 60px;
+}
+
+ion-button {
+  --border-radius: 5px;
+  --color: var(--ion-trova-white, #FFF);
+  text-align: center;
+  font-family: 'Poppins';
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+ion-input.custom {
+  background: var(--ion-trova-white, #FFF);
+  --color: var(--ion-trova-input-label);
+  --placeholder-color: var(--ion-trova-input-placeholder);
+  --placeholder-opacity: 0.8;
+  --padding-bottom: 8px;
+  --padding-top: 8px;
+  border-radius: 5px;
+}
+
+ion-item.custom-input {
+  --background: var(--ion-trova-white, #FFF);
+  --border-radius: 5px;
+}
+
+ion-label.custom-input {
+  width: auto;
+  color: var(--ion-trova-input-label);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+body {
+  --ion-background-color: linear-gradient(149deg, #E9F8F8 0%, #FAF5EE 100%);
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../public/assets/fonts/Poppins-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Poppins Bold';
+  src: url('../public/assets/fonts/Poppins-Bold.ttf') format('truetype');
+}
