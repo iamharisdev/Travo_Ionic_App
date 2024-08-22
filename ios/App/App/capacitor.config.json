@@ -1,0 +1,11 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "trova-provider-mobile",
+	"webDir": "dist",
+	"packageClassList": [
+		"AppPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"StatusBarPlugin"
+	]
+}
