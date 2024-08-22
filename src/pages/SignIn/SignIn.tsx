@@ -14,9 +14,9 @@ import TrovaLogo from "../../../public/assets/TrovaLogo.png";
 import { FORGOT_PASSWORD, LANDING } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 
-import "./Login.scss";
+import "./SignIn.scss";
 
-const CSSprefix = 'login';
+const CSSprefix = 'sign-in';
 
 const Login: React.FC = (): React.ReactElement => {
   const [email, setEmail] = useState<string>('');

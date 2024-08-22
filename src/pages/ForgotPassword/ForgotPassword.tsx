@@ -10,7 +10,7 @@ import {
 } from '@ionic/react';
 import React, { useMemo, useState } from 'react';
 import TrovaLogo from '../../../public/assets/TrovaLogo.png';
-import { LOGIN, VERIFY_EMAIL } from '../../shared/routes/routes';
+import { SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 import { useHistory } from 'react-router';
 
 import './ForgotPassword.scss';
@@ -71,7 +71,7 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
             Submit
           </IonButton>
           <IonButton
-            onClick={() => history.push(LOGIN)}
+            onClick={() => history.push(SING_IN)}
             className={`${CSSprefix}-back-to-sign-in`}
             fill='clear'
           >

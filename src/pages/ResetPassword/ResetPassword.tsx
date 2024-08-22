@@ -11,7 +11,7 @@ import {
 } from '@ionic/react';
 import React, { useMemo, useState } from 'react';
 import TrovaLogo from '../../../public/assets/TrovaLogo.png';
-import { LOGIN } from '../../shared/routes/routes';
+import { SING_IN } from '../../shared/routes/routes';
 
 import './ResetPassword.scss';
 
@@ -82,7 +82,7 @@ const ResetPassword: React.FC = (): React.ReactElement => {
             Reset password
           </IonButton>
           <IonButton
-            href={LOGIN}
+            href={SING_IN}
             className={`${CSSprefix}-back-to-sign-in`}
             fill='clear'
           >
