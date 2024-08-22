@@ -10,7 +10,8 @@ import {
 } from '@ionic/react';
 import React, { useMemo, useState } from 'react';
 import TrovaLogo from '../../../public/assets/TrovaLogo.png';
-import { LOGIN } from '../../shared/routes/routes';
+import { LOGIN, RESET_PASSWORD } from '../../shared/routes/routes';
+import { useHistory } from 'react-router';
 
 import './VerifyEmail.scss';
 
@@ -18,6 +19,7 @@ const CSSprefix = 'verify-email';
 
 const VerifyEmail: React.FC = (): React.ReactElement => {
   const [code, setCode] = useState<string>('');
+  const history = useHistory();
 
   const disableButton = useMemo(
     () => code === '',
@@ -64,7 +66,7 @@ const VerifyEmail: React.FC = (): React.ReactElement => {
             color='primary'
             disabled={disableButton}
             expand='block'
-            onClick={async () => console.log('verify email')}
+            onClick={() => history.push(RESET_PASSWORD)}
           >
             Submit
           </IonButton>

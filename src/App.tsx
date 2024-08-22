@@ -1,11 +1,12 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { FORGOT_PASSWORD, LANDING, LOGIN, VERIFY_EMAIL } from './shared/routes/routes';
+import { FORGOT_PASSWORD, LANDING, LOGIN, RESET_PASSWORD, VERIFY_EMAIL } from './shared/routes/routes';
 import Login from './pages/Login/Login';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Tabs from './components/Tabs/Tabs';
-import VerifyEmail from './pages/VerifyEmail/VerifyEmai';
+import VerifyEmail from './pages/VerifyEmail/VerifyEmail';
+import ResetPassword from './pages/ResetPassword/ResetPassword';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -41,6 +42,9 @@ const App: React.FC = () => (
         </Route>
         <Route exact path={VERIFY_EMAIL}>
           <VerifyEmail />
+        </Route>
+        <Route exact path={RESET_PASSWORD}>
+          <ResetPassword />
         </Route>
         <Route exact path={LANDING}>
           <Tabs />
