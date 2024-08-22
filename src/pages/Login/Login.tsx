@@ -8,21 +8,20 @@ import {
   IonLabel,
   IonPage,
   IonText,
-} from "@ionic/react";
-import React, { useMemo, useState } from "react";
+} from '@ionic/react';
+import React, { useMemo, useState } from 'react';
 import TrovaLogo from '../../../public/assets/TrovaLogo.png';
 
+import './Login.scss';
 
-import "./Login.scss";
-
-const CSSprefix = "login";
+const CSSprefix = 'login';
 
 const Login: React.FC = (): React.ReactElement => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   const disableButton = useMemo(
-    () => email === "" || password === "",
+    () => email === '' || password === '',
     [email, password]
   );
 
@@ -30,11 +29,11 @@ const Login: React.FC = (): React.ReactElement => {
     <IonPage>
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
-          <IonItem lines="none">
+          <IonItem lines='none'>
             <IonImg
               className={`${CSSprefix}-logo`}
               src={TrovaLogo}
-              alt="Trova Logo"
+              alt='Trova Logo'
             />
           </IonItem>
           <IonItem lines='none'>
@@ -44,42 +43,42 @@ const Login: React.FC = (): React.ReactElement => {
           </IonItem>
           <IonItem lines='none'>
             <IonText
-              color="dark"
+              color='dark'
               className={`${CSSprefix}-welcome`}
             >
               Welcome back! Please enter your details.
             </IonText>
           </IonItem>
-          <IonItem lines='none' className="custom-input ion-margin-bottom">
-            <IonLabel position="stacked" class="custom-input">Email address</IonLabel>
+          <IonItem lines='none' className='custom-input ion-margin-bottom'>
+            <IonLabel position='stacked' class='custom-input'>Email address</IonLabel>
             <IonInput
-              class="custom"
-              type="email"
-              placeholder="Enter email address"
-              onIonInput={(e) => setEmail(e.detail.value || "")}
+              class='custom'
+              type='email'
+              placeholder='Enter email address'
+              onIonInput={(e) => setEmail(e.detail.value || '')}
             />
           </IonItem>
-          <IonItem lines='none' className="custom-input ion-margin-bottom">
-            <IonLabel position="stacked" class="custom-input">Password</IonLabel>
+          <IonItem lines='none' className='custom-input ion-margin-bottom'>
+            <IonLabel position='stacked' class='custom-input'>Password</IonLabel>
             <IonInput
-              class="custom"
-              type="password"
-              placeholder="Enter your password"
-              onIonInput={(e) => setPassword(e.detail.value || "")}
+              class='custom'
+              type='password'
+              placeholder='Enter your password'
+              onIonInput={(e) => setPassword(e.detail.value || '')}
             >
-              <IonInputPasswordToggle slot="end" color="dark" />
+              <IonInputPasswordToggle slot='end' color='dark' />
             </IonInput>
           </IonItem>
           <IonButton
-            href="/"
+            href='/'
             className={`${CSSprefix}-forgot-password`}
-            fill="clear"
+            fill='clear'
           >
             Forgot Password?
           </IonButton>
           <IonButton
             className='login-button'
-            color="primary"
+            color='primary'
             disabled={disableButton}
             expand='block'
             onClick={async () => console.log('login')}
