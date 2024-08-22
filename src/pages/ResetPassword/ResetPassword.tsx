@@ -11,7 +11,8 @@ import {
 } from '@ionic/react';
 import React, { useMemo, useState } from 'react';
 import TrovaLogo from '../../../public/assets/TrovaLogo.png';
-import { SING_IN } from '../../shared/routes/routes';
+import { PASSWORD_CHANGED_SUCCESSFULLY, SING_IN } from '../../shared/routes/routes';
+import { useHistory } from 'react-router';
 
 import './ResetPassword.scss';
 
@@ -20,6 +21,7 @@ const CSSprefix = 'reset-password';
 const ResetPassword: React.FC = (): React.ReactElement => {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const history = useHistory();
 
   const disableButton = useMemo(
     () => password === '' || confirmPassword === '' || password !== confirmPassword,
@@ -77,7 +79,7 @@ const ResetPassword: React.FC = (): React.ReactElement => {
             color='primary'
             disabled={disableButton}
             expand='block'
-            onClick={async () => console.log('reset password')}
+            onClick={() => history.push(PASSWORD_CHANGED_SUCCESSFULLY)}
           >
             Reset password
           </IonButton>
