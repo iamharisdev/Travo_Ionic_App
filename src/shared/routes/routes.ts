@@ -1,5 +1,5 @@
 // Without Auth
-export const LOGIN = '/login';
+export const SING_IN = '/sign-in';
 export const FORGOT_PASSWORD = '/forgot-password';
 
 // With Auth

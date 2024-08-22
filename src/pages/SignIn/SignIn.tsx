@@ -11,12 +11,12 @@ import {
 } from "@ionic/react";
 import React, { useEffect, useMemo, useState } from "react";
 import TrovaLogo from "../../../public/assets/TrovaLogo.png";
-import { FORGOT_PASSWORD, LOGIN, DASHBOARD } from "../../shared/routes/routes";
+import { FORGOT_PASSWORD, SING_IN, DASHBOARD } from "../../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
 
-import "./Login.scss";
+import "./SignIn.scss";
 
-const CSSprefix = 'login';
+const CSSprefix = 'sign-in';
 
 const Login: React.FC = (): React.ReactElement => {
   const [email, setEmail] = useState<string>('');
@@ -31,7 +31,7 @@ const Login: React.FC = (): React.ReactElement => {
   );
 
   useEffect(() => {
-    if (location.pathname === LOGIN) {
+    if (location.pathname === SING_IN) {
       if (showingAnimation === undefined) {
         setShowingAnimation(true);
       }
