@@ -2,7 +2,7 @@ import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Login from './pages/Login/Login';
-import { LOGIN } from './shared/routes/routes';
+import { FORGOT_PASSWORD, LOGIN } from './shared/routes/routes';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -23,6 +23,7 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.scss';
 import './global.scss';
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 
 setupIonicReact();
 
@@ -32,6 +33,9 @@ const App: React.FC = () => (
       <IonRouterOutlet defaultValue={LOGIN}>
         <Route exact path={LOGIN}>
           <Login />
+        </Route>
+        <Route exact path={FORGOT_PASSWORD}>
+          <ForgotPassword />
         </Route>
         <Route exact path="/">
           <Redirect to={LOGIN} />

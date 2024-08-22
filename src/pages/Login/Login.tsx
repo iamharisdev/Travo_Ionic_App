@@ -13,6 +13,7 @@ import React, { useMemo, useState } from 'react';
 import TrovaLogo from '../../../public/assets/TrovaLogo.png';
 
 import './Login.scss';
+import { FORGOT_PASSWORD } from '../../shared/routes/routes';
 
 const CSSprefix = 'login';
 
@@ -70,7 +71,7 @@ const Login: React.FC = (): React.ReactElement => {
             </IonInput>
           </IonItem>
           <IonButton
-            href='/'
+            href={FORGOT_PASSWORD}
             className={`${CSSprefix}-forgot-password`}
             fill='clear'
           >
