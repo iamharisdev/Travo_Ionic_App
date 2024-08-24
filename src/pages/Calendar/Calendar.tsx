@@ -1,17 +1,15 @@
 import React from "react";
 import {
   IonContent,
-  IonHeader,
   IonPage,
   IonRefresher,
   IonRefresherContent,
-  IonTitle,
-  IonToolbar,
   RefresherEventDetail,
 } from "@ionic/react";
+import Header from "../../components/Header/Header";
+import Menu from "../../components/Menu/Menu";
 
 import "./Calendar.scss";
-import { calendar } from "ionicons/icons";
 
 const CSSprefix = 'calendar';
 
@@ -19,12 +17,9 @@ const Calendar: React.FC = (): React.ReactElement => {
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
 
   return (
-    <IonPage className={CSSprefix}>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Calendar</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+    <IonPage className={CSSprefix} id="calendar-content">
+      <Header showMenu menuId="calendar-menu" />
+      <Menu menuId="calendar-menu" contentId="calendar-content" />
       <IonContent fullscreen={true}>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />
