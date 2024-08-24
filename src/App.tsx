@@ -1,7 +1,7 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { FORGOT_PASSWORD, LANDING, SING_IN, RESET_PASSWORD, VERIFY_EMAIL, PASSWORD_CHANGED_SUCCESSFULLY } from './shared/routes/routes';
+import { FORGOT_PASSWORD, DASHBOARD, SING_IN, RESET_PASSWORD, VERIFY_EMAIL, PASSWORD_CHANGED_SUCCESSFULLY } from './shared/routes/routes';
 import SignIn from './pages/SignIn/SignIn';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Tabs from './components/Tabs/Tabs';
@@ -50,7 +50,7 @@ const App: React.FC = () => (
         <Route exact path={PASSWORD_CHANGED_SUCCESSFULLY}>
           <PasswordSuccess />
         </Route>
-        <Route exact path={LANDING}>
+        <Route exact path={DASHBOARD}>
           <Tabs />
         </Route>
         <Route exact path="/">

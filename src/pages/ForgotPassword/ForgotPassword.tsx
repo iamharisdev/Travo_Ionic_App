@@ -9,8 +9,8 @@ import {
   IonText,
 } from '@ionic/react';
 import React, { useMemo, useState } from 'react';
-import TrovaLogo from '../../../public/assets/TrovaLogo.png';
 import { SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
+import TrovaLogo from '/assets/TrovaLogo.png';
 import { useHistory } from 'react-router';
 
 import './ForgotPassword.scss';

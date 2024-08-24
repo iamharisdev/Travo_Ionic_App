@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   IonContent,
   IonHeader,
@@ -9,17 +9,19 @@ import {
   IonToolbar,
   RefresherEventDetail,
 } from "@ionic/react";
+import LeftSwipeGesture from "../../components/LeftSwipeGesture/LeftSwipeGesture";
 
 import "./Calendar.scss";
-import { calendar } from "ionicons/icons";
 
 const CSSprefix = 'calendar';
 
 const Calendar: React.FC = (): React.ReactElement => {
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
+  const calendarRef = useRef();
 
   return (
-    <IonPage className={CSSprefix}>
+    <IonPage ref={calendarRef} className={CSSprefix}>
+      <LeftSwipeGesture parentRef={calendarRef} />
       <IonHeader>
         <IonToolbar>
           <IonTitle>Calendar</IonTitle>

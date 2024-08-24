@@ -6,7 +6,7 @@ export const RESET_PASSWORD = '/reset-password';
 export const PASSWORD_CHANGED_SUCCESSFULLY = '/password-changed-successfully';
 
 // With Auth
-export const LANDING = '/landing';
-export const APPOINTMENTS = '/landing/appointments';
-export const CALENDAR = '/landing/calendar';
-export const PROFILE = '/landing/profile';
+export const DASHBOARD = '/dashboard';
+export const APPOINTMENTS = '/dashboard/appointments';
+export const CALENDAR = '/dashboard/calendar';
+export const PROFILE = '/dashboard/profile';
