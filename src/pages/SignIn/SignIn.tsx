@@ -10,7 +10,7 @@ import {
   IonText,
 } from "@ionic/react";
 import React, { useEffect, useMemo, useState } from "react";
-import TrovaLogo from "../../../public/assets/TrovaLogo.png";
+import TrovaLogo from "/assets/TrovaLogo.png";
 import { FORGOT_PASSWORD, SING_IN, DASHBOARD } from "../../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
 
