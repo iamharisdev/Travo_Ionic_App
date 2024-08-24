@@ -10,19 +10,20 @@ import {
   IonText,
 } from "@ionic/react";
 import React, { useEffect, useMemo, useState } from "react";
-import TrovaLogo from "../../../public/assets/TrovaLogo.png";
-import { FORGOT_PASSWORD, LANDING } from "../../shared/routes/routes";
-import { useHistory } from "react-router";
+import TrovaLogo from "/assets/TrovaLogo.png";
+import { FORGOT_PASSWORD, SING_IN, DASHBOARD } from "../../shared/routes/routes";
+import { useHistory, useLocation } from "react-router";
 
-import "./Login.scss";
+import "./SignIn.scss";
 
-const CSSprefix = 'login';
+const CSSprefix = 'sign-in';
 
 const Login: React.FC = (): React.ReactElement => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
   const history = useHistory();
+  const location = useLocation();
 
   const disableButton = useMemo(
     () => email === '' || password === '',
@@ -30,13 +31,15 @@ const Login: React.FC = (): React.ReactElement => {
   );
 
   useEffect(() => {
-    if (showingAnimation === undefined) {
-      setShowingAnimation(true);
+    if (location.pathname === SING_IN) {
+      if (showingAnimation === undefined) {
+        setShowingAnimation(true);
+      }
+      if (showingAnimation) {
+        setTimeout(() => setShowingAnimation(false), 1800);
+      }
     }
-    if (showingAnimation) {
-      setTimeout(() => setShowingAnimation(false), 1800);
-    }
-  }, [showingAnimation]);
+  }, [showingAnimation, location.pathname]);
 
   return (
     <IonPage>
@@ -103,7 +106,7 @@ const Login: React.FC = (): React.ReactElement => {
                 color="primary"
                 disabled={disableButton}
                 expand="block"
-                onClick={() => history.push(LANDING)}
+                onClick={() => history.push(DASHBOARD)}
               >
                 Sign in
               </IonButton>

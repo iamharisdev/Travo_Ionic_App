@@ -1,8 +1,8 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { FORGOT_PASSWORD, LANDING, LOGIN } from './shared/routes/routes';
-import Login from './pages/Login/Login';
+import { FORGOT_PASSWORD, DASHBOARD, SING_IN } from './shared/routes/routes';
+import SignIn from './pages/SignIn/SignIn';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Tabs from './components/Tabs/Tabs';
 
@@ -31,18 +31,18 @@ setupIonicReact();
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
-      <IonRouterOutlet defaultValue={LOGIN}>
-        <Route exact path={LOGIN}>
-          <Login />
+      <IonRouterOutlet defaultValue={SING_IN}>
+        <Route exact path={SING_IN}>
+          <SignIn />
         </Route>
         <Route exact path={FORGOT_PASSWORD}>
           <ForgotPassword />
         </Route>
-        <Route exact path={LANDING}>
+        <Route exact path={DASHBOARD}>
           <Tabs />
         </Route>
         <Route exact path="/">
-          <Redirect to={LOGIN} />
+          <Redirect to={SING_IN} />
         </Route>
       </IonRouterOutlet>
     </IonReactRouter>

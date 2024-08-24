@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   IonContent,
   IonPage,
@@ -8,6 +8,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
+import LeftSwipeGesture from "../../components/LeftSwipeGesture/LeftSwipeGesture";
 
 import "./Profile.scss";
 
@@ -15,9 +16,11 @@ const CSSprefix = 'profile';
 
 const Profile: React.FC = (): React.ReactElement => {
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
+  const profileRef = useRef();
 
   return (
-    <IonPage className={CSSprefix} id="profile-content">
+    <IonPage ref={profileRef} className={CSSprefix} id="profile-content">
+      <LeftSwipeGesture parentRef={profileRef} />
       <Header showMenu menuId="profile-menu" />
       <Menu menuId="profile-menu" contentId="profile-content" />
       <IonContent fullscreen={true}>

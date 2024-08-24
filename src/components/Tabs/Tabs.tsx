@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   IonIcon,
   IonLabel,
@@ -8,8 +8,8 @@ import {
   IonTabs,
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
-import { Route, Redirect } from "react-router-dom";
-import { APPOINTMENTS, CALENDAR, LANDING, PROFILE } from "../../shared/routes/routes";
+import { Redirect, Route } from "react-router-dom";
+import { APPOINTMENTS, CALENDAR, DASHBOARD, PROFILE } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import { IonReactRouter } from "@ionic/react-router";
 import Calendar from "../../pages/Calendar/Calendar";
@@ -22,12 +22,10 @@ const Tabs: React.FC = (): React.ReactElement => {
     <IonReactRouter>
       <IonTabs className="tabs">
         <IonRouterOutlet defaultValue={APPOINTMENTS}>
+          <Redirect exact path={DASHBOARD} to={APPOINTMENTS} />
           <Route exact path={APPOINTMENTS} component={Appointments} />
           <Route exact path={CALENDAR} component={Calendar} />
           <Route exact path={PROFILE} component={Profile} />
-          <Route exact path={LANDING}>
-            <Redirect to={APPOINTMENTS} />
-          </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           <IonTabButton tab="appointments" href={APPOINTMENTS}>

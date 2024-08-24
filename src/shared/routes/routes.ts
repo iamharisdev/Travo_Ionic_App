@@ -1,9 +1,9 @@
 // Without Auth
-export const LOGIN = '/login';
+export const SING_IN = '/sign-in';
 export const FORGOT_PASSWORD = '/forgot-password';
 
 // With Auth
-export const LANDING = '/landing';
-export const APPOINTMENTS = '/landing/appointments';
-export const CALENDAR = '/landing/calendar';
-export const PROFILE = '/landing/profile';
+export const DASHBOARD = '/dashboard';
+export const APPOINTMENTS = '/dashboard/appointments';
+export const CALENDAR = '/dashboard/calendar';
+export const PROFILE = '/dashboard/profile';
