@@ -18,19 +18,19 @@ const PasswordSuccess: React.FC = (): React.ReactElement => (
   <IonPage>
     <IonContent fullscreen>
       <div className={`${CSSprefix} ion-padding`}>
-        <IonItem lines='none'>
+        <IonItem className='ion-no-padding' lines='none'>
           <IonImg
             className={`${CSSprefix}-logo`}
             src={TrovaLogo}
             alt='Trova Logo'
           />
         </IonItem>
-        <IonItem lines='none'>
+        <IonItem className='ion-no-padding' lines='none'>
           <IonText className={`${CSSprefix}-title`}>
             Password changed successfully!
           </IonText>
         </IonItem>
-        <IonItem lines='none'>
+        <IonItem className='ion-no-padding' lines='none'>
           <IonText
             color='dark'
             className={`${CSSprefix}-description`}
