@@ -8,10 +8,11 @@ import {
   IonPage,
   IonText,
 } from '@ionic/react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 import TrovaLogo from '/assets/TrovaLogo.png';
 import { useHistory } from 'react-router';
+import LeftSwipeGesture from '../../components/LeftSwipeGesture/LeftSwipeGesture';
 
 import './ForgotPassword.scss';
 
@@ -20,6 +21,7 @@ const CSSprefix = 'forgot-password';
 const ForgotPassword: React.FC = (): React.ReactElement => {
   const [email, setEmail] = useState<string>('');
   const history = useHistory();
+  const forgotPasswordRef = useRef();
 
   const disableButton = useMemo(
     () => email === '',
@@ -27,7 +29,8 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
   );
 
   return (
-    <IonPage>
+    <IonPage ref={forgotPasswordRef}>
+      <LeftSwipeGesture parentRef={forgotPasswordRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>

@@ -9,12 +9,13 @@ import {
   IonPage,
   IonText,
 } from '@ionic/react';
-import React, { useMemo, useState } from 'react';
-import TrovaLogo from '../../../public/assets/TrovaLogo.png';
+import React, { useMemo, useRef, useState } from 'react';
+import TrovaLogo from '/assets/TrovaLogo.png';
 import { PASSWORD_CHANGED_SUCCESSFULLY, SING_IN } from '../../shared/routes/routes';
 import { useHistory } from 'react-router';
 
 import './ResetPassword.scss';
+import LeftSwipeGesture from '../../components/LeftSwipeGesture/LeftSwipeGesture';
 
 const CSSprefix = 'reset-password';
 
@@ -22,6 +23,7 @@ const ResetPassword: React.FC = (): React.ReactElement => {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const history = useHistory();
+  const resetPasswordRef = useRef();
 
   const disableButton = useMemo(
     () => password === '' || confirmPassword === '' || password !== confirmPassword,
@@ -29,7 +31,8 @@ const ResetPassword: React.FC = (): React.ReactElement => {
   );
 
   return (
-    <IonPage>
+    <IonPage ref={resetPasswordRef}>
+      <LeftSwipeGesture parentRef={resetPasswordRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>

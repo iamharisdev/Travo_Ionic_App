@@ -8,18 +8,20 @@ import {
   IonPage,
   IonText,
 } from '@ionic/react';
-import React, { useMemo, useState } from 'react';
-import TrovaLogo from '../../../public/assets/TrovaLogo.png';
+import React, { useMemo, useRef, useState } from 'react';
+import TrovaLogo from '/assets/TrovaLogo.png';
 import { SING_IN, RESET_PASSWORD } from '../../shared/routes/routes';
 import { useHistory } from 'react-router';
 
 import './VerifyEmail.scss';
+import LeftSwipeGesture from '../../components/LeftSwipeGesture/LeftSwipeGesture';
 
 const CSSprefix = 'verify-email';
 
 const VerifyEmail: React.FC = (): React.ReactElement => {
   const [code, setCode] = useState<string>('');
   const history = useHistory();
+  const verifyEmailRef = useRef();
 
   const disableButton = useMemo(
     () => code === '',
@@ -27,7 +29,8 @@ const VerifyEmail: React.FC = (): React.ReactElement => {
   );
 
   return (
-    <IonPage>
+    <IonPage ref={verifyEmailRef}>
+      <LeftSwipeGesture parentRef={verifyEmailRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>
