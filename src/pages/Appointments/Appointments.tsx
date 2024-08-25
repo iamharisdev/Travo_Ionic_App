@@ -20,7 +20,7 @@ const Appointments: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={appointmentsRef} className={CSSprefix} id="appointments-content">
-      <LeftSwipeGesture parentRef={appointmentsRef} />
+      <LeftSwipeGesture parentRef={appointmentsRef} menuId="appointments-menu" />
       <Header showMenu menuId="appointments-menu" />
       <Menu menuId="appointments-menu" contentId="appointments-content" />
       <IonContent fullscreen={true}>

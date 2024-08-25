@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({
 }): React.ReactElement => {
   const history = useHistory();
 
-  async function openFirstMenu() {
+  async function openMenuHandler() {
     await menuController.open(menuId);
   }
 
@@ -65,7 +65,7 @@ const Header: React.FC<HeaderProps> = ({
         )}
         {showMenu && (
           <IonButtons slot="start">
-            <IonButton onClick={openFirstMenu}>
+            <IonButton onClick={openMenuHandler}>
               <IonIcon slot="icon-only" icon={menu}></IonIcon>
             </IonButton>
           </IonButtons>

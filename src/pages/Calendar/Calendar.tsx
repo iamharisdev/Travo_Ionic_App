@@ -20,7 +20,7 @@ const Calendar: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={calendarRef} className={CSSprefix} id="calendar-content">
-      <LeftSwipeGesture parentRef={calendarRef} />
+      <LeftSwipeGesture parentRef={calendarRef} menuId="calendar-menu" />
       <Header showMenu menuId="calendar-menu" />
       <Menu menuId="calendar-menu" contentId="calendar-content" />
       <IonContent fullscreen={true}>

@@ -20,7 +20,7 @@ const Profile: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={profileRef} className={CSSprefix} id="profile-content">
-      <LeftSwipeGesture parentRef={profileRef} />
+      <LeftSwipeGesture parentRef={profileRef} menuId="profile-menu" />
       <Header showMenu menuId="profile-menu" />
       <Menu menuId="profile-menu" contentId="profile-content" />
       <IonContent fullscreen={true}>
