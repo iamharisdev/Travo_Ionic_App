@@ -1,0 +1,95 @@
+.sign-in {
+  &-main-container {
+    width: 100%;
+    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 140px;
+  }
+
+  &-logo-item {
+    --padding-start: 0;
+    --padding-end: 0;
+    margin-bottom: 30px;
+    position: relative;
+    right: 2px;
+  }
+
+  &-logo::part(image) {
+    width: auto;
+    max-width: 200px;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+
+  &-sign-in {
+    color: var(--ion-trova-gray-text, #2E2E2E);
+    font-family: 'Poppins Bold';
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  &-welcome {
+    color: var(--ion-trova-black, #000);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  &-forgot-password {
+    --border-radius: 5px;
+    --color: var(--ion-trova-black, #000);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-decoration-line: underline;
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .login-button {
+    margin-top: 30px;
+  }
+}
+
+.transition-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.transition-logo-item {
+  width: 200px;
+  height: 46.461px;
+  flex-shrink: 0;
+  bottom: 20px;
+  position: relative;
+}
+
+#float {
+  position: relative;
+  -webkit-animation: floatBubble 2s infinite normal ease-out;
+  animation: floatBubble 2s infinite normal ease-out;
+}
+
+@keyframes floatBubble {
+  0% {
+    bottom: 0;
+    right: 0;
+  }
+
+  100% {
+    bottom: 292px;
+    right: 119px;
+  }
+
+  from {
+    transform: scale(1.6);
+  }
+}
