@@ -32,13 +32,13 @@ const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet defaultValue={SING_IN}>
-        <Route exact path={SING_IN}>
+        <Route path={SING_IN}>
           <SignIn />
         </Route>
-        <Route exact path={FORGOT_PASSWORD}>
+        <Route path={FORGOT_PASSWORD}>
           <ForgotPassword />
         </Route>
-        <Route exact path={DASHBOARD}>
+        <Route path={DASHBOARD}>
           <Tabs />
         </Route>
         <Route exact path="/">
