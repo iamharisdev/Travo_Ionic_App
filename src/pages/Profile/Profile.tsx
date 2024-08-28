@@ -27,13 +27,13 @@ const Profile: React.FC = (): React.ReactElement => {
       <LeftSwipeGesture parentRef={profileRef} />
       <Header showMenu menuId="profile-menu" />
       <IonContent fullscreen={true} className={CSSprefix}>
-        <IonItem className="custom-input ion-margin-vertical" lines="none">
+        <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title`}>
             Profile settings
           </IonText>
         </IonItem>
         <IonItem
-          className="custom-input ion-margin-vertical"
+          className="ion-margin-vertical"
           lines="none"
           onClick={() => history.push(MY_PROFILE)}
         >
@@ -42,7 +42,7 @@ const Profile: React.FC = (): React.ReactElement => {
             <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
           </IonButton>
         </IonItem>
-        <IonItem className="custom-input" lines="none">
+        <IonItem lines="none">
           <IonText>Subscription details</IonText>
           <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
             <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />

@@ -29,6 +29,11 @@ ion-item.custom-input {
   --border-radius: 5px;
 }
 
+ion-item {
+  --background: transparent;
+  --border-radius: 5px;
+}
+
 ion-label.custom-input {
   width: auto;
   color: var(--ion-trova-input-label);
@@ -36,6 +41,12 @@ ion-label.custom-input {
   font-style: normal;
   font-weight: 500;
   line-height: 18px;
+}
+
+ion-textarea {
+  height: 150px;
+  width: 100%;
+  --padding-start: 0;
 }
 
 body {

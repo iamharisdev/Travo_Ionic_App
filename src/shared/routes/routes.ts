@@ -8,3 +8,4 @@ export const APPOINTMENTS = '/dashboard/appointments';
 export const CALENDAR = '/dashboard/calendar';
 export const PROFILE = '/dashboard/profile';
 export const MY_PROFILE = '/dashboard/profile/my-profile';
+export const PROFILE_INFORMATION = '/dashboard/profile/my-profile/profile-information';

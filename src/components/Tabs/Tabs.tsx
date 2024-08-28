@@ -9,11 +9,12 @@ import {
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
 import { Redirect, Route } from "react-router-dom";
-import { APPOINTMENTS, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE } from "../../shared/routes/routes";
+import { APPOINTMENTS, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Calendar from "../../pages/Calendar/Calendar";
 import Profile from "../../pages/Profile/Profile";
 import MyProfile from "../../pages/MyProfile/MyProfile";
+import ProfileInformation from "../../pages/ProfileInformation/ProfileInformation";
 
 import "./Tabs.scss";
 
@@ -26,6 +27,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={CALENDAR} component={Calendar} />
         <Route exact path={PROFILE} component={Profile} />
         <Route exact path={MY_PROFILE} component={MyProfile} />
+        <Route exact path={PROFILE_INFORMATION} component={ProfileInformation} />
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
         <IonTabButton tab="appointments" href={APPOINTMENTS}>
