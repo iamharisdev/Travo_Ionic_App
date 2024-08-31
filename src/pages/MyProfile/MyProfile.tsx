@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { caretForwardOutline } from "ionicons/icons";
-import { PROFILE_INFORMATION } from "../../shared/routes/routes";
+import { BUSINESS_INFORMATION, PROFILE_INFORMATION } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 
 import "./MyProfile.scss";
@@ -40,7 +40,11 @@ const MyProfile: React.FC = (): React.ReactElement => {
             <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
           </IonButton>
         </IonItem>
-        <IonItem className="ion-margin-bottom" lines="none">
+        <IonItem
+          className="ion-margin-bottom"
+          lines="none"
+          onClick={() => history.push(BUSINESS_INFORMATION)}
+        >
           <IonText>
             Business information
           </IonText>
