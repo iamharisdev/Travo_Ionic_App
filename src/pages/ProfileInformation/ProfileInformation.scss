@@ -61,4 +61,10 @@
     font-weight: 400;
     line-height: normal;
   }
+
+  &-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--ion-trova-divider);
+  }
 }

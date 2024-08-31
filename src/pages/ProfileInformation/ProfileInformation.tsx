@@ -45,6 +45,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           <IonRow className="ion-justify-content-center">
             <IonItem lines="none">
               <IonButton fill="clear" color="primary">Upload photo</IonButton>
+              <div className={`${CSSprefix}-divider`} />
               <IonButton fill="clear" color="danger">Remove photo</IonButton>
             </IonItem>
           </IonRow>
