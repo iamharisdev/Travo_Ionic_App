@@ -4,7 +4,7 @@ import { setStorageValue } from '../storage/storage.util';
 import { STORAGE_TOKEN } from '../constant/storage.constant';
 import { resetAll } from './common.actions';
 
-interface AuthState {
+export interface AuthState {
   success: boolean;
   token: string;
   message: string;
@@ -38,12 +38,12 @@ export const signInAction = createAsyncThunk(
       ]);
 
       return payload;
-    } catch (error) {
+    } catch (error: any) {
       console.error('[sign-in]: ', error);
       const payload = {
         success: false,
         token: '',
-        message: '',
+        message: error.response.statusText,
       };
 
       return payload;
@@ -63,7 +63,12 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.message = action.payload.message;
       })
-      .addCase(resetAll, () => initialState);
+      .addCase(resetAll, () => initialState)
+      .addCase(signInAction.rejected, (state) => {
+        state.success = false;
+        state.token = '';
+        state.message = 'Request rejected';
+      });
   }
 });
 
