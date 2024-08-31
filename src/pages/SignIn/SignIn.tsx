@@ -13,6 +13,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import TrovaLogo from "/assets/TrovaLogo.png";
 import { FORGOT_PASSWORD, SING_IN, DASHBOARD } from "../../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../state/store";
+import { signInAction } from "../../state/authSlice";
 
 import "./SignIn.scss";
 
@@ -24,6 +27,7 @@ const Login: React.FC = (): React.ReactElement => {
   const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
   const history = useHistory();
   const location = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
 
   const disableButton = useMemo(
     () => email === '' || password === '',
@@ -106,7 +110,18 @@ const Login: React.FC = (): React.ReactElement => {
                 color="primary"
                 disabled={disableButton}
                 expand="block"
-                onClick={() => history.push(DASHBOARD)}
+                onClick={async () => {
+                  const response = await dispatch(
+                    signInAction({
+                      email,
+                      password,
+                    })
+                  );
+
+                  if (response.meta.requestStatus === "fulfilled") {
+                    history.push(DASHBOARD);
+                  }
+                }}
               >
                 Sign in
               </IonButton>
