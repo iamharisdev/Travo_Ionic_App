@@ -10,3 +10,4 @@ export const PROFILE = '/dashboard/profile';
 export const MY_PROFILE = '/dashboard/profile/my-profile';
 export const PROFILE_INFORMATION = '/dashboard/profile/my-profile/profile-information';
 export const BUSINESS_INFORMATION = '/dashboard/profile/my-profile/business-information';
+export const BRANDING = '/dashboard/profile/my-profile/branding';

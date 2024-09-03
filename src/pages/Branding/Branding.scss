@@ -1,0 +1,77 @@
+.branding {
+  ion-content {
+    --background: var(--ion-trova-page-background);
+    padding: 8px 16px;
+  }
+
+  ion-list {
+    background: transparent;
+    padding: 8px 16px;
+    align-items: center;
+    gap: 16px;
+    align-self: stretch;
+  }
+
+  ion-select {
+    --placeholder-color: var(--ion-trova-input-placeholder);
+    --placeholder-opacity: 1;
+    position: relative;
+    margin-right: 10px;
+  }
+
+  ion-img::part(image) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  &-description {
+    color: var(--ion-trova-gray-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  &-form-item {
+    border: 1px solid var(--ion-trova-divider);
+    --border-radius: 5px;
+  }
+
+  &-nested-item {
+    --padding-start: 0;
+  }
+
+  &-avatar-item {
+    .input-wrapper {
+      align-self: center;
+    }
+  }
+
+  &-save-button {
+    margin-top: 24px;
+  }
+
+  &-image-description {
+    color: var(--ion-trova-input-placeholder);
+    text-align: center;
+    font-family: Poppins;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  &-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--ion-trova-divider);
+  }
+}
