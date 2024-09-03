@@ -37,7 +37,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (loading) {
-      present({ message, spinner: "bubbles", cssClass: "spinner" });
+      present({ message, spinner: "bubbles", cssClass: "spinner custom-loading" });
     }
 
     if (!loading) {
