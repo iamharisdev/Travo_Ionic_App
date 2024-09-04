@@ -11,7 +11,7 @@ import {
 import LeftSwipeGesture from "../../components/LeftSwipeGesture/LeftSwipeGesture";
 import Header from "../../components/Header/Header";
 import { caretForwardOutline } from "ionicons/icons";
-import { MY_PROFILE } from "../../shared/routes/routes";
+import { MY_PROFILE, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 
 import "./Profile.scss";
@@ -42,7 +42,10 @@ const Profile: React.FC = (): React.ReactElement => {
             <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
           </IonButton>
         </IonItem>
-        <IonItem lines="none">
+        <IonItem
+          lines="none"
+          onClick={() => history.push(SUBSCRIPTION_DETAILS)}
+        >
           <IonText>Subscription details</IonText>
           <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
             <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />

@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
 import { Redirect, Route } from "react-router-dom";
-import { APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION } from "../../shared/routes/routes";
+import { APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Calendar from "../../pages/Calendar/Calendar";
 import Profile from "../../pages/Profile/Profile";
@@ -19,6 +19,7 @@ import BusinessInformation from "../../pages/BusinessInformation/BusinessInforma
 import Branding from "../../pages/Branding/Branding";
 
 import "./Tabs.scss";
+import SubscriptionDetails from "../../pages/SubscriptionDetails/SubscriptionDetails";
 
 const Tabs: React.FC = (): React.ReactElement => {
   return (
@@ -32,6 +33,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={PROFILE_INFORMATION} component={ProfileInformation} />
         <Route exact path={BUSINESS_INFORMATION} component={BusinessInformation} />
         <Route exact path={BRANDING} component={Branding} />
+        <Route exact path={SUBSCRIPTION_DETAILS} component={SubscriptionDetails} />
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
         <IonTabButton tab="appointments" href={APPOINTMENTS}>
