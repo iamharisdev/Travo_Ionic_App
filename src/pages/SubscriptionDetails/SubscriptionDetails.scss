@@ -21,21 +21,13 @@
   }
 
   &-subscription {
+    margin: 0 0 20px 0;
     --background: var(--ion-trova-white);
     border-radius: 16px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.16);
 
     &-price {
-      --color: var(--ion-trova-gray-text);
-      font-size: 18px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: normal;
-      margin-right: 5px;
-    }
-
-    &-price {
-      --color: var(--ion-trova-gray-text);
+      color: var(--ion-trova-gray-text);
       font-size: 18px;
       font-style: normal;
       font-weight: 700;
@@ -69,13 +61,13 @@
   }
 
   &-next-payment {
+    margin: 20px 0;
     --background: var(--ion-trova-white);
     border-radius: 16px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.16);
 
     ion-card-title {
       --color: var(--ion-trova-gray-text);
-      font-family: Poppins;
       font-size: 20px;
       font-style: normal;
       font-weight: 700;
@@ -85,6 +77,32 @@
     ion-icon {
       width: 52px;
       height: 52px;
+      color: var(--ion-trova-medium-gray);
+    }
+
+    &-card-details-container {
+      display: flex;
+      flex-direction: column;
+      align-items: left;
+      margin-left: 16px;
+    }
+
+    &-card-details-text {
+      color: var(--ion-trova-gray-text);
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    &-description {
+      margin-top: 20px;
+      color: var(--ion-trova-input-placeholder);
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      white-space: pre-line;
     }
   }
 }

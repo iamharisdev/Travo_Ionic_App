@@ -12,9 +12,9 @@ import {
   IonText,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
+import { cardOutline } from "ionicons/icons";
 
 import "./SubscriptionDetails.scss";
-import { cardOutline } from "ionicons/icons";
 
 const CSSprefix = 'subscription-deatils';
 
@@ -29,7 +29,7 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
             Subscription details
           </IonText>
         </IonItem>
-        <IonList>
+        <IonList className="ion-no-padding">
           <IonCard className={`${CSSprefix}-subscription`}>
             <div className={`${CSSprefix}-subscription-container-gradient`} />
             <IonCardHeader>
@@ -49,11 +49,22 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
             <IonCardContent>
               <IonItem lines="none" className="ion-no-padding">
                 <IonIcon icon={cardOutline} />
-                <IonItem lines="none" className="ion-no-padding">
-                  <IonText>
+                <div className={`${CSSprefix}-next-payment-card-details-container`}>
+                  <IonText className={`${CSSprefix}-next-payment-card-details-text`}>
                     amex
                   </IonText>
-                </IonItem>
+                  <IonText className={`${CSSprefix}-next-payment-card-details-text`}>
+                    ************4764
+                  </IonText>
+                </div>
+              </IonItem>
+              <IonItem lines="none" className="ion-no-padding">
+                <IonText className={`${CSSprefix}-next-payment-description`}>
+                  For changing or adding a card, please do it on the desktop version.
+                  {"\n"}
+                  {"\n"}
+                  Please Contact Support at hello@trova.health to cancel your Subscription.
+                </IonText>
               </IonItem>
             </IonCardContent>
           </IonCard>
