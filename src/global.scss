@@ -36,6 +36,38 @@ ion-label.custom-input {
   font-style: normal;
   font-weight: 500;
   line-height: 18px;
+  z-index: 10;
+}
+
+ion-loading.custom-loading {
+  --spinner-color: var(--ion-color-primary);
+}
+
+ion-tab-bar {
+  --background: var(--ion-trova-white);
+  border-top: 1px solid var(--ion-trova-shades-contrast, rgba(28, 55, 90, 0.16));
+}
+
+.ios ion-toolbar {
+  --background: var(--ion-trova-white);
+  border-bottom: 1px solid var(--ion-trova-divider);
+}
+
+.md ion-toolbar {
+  --background: var(--ion-trova-white);
+  border-bottom: 1px solid var(--ion-trova-divider);
+  text-align: center;
+}
+
+.md ion-button {
+  border-radius: 5px;
+  text-transform: capitalize;
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  min-height: 48px;
 }
 
 body {

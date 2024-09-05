@@ -13,6 +13,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import TrovaLogo from "/assets/TrovaLogo.png";
 import { FORGOT_PASSWORD, SING_IN, DASHBOARD } from "../../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../state/store";
+import { AuthState, signInAction } from "../../state/authSlice";
+import { setLoading } from "../../state/loadingSlice";
+import usePresentToast from "../../hooks/usePresentToast";
 
 import "./SignIn.scss";
 
@@ -24,6 +29,8 @@ const Login: React.FC = (): React.ReactElement => {
   const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
   const history = useHistory();
   const location = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
+  const [presentToast] = usePresentToast();
 
   const disableButton = useMemo(
     () => email === '' || password === '',
@@ -106,7 +113,28 @@ const Login: React.FC = (): React.ReactElement => {
                 color="primary"
                 disabled={disableButton}
                 expand="block"
-                onClick={() => history.push(DASHBOARD)}
+                onClick={async () => {
+                  dispatch(setLoading({ loading: true }));
+                  const response = await dispatch(
+                    signInAction({
+                      email,
+                      password,
+                    })
+                  );
+
+                  if (response.meta.requestStatus === 'fulfilled' && (response.payload as AuthState).success) {
+                    dispatch(setLoading({ loading: false }));
+                    history.push(DASHBOARD);
+                  } else {
+                    dispatch(setLoading({ loading: false }));
+                    presentToast((response.payload as AuthState).message, 1000, 'top', 'danger');
+                  }
+
+                  if (response.meta.requestStatus === 'rejected') {
+                    dispatch(setLoading({ loading: false }));
+                    presentToast((response.payload as AuthState).message, 1000, 'top', 'danger');
+                  }
+                }}
               >
                 Sign in
               </IonButton>
