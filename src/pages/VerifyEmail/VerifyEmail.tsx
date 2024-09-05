@@ -9,28 +9,28 @@ import {
   IonText,
 } from '@ionic/react';
 import React, { useMemo, useRef, useState } from 'react';
-import { SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 import TrovaLogo from '/assets/TrovaLogo.png';
+import { SING_IN, RESET_PASSWORD } from '../../shared/routes/routes';
 import { useHistory } from 'react-router';
+
+import './VerifyEmail.scss';
 import LeftSwipeGesture from '../../components/LeftSwipeGesture/LeftSwipeGesture';
 
-import './ForgotPassword.scss';
+const CSSprefix = 'verify-email';
 
-const CSSprefix = 'forgot-password';
-
-const ForgotPassword: React.FC = (): React.ReactElement => {
-  const [email, setEmail] = useState<string>('');
+const VerifyEmail: React.FC = (): React.ReactElement => {
+  const [code, setCode] = useState<string>('');
   const history = useHistory();
-  const forgotPasswordRef = useRef();
+  const verifyEmailRef = useRef();
 
   const disableButton = useMemo(
-    () => email === '',
-    [email]
+    () => code === '',
+    [code]
   );
 
   return (
-    <IonPage ref={forgotPasswordRef}>
-      <LeftSwipeGesture parentRef={forgotPasswordRef} />
+    <IonPage ref={verifyEmailRef}>
+      <LeftSwipeGesture parentRef={verifyEmailRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>
@@ -41,8 +41,8 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
             />
           </IonItem>
           <IonItem className='ion-no-padding' lines='none'>
-            <IonText className={`${CSSprefix}-forgot-password-title`}>
-              Forgot password
+            <IonText className={`${CSSprefix}-title`}>
+              Verify email
             </IonText>
           </IonItem>
           <IonItem className='ion-no-padding' lines='none'>
@@ -50,18 +50,18 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
               color='dark'
               className={`${CSSprefix}-description`}
             >
-              Enter your email address to reset your password.
+              For your security, we sent a 6-digit code to your email address. Please enter that code here.
             </IonText>
           </IonItem>
           <IonItem lines='none' className='custom-input ion-margin-bottom'>
             <IonLabel position='stacked' class='custom-input'>
-              Enter your registered email address
+              Verification code
             </IonLabel>
             <IonInput
               class='custom'
-              type='email'
-              placeholder='Email address'
-              onIonInput={(e) => setEmail(e.detail.value || '')}
+              type='number'
+              placeholder='Enter your 6 digit code'
+              onIonInput={(e) => setCode(e.detail.value || '')}
             />
           </IonItem>
           <IonButton
@@ -69,12 +69,12 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
             color='primary'
             disabled={disableButton}
             expand='block'
-            onClick={() => history.push(VERIFY_EMAIL)}
+            onClick={() => history.push(RESET_PASSWORD)}
           >
             Submit
           </IonButton>
           <IonButton
-            onClick={() => history.push(SING_IN)}
+            href={SING_IN}
             className={`${CSSprefix}-back-to-sign-in`}
             fill='clear'
           >
@@ -86,4 +86,4 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
   );
 };
 
-export default ForgotPassword;
+export default VerifyEmail;
