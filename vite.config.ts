@@ -21,5 +21,6 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env': env
     },
+    optimizeDeps: { exclude: ['node_modules/.cache'] }
   }
 })
