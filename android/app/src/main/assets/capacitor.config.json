@@ -1,5 +1,12 @@
 {
-	"appId": "io.ionic.starter",
+	"appId": "trova-provider-mobile",
 	"appName": "trova-provider-mobile",
-	"webDir": "dist"
+	"webDir": "dist",
+	"server": {
+		"allowNavigation": [
+			"undefined"
+		],
+		"androidScheme": "https",
+		"iosScheme": "https"
+	}
 }

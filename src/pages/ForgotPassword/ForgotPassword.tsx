@@ -8,10 +8,11 @@ import {
   IonPage,
   IonText,
 } from '@ionic/react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
+import { SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 import TrovaLogo from '/assets/TrovaLogo.png';
-import { SING_IN } from '../../shared/routes/routes';
 import { useHistory } from 'react-router';
+import SwipeGesture from '../../components/SwipeGesture/SwipeGesture';
 
 import './ForgotPassword.scss';
 
@@ -20,6 +21,7 @@ const CSSprefix = 'forgot-password';
 const ForgotPassword: React.FC = (): React.ReactElement => {
   const [email, setEmail] = useState<string>('');
   const history = useHistory();
+  const forgotPasswordRef = useRef();
 
   const disableButton = useMemo(
     () => email === '',
@@ -27,22 +29,23 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
   );
 
   return (
-    <IonPage>
+    <IonPage ref={forgotPasswordRef}>
+      <SwipeGesture parentRef={forgotPasswordRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
-          <IonItem lines='none'>
+          <IonItem className='ion-no-padding' lines='none'>
             <IonImg
               className={`${CSSprefix}-logo`}
               src={TrovaLogo}
               alt='Trova Logo'
             />
           </IonItem>
-          <IonItem lines='none'>
+          <IonItem className='ion-no-padding' lines='none'>
             <IonText className={`${CSSprefix}-forgot-password-title`}>
               Forgot password
             </IonText>
           </IonItem>
-          <IonItem lines='none'>
+          <IonItem className='ion-no-padding' lines='none'>
             <IonText
               color='dark'
               className={`${CSSprefix}-description`}
@@ -56,7 +59,7 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
             </IonLabel>
             <IonInput
               class='custom'
-              type='text'
+              type='email'
               placeholder='Email address'
               onIonInput={(e) => setEmail(e.detail.value || '')}
             />
@@ -66,7 +69,7 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
             color='primary'
             disabled={disableButton}
             expand='block'
-            onClick={async () => console.log('forgot password')}
+            onClick={() => history.push(VERIFY_EMAIL)}
           >
             Submit
           </IonButton>

@@ -8,11 +8,12 @@ import {
   IonPage,
   IonText,
 } from "@ionic/react";
-import LeftSwipeGesture from "../../components/LeftSwipeGesture/LeftSwipeGesture";
+import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import Header from "../../components/Header/Header";
 import { caretForwardOutline } from "ionicons/icons";
 import { MY_PROFILE, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
+import Menu from "../../components/Menu/Menu";
 
 import "./Profile.scss";
 
@@ -23,9 +24,10 @@ const Profile: React.FC = (): React.ReactElement => {
   const history = useHistory();
 
   return (
-    <IonPage ref={profileRef} className={CSSprefix}>
-      <LeftSwipeGesture parentRef={profileRef} />
+    <IonPage ref={profileRef} className={CSSprefix} id="profile-content">
+      <SwipeGesture parentRef={profileRef} menuId="profile-menu" />
       <Header showMenu menuId="profile-menu" />
+      <Menu menuId="profile-menu" contentId="profile-content" />
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title`}>
