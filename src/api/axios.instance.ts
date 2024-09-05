@@ -2,6 +2,8 @@ import axios from 'axios';
 import { getStorageValue } from '../storage/storage.util';
 import { STORAGE_TOKEN } from '../constant/storage.constant';
 
+// TODO: configure provider api url
+
 export const privateAxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
 });

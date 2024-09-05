@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   IonIcon,
   IonLabel,
@@ -8,7 +8,7 @@ import {
   IonTabs,
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, useLocation } from "react-router-dom";
 import { APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Calendar from "../../pages/Calendar/Calendar";
@@ -17,11 +17,55 @@ import MyProfile from "../../pages/MyProfile/MyProfile";
 import ProfileInformation from "../../pages/ProfileInformation/ProfileInformation";
 import BusinessInformation from "../../pages/BusinessInformation/BusinessInformation";
 import Branding from "../../pages/Branding/Branding";
+import SubscriptionDetails from "../../pages/SubscriptionDetails/SubscriptionDetails";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state/store";
+import usePresentToast from "../../hooks/usePresentToast";
+import { setLoading } from "../../state/loadingSlice";
+import { getProfileAction } from "../../state/providerSlice";
 
 import "./Tabs.scss";
-import SubscriptionDetails from "../../pages/SubscriptionDetails/SubscriptionDetails";
 
 const Tabs: React.FC = (): React.ReactElement => {
+  const dispatch = useDispatch<AppDispatch>();
+  const [presentToast] = usePresentToast();
+  const location = useLocation();
+  const { auth, provider } = useSelector((state: RootState) => state);
+  console.log('auth: ', auth);
+
+  useEffect(() => {
+    const initialLoad = async () => {
+      dispatch(setLoading({ loading: true, message: 'Loading data' }));
+      const profileResponse = await dispatch(getProfileAction({
+        practiceId: '98436372-6d89-4f1e-bb03-3002ad6dfb3e',
+        providerId: '670fd97e-731a-4ff8-b747-ba288b1c5adf'
+      }));
+
+      if (
+        profileResponse.meta.requestStatus === 'fulfilled') {
+        dispatch(setLoading({ loading: false, message: undefined }));
+      }
+      if (profileResponse.meta.requestStatus === 'rejected') {
+        presentToast(
+          '¡Error at loading profile!',
+          1000,
+          'top',
+          'danger'
+        );
+      }
+      dispatch(setLoading({ loading: false, message: undefined }));
+    };
+
+    if (
+      auth?.state.success !== null &&
+      !provider.state.success &&
+      location.pathname === APPOINTMENTS
+    ) {
+      // TODO: fix loop after sign in
+      initialLoad();
+    }
+  }, [auth, provider, location.pathname, location, dispatch, presentToast]);
+
   return (
     <IonTabs className="tabs">
       <IonRouterOutlet>
