@@ -9,7 +9,7 @@ import {
 import React, { useRef } from 'react';
 import TrovaLogo from '/assets/TrovaLogo.png';
 import { SING_IN } from '../../shared/routes/routes';
-import LeftSwipeGesture from '../../components/LeftSwipeGesture/LeftSwipeGesture';
+import SwipeGesture from '../../components/SwipeGesture/SwipeGesture';
 
 import './PasswordSuccess.scss';
 
@@ -20,7 +20,7 @@ const PasswordSuccess: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={passwordSuccessRef}>
-      <LeftSwipeGesture parentRef={passwordSuccessRef} />
+      <SwipeGesture parentRef={passwordSuccessRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>

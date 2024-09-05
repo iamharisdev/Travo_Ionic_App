@@ -13,9 +13,9 @@ import React, { useMemo, useRef, useState } from 'react';
 import TrovaLogo from '/assets/TrovaLogo.png';
 import { PASSWORD_CHANGED_SUCCESSFULLY, SING_IN } from '../../shared/routes/routes';
 import { useHistory } from 'react-router';
+import SwipeGesture from '../../components/SwipeGesture/SwipeGesture';
 
 import './ResetPassword.scss';
-import LeftSwipeGesture from '../../components/LeftSwipeGesture/LeftSwipeGesture';
 
 const CSSprefix = 'reset-password';
 
@@ -32,7 +32,7 @@ const ResetPassword: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={resetPasswordRef}>
-      <LeftSwipeGesture parentRef={resetPasswordRef} />
+      <SwipeGesture parentRef={resetPasswordRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>

@@ -1,13 +1,21 @@
 import React, { useCallback, useEffect } from 'react';
-import { LeftSwipeProps } from './leftSwipeGesture.type';
+import { SwipeProps } from './swipeGesture.type';
 import { createGesture, GestureDetail } from '@ionic/react';
 import { useHistory, useLocation } from 'react-router';
+import { menuController } from '@ionic/core/components';
 import { APPOINTMENTS, CALENDAR, DASHBOARD, FORGOT_PASSWORD, PASSWORD_CHANGED_SUCCESSFULLY, PROFILE, RESET_PASSWORD, SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 
-const LeftSwipeGesture: React.FC<LeftSwipeProps> = ({ parentRef }): null => {
+const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId }): null => {
   const location = useLocation();
   const history = useHistory();
 
+  async function openMenuHandler() {
+    await menuController.open(menuId);
+  }
+
+  async function closeMenuHandler() {
+    await menuController.close(menuId);
+  }
 
   const swipeHandler = useCallback((ev: GestureDetail) => {
     const { pathname } = location;
@@ -15,7 +23,14 @@ const LeftSwipeGesture: React.FC<LeftSwipeProps> = ({ parentRef }): null => {
     // if deltaX < 0 right swipe.
     if (ev.deltaX > 0) {
       if (
-        pathname === FORGOT_PASSWORD ||
+        pathname === APPOINTMENTS ||
+        pathname === CALENDAR ||
+        pathname === PROFILE
+      ) {
+        openMenuHandler();
+      }
+
+      if (pathname === FORGOT_PASSWORD ||
         pathname === VERIFY_EMAIL ||
         pathname === RESET_PASSWORD ||
         pathname === PASSWORD_CHANGED_SUCCESSFULLY
@@ -23,7 +38,17 @@ const LeftSwipeGesture: React.FC<LeftSwipeProps> = ({ parentRef }): null => {
         history.push(SING_IN);
       }
     }
-  }, [parentRef.current, location.pathname, history]);
+
+    if (ev.deltaX < 0) {
+      if (
+        pathname === APPOINTMENTS ||
+        pathname === CALENDAR ||
+        pathname === PROFILE
+      ) {
+        closeMenuHandler();
+      }
+    }
+  }, [parentRef.current, location.pathname, history, menuId]);
 
   useEffect(() => {
     if (
@@ -40,19 +65,19 @@ const LeftSwipeGesture: React.FC<LeftSwipeProps> = ({ parentRef }): null => {
       const gesture = createGesture({
         el: parentRef.current,
         threshold: 0,
-        gestureName: 'left-swipe',
+        gestureName: 'swipe',
         // go back priority is 40.
         // higher priority, so, 40.5
         gesturePriority: 40.5,
-        onMove: swipeHandler,
+        onMove: swipeHandler
       });
 
       gesture.enable(true);
     }
-  }, [parentRef.current, location.pathname]);
+  }, [parentRef.current, location.pathname, menuId]);
 
 
   return null;
 };
 
-export default LeftSwipeGesture;
+export default SwipeGesture;

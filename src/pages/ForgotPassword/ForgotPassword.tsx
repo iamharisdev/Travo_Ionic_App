@@ -12,7 +12,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 import TrovaLogo from '/assets/TrovaLogo.png';
 import { useHistory } from 'react-router';
-import LeftSwipeGesture from '../../components/LeftSwipeGesture/LeftSwipeGesture';
+import SwipeGesture from '../../components/SwipeGesture/SwipeGesture';
 
 import './ForgotPassword.scss';
 
@@ -30,7 +30,7 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={forgotPasswordRef}>
-      <LeftSwipeGesture parentRef={forgotPasswordRef} />
+      <SwipeGesture parentRef={forgotPasswordRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>

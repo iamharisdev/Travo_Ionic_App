@@ -1,15 +1,14 @@
 import React, { useRef } from "react";
 import {
   IonContent,
-  IonHeader,
   IonPage,
   IonRefresher,
   IonRefresherContent,
-  IonTitle,
-  IonToolbar,
   RefresherEventDetail,
 } from "@ionic/react";
-import LeftSwipeGesture from "../../components/LeftSwipeGesture/LeftSwipeGesture";
+import Header from "../../components/Header/Header";
+import Menu from "../../components/Menu/Menu";
+import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 
 import "./Profile.scss";
 
@@ -20,13 +19,10 @@ const Profile: React.FC = (): React.ReactElement => {
   const profileRef = useRef();
 
   return (
-    <IonPage ref={profileRef} className={CSSprefix}>
-      <LeftSwipeGesture parentRef={profileRef} />
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Profile</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+    <IonPage ref={profileRef} className={CSSprefix} id="profile-content">
+      <SwipeGesture parentRef={profileRef} menuId="profile-menu" />
+      <Header showMenu menuId="profile-menu" />
+      <Menu menuId="profile-menu" contentId="profile-content" />
       <IonContent fullscreen={true}>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />

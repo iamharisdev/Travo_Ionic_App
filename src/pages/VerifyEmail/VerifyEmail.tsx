@@ -12,9 +12,9 @@ import React, { useMemo, useRef, useState } from 'react';
 import TrovaLogo from '/assets/TrovaLogo.png';
 import { SING_IN, RESET_PASSWORD } from '../../shared/routes/routes';
 import { useHistory } from 'react-router';
+import SwipeGesture from '../../components/SwipeGesture/SwipeGesture';
 
 import './VerifyEmail.scss';
-import LeftSwipeGesture from '../../components/LeftSwipeGesture/LeftSwipeGesture';
 
 const CSSprefix = 'verify-email';
 
@@ -30,7 +30,7 @@ const VerifyEmail: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={verifyEmailRef}>
-      <LeftSwipeGesture parentRef={verifyEmailRef} />
+      <SwipeGesture parentRef={verifyEmailRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>
