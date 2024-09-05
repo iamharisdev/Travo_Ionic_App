@@ -21,15 +21,5 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env': env
     },
-    server: {
-      cors: false,
-      proxy: {
-        '/api': {
-          target: env.REACT_APP_API_URL,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-        },
-      },
-    },
   }
 })

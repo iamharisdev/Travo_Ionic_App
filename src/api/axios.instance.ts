@@ -3,11 +3,11 @@ import { getStorageValue } from '../storage/storage.util';
 import { STORAGE_TOKEN } from '../constant/storage.constant';
 
 export const privateAxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 export const publicAxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 privateAxiosInstance.interceptors.request.use(
