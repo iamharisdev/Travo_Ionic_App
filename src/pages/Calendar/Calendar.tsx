@@ -8,7 +8,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
-import LeftSwipeGesture from "../../components/LeftSwipeGesture/LeftSwipeGesture";
+import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 
 import "./Calendar.scss";
 
@@ -20,7 +20,7 @@ const Calendar: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={calendarRef} className={CSSprefix} id="calendar-content">
-      <LeftSwipeGesture parentRef={calendarRef} menuId="calendar-menu" />
+      <SwipeGesture parentRef={calendarRef} menuId="calendar-menu" />
       <Header showMenu menuId="calendar-menu" />
       <Menu menuId="calendar-menu" contentId="calendar-content" />
       <IonContent fullscreen={true}>

@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect } from 'react';
-import { LeftSwipeProps } from './leftSwipeGesture.type';
+import { SwipeProps } from './swipeGesture.type';
 import { createGesture, GestureDetail } from '@ionic/react';
 import { useHistory, useLocation } from 'react-router';
 import { menuController } from '@ionic/core/components';
 import { APPOINTMENTS, CALENDAR, DASHBOARD, FORGOT_PASSWORD, PASSWORD_CHANGED_SUCCESSFULLY, PROFILE, RESET_PASSWORD, SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 
-const LeftSwipeGesture: React.FC<LeftSwipeProps> = ({ parentRef, menuId }): null => {
+const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId }): null => {
   const location = useLocation();
   const history = useHistory();
 
@@ -65,7 +65,7 @@ const LeftSwipeGesture: React.FC<LeftSwipeProps> = ({ parentRef, menuId }): null
       const gesture = createGesture({
         el: parentRef.current,
         threshold: 0,
-        gestureName: 'left-swipe',
+        gestureName: 'swipe',
         // go back priority is 40.
         // higher priority, so, 40.5
         gesturePriority: 40.5,
@@ -80,4 +80,4 @@ const LeftSwipeGesture: React.FC<LeftSwipeProps> = ({ parentRef, menuId }): null
   return null;
 };
 
-export default LeftSwipeGesture;
+export default SwipeGesture;

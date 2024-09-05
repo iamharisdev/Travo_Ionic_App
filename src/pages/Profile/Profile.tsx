@@ -8,7 +8,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
-import LeftSwipeGesture from "../../components/LeftSwipeGesture/LeftSwipeGesture";
+import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 
 import "./Profile.scss";
 
@@ -20,7 +20,7 @@ const Profile: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={profileRef} className={CSSprefix} id="profile-content">
-      <LeftSwipeGesture parentRef={profileRef} menuId="profile-menu" />
+      <SwipeGesture parentRef={profileRef} menuId="profile-menu" />
       <Header showMenu menuId="profile-menu" />
       <Menu menuId="profile-menu" contentId="profile-content" />
       <IonContent fullscreen={true}>

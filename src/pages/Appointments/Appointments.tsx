@@ -8,7 +8,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
-import LeftSwipeGesture from "../../components/LeftSwipeGesture/LeftSwipeGesture";
+import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 
 import "./Appointments.scss";
 
@@ -20,7 +20,7 @@ const Appointments: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage ref={appointmentsRef} className={CSSprefix} id="appointments-content">
-      <LeftSwipeGesture parentRef={appointmentsRef} menuId="appointments-menu" />
+      <SwipeGesture parentRef={appointmentsRef} menuId="appointments-menu" />
       <Header showMenu menuId="appointments-menu" />
       <Menu menuId="appointments-menu" contentId="appointments-content" />
       <IonContent fullscreen={true}>
