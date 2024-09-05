@@ -1,10 +1,16 @@
+import React, { useEffect } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { IonApp, IonRouterOutlet, setupIonicReact, useIonLoading } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { FORGOT_PASSWORD, DASHBOARD, SING_IN } from './shared/routes/routes';
+import { FORGOT_PASSWORD, DASHBOARD, SING_IN, RESET_PASSWORD, VERIFY_EMAIL, PASSWORD_CHANGED_SUCCESSFULLY } from './shared/routes/routes';
 import SignIn from './pages/SignIn/SignIn';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Tabs from './components/Tabs/Tabs';
+import VerifyEmail from './pages/VerifyEmail/VerifyEmail';
+import ResetPassword from './pages/ResetPassword/ResetPassword';
+import PasswordSuccess from './pages/PasswordSuccess/PasswordSuccess';
+import { useSelector } from 'react-redux';
+import { RootState } from './state/store';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -28,25 +34,49 @@ import './global.scss';
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet defaultValue={SING_IN}>
-        <Route path={SING_IN}>
-          <SignIn />
-        </Route>
-        <Route path={FORGOT_PASSWORD}>
-          <ForgotPassword />
-        </Route>
-        <Route path={DASHBOARD}>
-          <Tabs />
-        </Route>
-        <Route exact path="/">
-          <Redirect to={SING_IN} />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const { loading, message } = useSelector((state: RootState) => state.loading);
+  const [present, dismiss] = useIonLoading();
+
+  useEffect(() => {
+    if (loading) {
+      present({ message, spinner: "bubbles", cssClass: "spinner custom-loading" });
+    }
+
+    if (!loading) {
+      dismiss();
+    }
+  }, [dismiss, loading, message, present]);
+
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet defaultValue={SING_IN}>
+          <Route path={SING_IN}>
+            <SignIn />
+          </Route>
+          <Route path={FORGOT_PASSWORD}>
+            <ForgotPassword />
+          </Route>
+          <Route path={VERIFY_EMAIL}>
+            <VerifyEmail />
+          </Route>
+          <Route path={RESET_PASSWORD}>
+            <ResetPassword />
+          </Route>
+          <Route path={PASSWORD_CHANGED_SUCCESSFULLY}>
+            <PasswordSuccess />
+          </Route>
+          <Route path={DASHBOARD}>
+            <Tabs />
+          </Route>
+          <Route exact path="/">
+            <Redirect to={SING_IN} />
+          </Route>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+  );
+};
 
 export default App;
