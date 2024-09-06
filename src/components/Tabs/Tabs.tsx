@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import usePresentToast from "../../hooks/usePresentToast";
 import { setLoading } from "../../state/loadingSlice";
-import { getProfileAction } from "../../state/providerSlice";
+import { getMeAction } from "../../state/providerSlice";
 
 import "./Tabs.scss";
 
@@ -31,15 +31,11 @@ const Tabs: React.FC = (): React.ReactElement => {
   const [presentToast] = usePresentToast();
   const location = useLocation();
   const { auth, provider } = useSelector((state: RootState) => state);
-  console.log('auth: ', auth);
 
   useEffect(() => {
     const initialLoad = async () => {
       dispatch(setLoading({ loading: true, message: 'Loading data' }));
-      const profileResponse = await dispatch(getProfileAction({
-        practiceId: '98436372-6d89-4f1e-bb03-3002ad6dfb3e',
-        providerId: '670fd97e-731a-4ff8-b747-ba288b1c5adf'
-      }));
+      const profileResponse = await dispatch(getMeAction());
 
       if (
         profileResponse.meta.requestStatus === 'fulfilled') {
@@ -57,14 +53,13 @@ const Tabs: React.FC = (): React.ReactElement => {
     };
 
     if (
-      auth?.state.success !== null &&
+      auth.state.success &&
       !provider.state.success &&
-      location.pathname === APPOINTMENTS
+      location.pathname.includes(DASHBOARD)
     ) {
-      // TODO: fix loop after sign in
       initialLoad();
     }
-  }, [auth, provider, location.pathname, location, dispatch, presentToast]);
+  }, [auth.state.success, provider.state.success, location.pathname, location, dispatch, presentToast]);
 
   return (
     <IonTabs className="tabs">

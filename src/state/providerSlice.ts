@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
-import { getProfile } from '../api/services/provider';
+import { getMe, getProfile } from '../api/services/provider';
 import { StatusState } from '../shared/types/state.type';
 
 export interface ProviderProfileResponse {
@@ -18,16 +18,37 @@ export interface ProviderProfileResponse {
   skipAppointmentRequestNotifications: boolean | null;
 }
 
-export interface ProviderState extends ProviderProfileResponse {
-  state: StatusState;
-}
-
 interface GetProfile {
   practiceId: string;
   providerId: string;
 }
 
-const initialState: ProviderState = {
+interface Principal {
+  username: string;
+  providerId: string;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  profilePicture: string;
+  countryCode: string;
+  timeZone: string;
+  superAdmin: boolean;
+}
+
+interface ProviderPractices {
+  practiceId: string;
+  providerId: string;
+  profileRole: string;
+  active: string;
+}
+
+export interface MeInterface {
+  principal: Principal | null;
+  providerPractices: Array<ProviderPractices>;
+}
+
+// for practice details
+interface Practice {
   profilePictureUrl: null,
   firstName: '',
   lastName: '',
@@ -40,20 +61,29 @@ const initialState: ProviderState = {
   phoneNumberPrefix: '',
   userName: '',
   skipAppointmentRequestNotifications: null,
+}
+
+export interface ProviderState extends MeInterface {
+  state: StatusState;
+}
+
+const initialState: ProviderState = {
+  principal: null,
+  providerPractices: [],
   state: {
     success: false,
   }
 }
 
-export const getProfileAction = createAsyncThunk(
-  'provider/getProfile',
-  async ({ practiceId, providerId }: GetProfile): Promise<ProviderState> => {
+export const getMeAction = createAsyncThunk(
+  'provider/getMe',
+  async (): Promise<ProviderState> => {
     try {
-      const response = await getProfile(practiceId, providerId);
-      console.log('getProfileAction: ', response);
+      const response = await getMe();
 
       const payload: ProviderState = {
-        ...response.data,
+        principal: response.data.principal,
+        providerPractices: response.data.providerPractices,
         state: {
           success: true,
         }
@@ -61,10 +91,24 @@ export const getProfileAction = createAsyncThunk(
 
       return payload;
     } catch (error: any) {
-      console.error('[provider-service]: ', error);
+      console.error('[getMe]: ', error);
       const payload = { ...initialState, state: { message: error.response.statusText, error, success: false } };
 
       return payload;
+    }
+  }
+);
+
+export const getPractice = createAsyncThunk(
+  'provider/getPractice',
+  async ({ practiceId, providerId }: GetProfile): Promise<ProviderProfileResponse | null> => {
+    try {
+      const response = await getProfile(practiceId, providerId);
+
+      return response.data;
+    } catch (error: any) {
+      console.error('[getPractice]: ', error);
+      return null;
     }
   }
 );
@@ -75,13 +119,15 @@ const providerSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getProfileAction.pending, () => console.log('pending get profile'))
-      .addCase(getProfileAction.fulfilled, (state, action: PayloadAction<ProviderState>) => {
-        state = { ...action.payload }
+      .addCase(getMeAction.pending, () => console.log('pending get profile'))
+      .addCase(getMeAction.fulfilled, (state, action: PayloadAction<ProviderState>) => {
+        state.principal = action.payload.principal;
+        state.providerPractices = action.payload.providerPractices;
+        state.state = { ...action.payload.state };
       })
       .addCase(resetAll, () => initialState)
-      .addCase(getProfileAction.rejected, (state) => {
-        state = { ...initialState }
+      .addCase(getMeAction.rejected, (state) => {
+        state = initialState;
       });
   }
 });
