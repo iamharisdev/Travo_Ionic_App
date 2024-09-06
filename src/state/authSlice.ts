@@ -86,7 +86,17 @@ export const signInAction = createAsyncThunk(
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    reloadAuth: (state, action: PayloadAction<{ token: string }>) => {
+      const provider = jwtDecode(action.payload.token) as AuthProvider;
+
+      state.success = true;
+      state.token = action.payload.token;
+      state.message = 'auth reloaded';
+      state.provider = provider;
+      state.state = { success: true };
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(signInAction.pending, () => console.log('pending sign-in user'))
@@ -107,5 +117,7 @@ const authSlice = createSlice({
       });
   }
 });
+
+export const { reloadAuth } = authSlice.actions;
 
 export default authSlice.reducer;

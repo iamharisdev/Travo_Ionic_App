@@ -23,6 +23,9 @@ import { AppDispatch, RootState } from "../../state/store";
 import usePresentToast from "../../hooks/usePresentToast";
 import { setLoading } from "../../state/loadingSlice";
 import { getMeAction } from "../../state/providerSlice";
+import { getStorageValue } from "../../storage/storage.util";
+import { STORAGE_TOKEN } from "../../constant/storage.constant";
+import { reloadAuth } from "../../state/authSlice";
 
 import "./Tabs.scss";
 
@@ -37,10 +40,10 @@ const Tabs: React.FC = (): React.ReactElement => {
       dispatch(setLoading({ loading: true, message: 'Loading data' }));
       const profileResponse = await dispatch(getMeAction());
 
-      if (
-        profileResponse.meta.requestStatus === 'fulfilled') {
+      if (profileResponse.meta.requestStatus === 'fulfilled') {
         dispatch(setLoading({ loading: false, message: undefined }));
       }
+
       if (profileResponse.meta.requestStatus === 'rejected') {
         presentToast(
           '¡Error at loading profile!',
@@ -52,12 +55,24 @@ const Tabs: React.FC = (): React.ReactElement => {
       dispatch(setLoading({ loading: false, message: undefined }));
     };
 
+    const checkTokenHandler = async () => {
+      const token = await getStorageValue(STORAGE_TOKEN);
+
+      if (token) {
+        dispatch(reloadAuth({ token }));
+      }
+    };
+
     if (
       auth.state.success &&
       !provider.state.success &&
       location.pathname.includes(DASHBOARD)
     ) {
       initialLoad();
+    }
+
+    if (!auth.state.success) {
+      checkTokenHandler();
     }
   }, [auth.state.success, provider.state.success, location.pathname, location, dispatch, presentToast]);
 
