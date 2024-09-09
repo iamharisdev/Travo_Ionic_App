@@ -114,6 +114,7 @@ export const updatePracticeAction = createAsyncThunk(
   'provider/updatePractice',
   async ({ practiceId, providerId, practice }: UpdatePractice): Promise<Practice | null> => {
     try {
+      console.log('practice: ', practice);
       await updatePractice(practiceId, providerId, practice);
 
       return practice;

@@ -43,7 +43,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Trova requires access to your phone’s camera.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Trova requires add access to your phone&apos;s photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Trova requires access to your phone&apos;s photo library.</string>
 </dict>
 </plist>

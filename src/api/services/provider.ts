@@ -12,3 +12,10 @@ export const getPractice = async (practiceId: string, providerId: string) => {
 export const updatePractice = async (practiceId: string, providerId: string, practice: Practice) => {
   return await providerApiInstance.put<void>(`/practices/${practiceId}/providers/${providerId}/profile-information`, practice);
 }
+
+export const uploadProfilePicture = async (providerId: string, file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return await providerApiInstance.post<{ data: string }>(`/providers/${providerId}/upload-profile-picture`, formData);
+}

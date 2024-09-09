@@ -1,5 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
+  ActionSheetButton,
+  IonActionSheet,
   IonAvatar,
   IonButton,
   IonContent,
@@ -24,6 +26,8 @@ import usePresentToast from "../../hooks/usePresentToast";
 import { setLoading } from "../../state/loadingSlice";
 import { updatePracticeAction } from "../../state/providerSlice";
 import { practiceUpdateSchema } from "./validation/profileInformation.schema";
+import { uploadProfilePicture } from "../../api/services/provider";
+import useFiles from "../../hooks/useFiles";
 
 import "./ProfileInformation.scss";
 
@@ -33,7 +37,11 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
   const { provider } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
+  const { takePhoto, pickPhoto } = useFiles();
+  const [openUploadImageActionSheet, setOpenUploadImageActionSheet] =
+    useState<boolean>(false);
   const initialValues = useMemo(() => provider.practice || {
+    profilePictureUrl: null,
     firstName: '',
     lastName: '',
     displayName: '',
@@ -87,6 +95,80 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
     },
   });
 
+
+  const onChangeImageHandler = async (action: "take" | "pick" | "delete") => {
+    setOpenUploadImageActionSheet(false);
+    let profilePicture: File | null = null;
+
+    if (action === "take") {
+      profilePicture = await takePhoto();
+      if (!profilePicture) return;
+    }
+
+    if (action === "pick") {
+      profilePicture = await pickPhoto();
+      if (!profilePicture) return;
+    }
+
+    if (profilePicture && (action === 'take' || action === 'pick') && providerId && practiceId) {
+      try {
+        dispatch(
+          setLoading({ loading: true, message: 'Uploading profile picture' })
+        );
+        const profilePictureResponse = await uploadProfilePicture(providerId, profilePicture);
+        if (profilePictureResponse.data.data) {
+          dispatch(
+            updatePracticeAction({
+              practiceId, providerId, practice: {
+                ...formik.values,
+                profilePictureUrl: profilePictureResponse.data.data,
+              }
+            })
+          )
+        }
+
+        dispatch(setLoading({ loading: false, message: '' }));
+      } catch (error) {
+        dispatch(setLoading({ loading: false, message: '' }));
+        presentToast(
+          '¡Error at upload profile picture!',
+          1000,
+          'top',
+          'danger'
+        );
+      }
+
+    }
+  };
+
+  const uploadActions = useMemo(() => {
+    const actions: (string | ActionSheetButton<any>)[] = [
+      {
+        text: "Take photo",
+        data: {
+          action: "takePhoto",
+        },
+        handler: async () => onChangeImageHandler("take"),
+      },
+      {
+        text: "Choose photo",
+        data: {
+          action: "pickPhoto",
+        },
+        handler: async () => onChangeImageHandler("pick"),
+      },
+      {
+        text: "Cancel",
+        role: "cancel",
+        data: {
+          action: "cancel",
+        },
+      },
+    ];
+
+    return actions;
+  }, [onChangeImageHandler]);
+
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showMenu={false} />
@@ -101,13 +183,19 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             <IonAvatar>
               <img
                 alt="person"
-                src={PersonSvg}
+                src={formik.values?.profilePictureUrl || PersonSvg}
               />
             </IonAvatar>
           </IonRow>
           <IonRow className="ion-justify-content-center">
             <IonItem lines="none">
-              <IonButton fill="clear" color="primary">Upload photo</IonButton>
+              <IonButton
+                fill="clear"
+                color="primary"
+                onClick={() => setOpenUploadImageActionSheet(true)}
+              >
+                Upload photo
+              </IonButton>
               <div className={`${CSSprefix}-divider`} />
               <IonButton fill="clear" color="danger">Remove photo</IonButton>
             </IonItem>
@@ -250,6 +338,12 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           </IonButton>
         </IonList>
       </IonContent>
+      <IonActionSheet
+        header="Choose option"
+        buttons={uploadActions}
+        isOpen={openUploadImageActionSheet}
+        onDidDismiss={() => setOpenUploadImageActionSheet(false)}
+      />
     </IonPage >
   );
 };
