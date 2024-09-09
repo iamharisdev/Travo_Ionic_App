@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   IonAvatar,
   IonButton,
@@ -14,20 +14,46 @@ import {
   IonText,
   IonTextarea,
 } from "@ionic/react";
+import { useFormik } from 'formik';
 import Header from "../../components/Header/Header";
 import { caretDownOutline, caretUpOutline } from "ionicons/icons";
 import PersonSvg from '/assets/person-circle.svg';
+import { useSelector } from "react-redux";
+import { RootState } from "../../state/store";
 
 import "./ProfileInformation.scss";
 
 const CSSprefix = 'profile-information';
 
 const ProfileInformation: React.FC = (): React.ReactElement => {
+  const { provider } = useSelector((state: RootState) => state);
+  const initialValues = useMemo(() => provider.practice || {
+    profilePictureUrl: '',
+    firstName: '',
+    lastName: '',
+    displayName: '',
+    languages: '',
+    qualificationsAndTitle: '',
+    bio: '',
+    preferredCurrency: '',
+    phoneNumber: '',
+    phoneNumberPrefix: '',
+    userName: '',
+    skipAppointmentRequestNotifications: false
+  }, [provider.practice]);
+
+  const formik = useFormik({
+    initialValues,
+    enableReinitialize: true,
+    onSubmit: values => {
+      console.log('handle submit: ', values);
+    },
+  });
 
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showMenu={false} />
-      <IonContent fullscreen={true} className={CSSprefix}>
+      <IonContent className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title ion-margin-top`}>
             My profile information
@@ -61,11 +87,12 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           >
             <IonLabel position="stacked" class="custom-input">First name*</IonLabel>
             <IonInput
+              name="firstName"
               class="custom"
               type="text"
               placeholder="Enter first name"
-              value={null}
-              onIonInput={(e) => null}
+              value={formik.values.firstName}
+              onIonInput={(e) => formik.setFieldValue('firstName', e.detail.value)}
             />
           </IonItem>
           <IonItem
@@ -74,11 +101,12 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           >
             <IonLabel position="stacked" class="custom-input">Last name*</IonLabel>
             <IonInput
+              name="lastName"
               class="custom"
               type="text"
               placeholder="Enter last name"
-              value={null}
-              onIonInput={(e) => null}
+              value={formik.values.lastName}
+              onIonInput={(e) => formik.setFieldValue('lastName', e.detail.value)}
             />
           </IonItem>
           <IonItem
@@ -91,20 +119,25 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
               className={`${CSSprefix}-nested-item`}
             >
               <IonSelect
+                name="phoneNumberPrefix"
                 placeholder="Country Code"
                 toggleIcon={caretDownOutline}
                 expandedIcon={caretUpOutline}
+                selectedText={formik.values.phoneNumberPrefix}
+                value={formik.values.phoneNumberPrefix}
+                onIonChange={(e) => formik.setFieldValue('phoneNumberPrefix', e.detail.value)}
               >
-                <IonSelectOption value="52">+52</IonSelectOption>
-                <IonSelectOption value="53">+53</IonSelectOption>
-                <IonSelectOption value="54">+54</IonSelectOption>
+                <IonSelectOption value="+52">+52</IonSelectOption>
+                <IonSelectOption value="+53">+53</IonSelectOption>
+                <IonSelectOption value="+54">+54</IonSelectOption>
               </IonSelect>
               <IonInput
+                name="phoneNumber"
                 class="custom"
                 type="number"
                 placeholder="Number"
-                value={null}
-                onIonInput={(e) => null}
+                value={formik.values.phoneNumber}
+                onIonInput={(e) => formik.setFieldValue('phoneNumber', e.detail.value)}
               />
 
             </IonItem>
@@ -115,11 +148,12 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           >
             <IonLabel position="stacked" class="custom-input">Display name*</IonLabel>
             <IonInput
+              name="displayName"
               class="custom"
               type="text"
               placeholder="Enter display name"
-              value={null}
-              onIonInput={(e) => null}
+              value={formik.values.displayName}
+              onIonInput={(e) => formik.setFieldValue('displayName', e.detail.value)}
             />
           </IonItem>
           <IonItem
@@ -128,11 +162,12 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           >
             <IonLabel position="stacked" class="custom-input">Qualifications and titles</IonLabel>
             <IonInput
+              name="qualificationsAndTitle"
               class="custom"
               type="text"
               placeholder="Enter qualifications and titles"
-              value={null}
-              onIonInput={(e) => null}
+              value={formik.values.qualificationsAndTitle}
+              onIonInput={(e) => formik.setFieldValue('qualificationsAndTitle', e.detail.value)}
             />
           </IonItem>
           <IonItem
@@ -141,13 +176,17 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           >
             <IonLabel position="stacked" class="custom-input">Currency*</IonLabel>
             <IonSelect
+              name="preferredCurrency"
               placeholder="Enter currency"
               toggleIcon={caretDownOutline}
               expandedIcon={caretUpOutline}
+              selectedText={formik.values.preferredCurrency}
+              value={formik.values.preferredCurrency}
+              onIonChange={(e) => formik.setFieldValue('preferredCurrency', e.detail.value)}
             >
-              <IonSelectOption value="aud">AUD</IonSelectOption>
-              <IonSelectOption value="brl">BRL</IonSelectOption>
-              <IonSelectOption value="zar">ZAR</IonSelectOption>
+              <IonSelectOption value="AUD">AUD</IonSelectOption>
+              <IonSelectOption value="BRL">BRL</IonSelectOption>
+              <IonSelectOption value="ZAR">ZAR</IonSelectOption>
             </IonSelect>
           </IonItem>
           <IonItem
@@ -156,10 +195,11 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           >
             <IonLabel position="stacked" class="custom-input">Bio*</IonLabel>
             <IonTextarea
+              name="bio"
               autoGrow
               aria-label="bio"
-              value={null}
-              onIonInput={(e) => null}
+              value={formik.values.bio}
+              onIonInput={(e) => formik.setFieldValue('bio', e.detail.value)}
             />
           </IonItem>
           <IonButton
