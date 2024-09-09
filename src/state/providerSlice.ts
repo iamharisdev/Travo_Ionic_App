@@ -1,11 +1,15 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
-import { getMe, getPractice } from '../api/services/provider';
+import { getMe, getPractice, updatePractice } from '../api/services/provider';
 import { StatusState } from '../shared/types/state.type';
 
 interface GetProfile {
   practiceId: string;
   providerId: string;
+}
+
+interface UpdatePractice extends GetProfile {
+  practice: Practice
 }
 
 interface Principal {
@@ -28,7 +32,7 @@ interface ProviderPractices {
 }
 
 export interface Practice {
-  profilePictureUrl: string | null;
+  profilePictureUrl?: string | null;
   firstName: string;
   lastName: string;
   displayName: string;
@@ -39,7 +43,7 @@ export interface Practice {
   phoneNumber: string;
   phoneNumberPrefix: string;
   userName: string;
-  skipAppointmentRequestNotifications: boolean | null;
+  skipAppointmentRequestNotifications?: boolean | null;
 }
 
 export interface MeInterface {
@@ -106,6 +110,21 @@ export const getPracticeAction = createAsyncThunk(
   }
 );
 
+export const updatePracticeAction = createAsyncThunk(
+  'provider/updatePractice',
+  async ({ practiceId, providerId, practice }: UpdatePractice): Promise<Practice | null> => {
+    try {
+      await updatePractice(practiceId, providerId, practice);
+
+      return practice;
+    } catch (error: any) {
+      console.error('[updatePractice]: ', error);
+
+      return null;
+    }
+  }
+);
+
 const providerSlice = createSlice({
   name: 'provider',
   initialState,
@@ -131,6 +150,15 @@ const providerSlice = createSlice({
       .addCase(getPracticeAction.rejected, (state) => {
         state.practice = null;
         state.state = { ...state.state, success: false }
+      })
+      .addCase(updatePracticeAction.pending, () => console.log('pending update practice'))
+      .addCase(updatePracticeAction.fulfilled, (state, action: PayloadAction<Practice | null>) => {
+        state.practice = action.payload;
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(updatePracticeAction.rejected, (state) => {
+        state.practice = state.practice;
+        state.state = { ...state.state, success: false, message: 'error at update practice state' }
       });
   }
 });

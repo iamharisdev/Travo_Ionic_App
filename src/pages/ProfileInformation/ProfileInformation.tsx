@@ -18,8 +18,12 @@ import { useFormik } from 'formik';
 import Header from "../../components/Header/Header";
 import { caretDownOutline, caretUpOutline } from "ionicons/icons";
 import PersonSvg from '/assets/person-circle.svg';
-import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state/store";
+import usePresentToast from "../../hooks/usePresentToast";
+import { setLoading } from "../../state/loadingSlice";
+import { updatePracticeAction } from "../../state/providerSlice";
+import { practiceUpdateSchema } from "./validation/profileInformation.schema";
 
 import "./ProfileInformation.scss";
 
@@ -27,8 +31,9 @@ const CSSprefix = 'profile-information';
 
 const ProfileInformation: React.FC = (): React.ReactElement => {
   const { provider } = useSelector((state: RootState) => state);
+  const dispatch = useDispatch<AppDispatch>();
+  const [presentToast] = usePresentToast();
   const initialValues = useMemo(() => provider.practice || {
-    profilePictureUrl: '',
     firstName: '',
     lastName: '',
     displayName: '',
@@ -39,14 +44,46 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
     phoneNumber: '',
     phoneNumberPrefix: '',
     userName: '',
-    skipAppointmentRequestNotifications: false
   }, [provider.practice]);
+  const { practiceId, providerId }: {
+    practiceId?: string;
+    providerId?: string;
+  } = useMemo(() => {
+    if (provider.providerPractices.length > 0) {
+      const [providerPractice] = provider.providerPractices;
+      return {
+        practiceId: providerPractice.practiceId,
+        providerId: providerPractice.providerId
+      }
+    }
+
+    return {}
+  }, [provider.providerPractices]);
 
   const formik = useFormik({
     initialValues,
     enableReinitialize: true,
-    onSubmit: values => {
-      console.log('handle submit: ', values);
+    onSubmit: async (values) => {
+      const valid = await practiceUpdateSchema.validate(values);
+
+      if (practiceId && providerId && valid) {
+        dispatch(setLoading({ loading: true }));
+        const response = await dispatch(updatePracticeAction({ practiceId, providerId, practice: values }));
+
+        if (response.meta.requestStatus === 'fulfilled') {
+          dispatch(setLoading({ loading: false, message: undefined }));
+        }
+
+        if (response.meta.requestStatus === 'rejected') {
+          presentToast(
+            '¡Error at update practice!',
+            1000,
+            'top',
+            'danger'
+          );
+        }
+        dispatch(setLoading({ loading: false, message: undefined }));
+      }
     },
   });
 
@@ -206,7 +243,8 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             className={`${CSSprefix}-save-button`}
             color="primary"
             expand="block"
-            onClick={() => null}
+            disabled={!formik.dirty}
+            onClick={() => formik.submitForm()}
           >
             Save details
           </IonButton>

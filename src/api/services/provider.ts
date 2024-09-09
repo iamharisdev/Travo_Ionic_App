@@ -8,3 +8,7 @@ export const getMe = async () => {
 export const getPractice = async (practiceId: string, providerId: string) => {
   return await providerApiInstance.get<Practice>(`/practices/${practiceId}/providers/${providerId}/profile-information`);
 }
+
+export const updatePractice = async (practiceId: string, providerId: string, practice: Practice) => {
+  return await providerApiInstance.put<void>(`/practices/${practiceId}/providers/${providerId}/profile-information`, practice);
+}
