@@ -95,8 +95,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
     },
   });
 
-
-  const onChangeImageHandler = async (action: "take" | "pick" | "delete") => {
+  const changePhotoHandler = async (action: "take" | "pick" | "delete") => {
     setOpenUploadImageActionSheet(false);
     let profilePicture: File | null = null;
 
@@ -124,7 +123,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
                 profilePictureUrl: profilePictureResponse.data.data,
               }
             })
-          )
+          );
         }
 
         dispatch(setLoading({ loading: false, message: '' }));
@@ -141,6 +140,35 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
     }
   };
 
+  const removePhotoHandler = async () => {
+    if (providerId && practiceId) {
+      try {
+        dispatch(
+          setLoading({ loading: true, message: 'Removing profile picture' })
+        );
+        await dispatch(
+          updatePracticeAction({
+            practiceId, providerId, practice: {
+              ...formik.values,
+              profilePictureUrl: null,
+            }
+          })
+        );
+
+        dispatch(setLoading({ loading: false, message: '' }));
+      } catch (error) {
+        dispatch(setLoading({ loading: false, message: '' }));
+        presentToast(
+          '¡Error at remove profile picture!',
+          1000,
+          'top',
+          'danger'
+        );
+      }
+
+    }
+  };
+
   const uploadActions = useMemo(() => {
     const actions: (string | ActionSheetButton<any>)[] = [
       {
@@ -148,14 +176,14 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
         data: {
           action: "takePhoto",
         },
-        handler: async () => onChangeImageHandler("take"),
+        handler: async () => changePhotoHandler("take"),
       },
       {
         text: "Choose photo",
         data: {
           action: "pickPhoto",
         },
-        handler: async () => onChangeImageHandler("pick"),
+        handler: async () => changePhotoHandler("pick"),
       },
       {
         text: "Cancel",
@@ -167,7 +195,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
     ];
 
     return actions;
-  }, [onChangeImageHandler]);
+  }, [changePhotoHandler]);
 
   return (
     <IonPage className={CSSprefix}>
@@ -196,8 +224,18 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
               >
                 Upload photo
               </IonButton>
-              <div className={`${CSSprefix}-divider`} />
-              <IonButton fill="clear" color="danger">Remove photo</IonButton>
+              {formik.values?.profilePictureUrl !== null && (
+                <>
+                  <div className={`${CSSprefix}-divider`} />
+                  <IonButton
+                    fill="clear"
+                    color="danger"
+                    onClick={removePhotoHandler}
+                  >
+                    Remove photo
+                  </IonButton>
+                </>
+              )}
             </IonItem>
           </IonRow>
           <IonRow className="ion-justify-content-center">
