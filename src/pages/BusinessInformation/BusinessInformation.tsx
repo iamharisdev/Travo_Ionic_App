@@ -26,6 +26,7 @@ import "./BusinessInformation.scss";
 
 const CSSprefix = 'business-information';
 
+// TODO: replace this array with countries from practice state
 const countries = [
   'ZA',
   'BR',

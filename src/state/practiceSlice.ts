@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
-import { getBusinessInformation, updateBusinessInformation } from '../api/services/practice';
+import { getBusinessInformation, getCountries, updateBusinessInformation } from '../api/services/practice';
 
 export interface BusinessInformation {
   id: string;
@@ -21,6 +21,11 @@ export interface BusinessInformation {
   fqDomain: string;
 }
 
+export interface Country {
+  name: string;
+  code: string;
+}
+
 interface UpdatebusinessInformation {
   practiceId: string;
   businessInformation: Partial<BusinessInformation>;
@@ -28,11 +33,13 @@ interface UpdatebusinessInformation {
 
 export interface ProviderState {
   businessInformation: BusinessInformation | null;
+  countries: Array<Country>;
   state: StatusState;
 }
 
 const initialState: ProviderState = {
   businessInformation: null,
+  countries: [],
   state: {
     success: false,
   }
@@ -67,6 +74,20 @@ export const updateBusinessInformationAction = createAsyncThunk(
   }
 );
 
+export const getCountriesAction = createAsyncThunk(
+  'practice/getCountries',
+  async (): Promise<Array<Country>> => {
+    try {
+      const response = await getCountries();
+
+      return response.data;
+    } catch (error: any) {
+      console.error('[getCountries]: ', error);
+      return [];
+    }
+  }
+);
+
 const practiceSlice = createSlice({
   name: 'practice',
   initialState,
@@ -91,6 +112,15 @@ const practiceSlice = createSlice({
       .addCase(updateBusinessInformationAction.rejected, (state) => {
         state.businessInformation = state.businessInformation;
         state.state = { ...state.state, success: false, message: 'error at update business information state' }
+      })
+      .addCase(getCountriesAction.pending, () => console.log('pending get countries'))
+      .addCase(getCountriesAction.fulfilled, (state, action: PayloadAction<Array<Country>>) => {
+        state.countries = action.payload;
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(getCountriesAction.rejected, (state) => {
+        state.businessInformation = state.businessInformation;
+        state.state = { ...state.state, success: false, message: 'error at get countries state' }
       });
   }
 });

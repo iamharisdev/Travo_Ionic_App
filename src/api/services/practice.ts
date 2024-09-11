@@ -1,4 +1,4 @@
-import { BusinessInformation } from "../../state/practiceSlice";
+import { BusinessInformation, Country } from "../../state/practiceSlice";
 import { practiceApiInstance } from "../axios.instance";
 
 export const getBusinessInformation = async (practiceId: string) => {
@@ -7,4 +7,8 @@ export const getBusinessInformation = async (practiceId: string) => {
 
 export const updateBusinessInformation = async (practiceId: string, businessInformation: Partial<BusinessInformation>) => {
   return await practiceApiInstance.put<void>(`/practices/${practiceId}/business-information`, businessInformation);
+}
+
+export const getCountries = async () => {
+  return await practiceApiInstance.get<Array<Country>>(`/global-data/countries`);
 }
