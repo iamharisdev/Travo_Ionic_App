@@ -34,7 +34,7 @@ import "./ProfileInformation.scss";
 const CSSprefix = 'profile-information';
 
 const ProfileInformation: React.FC = (): React.ReactElement => {
-  const { provider } = useSelector((state: RootState) => state);
+  const { provider, practice: { phoneCodes } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const { takePhoto, pickPhoto } = useFiles();
@@ -290,9 +290,9 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
                 value={formik.values.phoneNumberPrefix}
                 onIonChange={(e) => formik.setFieldValue('phoneNumberPrefix', e.detail.value)}
               >
-                <IonSelectOption value="+52">+52</IonSelectOption>
-                <IonSelectOption value="+53">+53</IonSelectOption>
-                <IonSelectOption value="+54">+54</IonSelectOption>
+                {phoneCodes.map(({ countryCode, code }) => (
+                  <IonSelectOption key={countryCode} value={code}>{code}</IonSelectOption>
+                ))}
               </IonSelect>
               <IonInput
                 name="phoneNumber"

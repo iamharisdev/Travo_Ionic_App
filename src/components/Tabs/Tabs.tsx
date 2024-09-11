@@ -26,7 +26,7 @@ import { getMeAction } from "../../state/providerSlice";
 import { getStorageValue } from "../../storage/storage.util";
 import { STORAGE_TOKEN } from "../../constant/storage.constant";
 import { reloadAuth } from "../../state/authSlice";
-import { getBusinessInformationAction, getCountriesAction } from "../../state/practiceSlice";
+import { getBusinessInformationAction, getCountriesAction, getPhoneCodesAction } from "../../state/practiceSlice";
 
 import "./Tabs.scss";
 
@@ -43,6 +43,7 @@ const Tabs: React.FC = (): React.ReactElement => {
       dispatch(setLoading({ loading: true, message: 'Loading data' }));
       const profileResponse = await dispatch<any>(getMeAction());
       await dispatch(getCountriesAction());
+      await dispatch(getPhoneCodesAction());
 
       if (profileResponse.payload?.providerPractices?.length > 0) {
         const [providerPractice] = profileResponse.payload.providerPractices;

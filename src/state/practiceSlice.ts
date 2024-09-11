@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
-import { getBusinessInformation, getCountries, updateBusinessInformation } from '../api/services/practice';
+import { getBusinessInformation, getCountries, getPhoneCodes, updateBusinessInformation } from '../api/services/practice';
 
 export interface BusinessInformation {
   id: string;
@@ -26,6 +26,12 @@ export interface Country {
   code: string;
 }
 
+export interface PhoneCode {
+  countryName: string;
+  countryCode: string;
+  code: string;
+}
+
 interface UpdatebusinessInformation {
   practiceId: string;
   businessInformation: Partial<BusinessInformation>;
@@ -34,12 +40,14 @@ interface UpdatebusinessInformation {
 export interface ProviderState {
   businessInformation: BusinessInformation | null;
   countries: Array<Country>;
+  phoneCodes: Array<PhoneCode>;
   state: StatusState;
 }
 
 const initialState: ProviderState = {
   businessInformation: null,
   countries: [],
+  phoneCodes: [],
   state: {
     success: false,
   }
@@ -88,6 +96,20 @@ export const getCountriesAction = createAsyncThunk(
   }
 );
 
+export const getPhoneCodesAction = createAsyncThunk(
+  'practice/getPhoneCodes',
+  async (): Promise<Array<PhoneCode>> => {
+    try {
+      const response = await getPhoneCodes();
+
+      return response.data;
+    } catch (error: any) {
+      console.error('[getPhoneCodes]: ', error);
+      return [];
+    }
+  }
+);
+
 const practiceSlice = createSlice({
   name: 'practice',
   initialState,
@@ -121,6 +143,15 @@ const practiceSlice = createSlice({
       .addCase(getCountriesAction.rejected, (state) => {
         state.businessInformation = state.businessInformation;
         state.state = { ...state.state, success: false, message: 'error at get countries state' }
+      })
+      .addCase(getPhoneCodesAction.pending, () => console.log('pending get phone codes'))
+      .addCase(getPhoneCodesAction.fulfilled, (state, action: PayloadAction<Array<PhoneCode>>) => {
+        state.phoneCodes = action.payload;
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(getPhoneCodesAction.rejected, (state) => {
+        state.businessInformation = state.businessInformation;
+        state.state = { ...state.state, success: false, message: 'error at get phone codes state' }
       });
   }
 });
