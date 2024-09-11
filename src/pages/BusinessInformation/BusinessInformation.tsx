@@ -15,8 +15,9 @@ import {
 import Header from "../../components/Header/Header";
 import { caretDownOutline, caretUpOutline, copyOutline } from "ionicons/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../state/store";
 import { useFormik } from "formik";
+import { Clipboard } from '@capacitor/clipboard';
+import { AppDispatch, RootState } from "../../state/store";
 import { businessInformationSchema } from "./validation/businessInformation.schema";
 import { setLoading } from "../../state/loadingSlice";
 import usePresentToast from "../../hooks/usePresentToast";
@@ -25,13 +26,6 @@ import { updateBusinessInformationAction } from "../../state/practiceSlice";
 import "./BusinessInformation.scss";
 
 const CSSprefix = 'business-information';
-
-// TODO: replace this array with countries from practice state
-const countries = [
-  'ZA',
-  'BR',
-  'AU',
-];
 
 const BusinessInformation: React.FC = (): React.ReactElement => {
   const { practice } = useSelector((state: RootState) => state);
@@ -81,6 +75,17 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
     },
   });
 
+  const autoGeneratePersonalizedUrlHandler = (subdomain: string) => {
+    const personalizedUrl = `https://${subdomain}.${process.env.REACT_APP_PERSONALIZED_URL}`;
+    formik.setFieldValue('fqDomain', personalizedUrl);
+  };
+
+  const copyPersonalizedUrl = async () => {
+    await Clipboard.write({
+      string: formik.values.fqDomain
+    });
+  };
+
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showMenu={false} />
@@ -103,7 +108,10 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
               type="text"
               placeholder="Enter page name"
               value={formik.values.subdomain}
-              onIonInput={(e) => formik.setFieldValue('subdomain', e.detail.value)}
+              onIonInput={(e) => {
+                formik.setFieldValue('subdomain', e.detail.value);
+                autoGeneratePersonalizedUrlHandler(e.detail.value || '');
+              }}
             />
           </IonItem>
           <IonItem
@@ -114,13 +122,13 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
               Auto booking page personalized URL
             </IonLabel>
             <IonInput
+              disabled
               class="custom"
               type="text"
               placeholder="Enter page name above to generate"
               value={formik.values.fqDomain}
-              onIonInput={(e) => formik.setFieldValue('fqDomain', e.detail.value)}
             />
-            <IonIcon className={`${CSSprefix}-copy-icon`} slot="end" icon={copyOutline} />
+            <IonIcon className={`${CSSprefix}-copy-icon`} slot="end" icon={copyOutline} onClick={copyPersonalizedUrl} />
           </IonItem>
           <IonItem
             lines="none"
@@ -152,8 +160,8 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
               value={formik.values.country}
               onIonChange={(e) => formik.setFieldValue('country', e.detail.value)}
             >
-              {countries.map((country) => (
-                <IonSelectOption key={country} value={country}>{country}</IonSelectOption>
+              {practice.countries.map(({ name, code }) => (
+                <IonSelectOption key={code} value={code}>{name}</IonSelectOption>
               ))}
             </IonSelect>
           </IonItem>
