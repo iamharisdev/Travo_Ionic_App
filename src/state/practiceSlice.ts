@@ -113,7 +113,14 @@ export const getPhoneCodesAction = createAsyncThunk(
 const practiceSlice = createSlice({
   name: 'practice',
   initialState,
-  reducers: {},
+  reducers: {
+    updateBrandingInformationAction: (state, action: PayloadAction<{ logoUrl: string }>) => {
+      if (state.businessInformation) {
+        state.businessInformation.logoUrl = action.payload.logoUrl;
+        state.state = { success: true };
+      }
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(resetAll, () => initialState)
@@ -155,5 +162,7 @@ const practiceSlice = createSlice({
       });
   }
 });
+
+export const { updateBrandingInformationAction } = practiceSlice.actions;
 
 export default practiceSlice.reducer;
