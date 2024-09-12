@@ -11,6 +11,8 @@ import ResetPassword from './pages/ResetPassword/ResetPassword';
 import PasswordSuccess from './pages/PasswordSuccess/PasswordSuccess';
 import { useSelector } from 'react-redux';
 import { RootState } from './state/store';
+import { Device } from "@capacitor/device";
+import eruda from 'eruda';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -37,6 +39,26 @@ setupIonicReact();
 const App: React.FC = () => {
   const { loading, message } = useSelector((state: RootState) => state.loading);
   const [present, dismiss] = useIonLoading();
+
+  useEffect(() => {
+    const initHandler = async () => {
+      const info = await Device.getInfo();
+
+      if (
+        (info.platform === "ios" || info.platform === "android") &&
+        process.env?.REACT_APP_SHOW_ERUDA
+      ) {
+        const el = document.createElement("div");
+        document.body.appendChild(el);
+
+        eruda.init({
+          container: el,
+        });
+      }
+    };
+
+    initHandler();
+  }, []);
 
   useEffect(() => {
     if (loading) {

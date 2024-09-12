@@ -6,6 +6,7 @@
 		"allowNavigation": [
 			"undefined",
 			"undefined",
+			"undefined",
 			"undefined"
 		],
 		"androidScheme": "https",
@@ -15,6 +16,7 @@
 		"AppPlugin",
 		"CAPCameraPlugin",
 		"ClipboardPlugin",
+		"DevicePlugin",
 		"HapticsPlugin",
 		"KeyboardPlugin",
 		"PreferencesPlugin",
