@@ -45,10 +45,10 @@ const App: React.FC = () => {
       const info = await Device.getInfo();
 
       if (
-        (info.platform === "ios" || info.platform === "android") &&
-        process.env?.REACT_APP_SHOW_ERUDA
+        (info.platform === 'ios' || info.platform === 'android') &&
+        process.env?.REACT_APP_SHOW_ERUDA === 'true'
       ) {
-        const el = document.createElement("div");
+        const el = document.createElement('div');
         document.body.appendChild(el);
 
         eruda.init({
