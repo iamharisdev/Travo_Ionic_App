@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   IonCard,
   IonCardContent,
@@ -13,13 +13,20 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { cardOutline } from "ionicons/icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../state/store";
 
 import "./SubscriptionDetails.scss";
 
 const CSSprefix = 'subscription-deatils';
 
 const SubscriptionDetails: React.FC = (): React.ReactElement => {
-  // TODO: fill data with values from billing state once CORS issue is solved
+  const { billing } = useSelector((state: RootState) => state);
+  const productName = useMemo(() => billing.productDetails?.productName, [billing.productDetails]);
+  const productDetail = useMemo(() => billing.productsDetails.find(({ name }) => name === productName), [productName, billing.productsDetails]);
+  const cardBrand = useMemo(() => billing.paymentMethod?.cardBrand, [billing?.paymentMethod?.cardBrand]);
+  const last4 = useMemo(() => billing.paymentMethod?.last4, [billing.paymentMethod?.last4]);
+
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showMenu={false} />
@@ -34,9 +41,9 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
             <div className={`${CSSprefix}-subscription-container-gradient`} />
             <IonCardHeader>
               <IonItem lines="none" className="ion-no-padding ion-no-margin">
-                <IonCardTitle>Pro</IonCardTitle>
+                <IonCardTitle>{productName}</IonCardTitle>
                 <IonItem lines="none" className="ion-no-padding ion-no-margin" slot="end">
-                  <IonText className={`${CSSprefix}-subscription-price`}>R999.00</IonText>
+                  <IonText className={`${CSSprefix}-subscription-price`}>{`${productDetail?.currencySymbol}${productDetail?.price}`}</IonText>
                   <IonText slot="end" className={`${CSSprefix}-subscription-month`}>/ Monthly</IonText>
                 </IonItem>
               </IonItem>
@@ -51,10 +58,10 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
                 <IonIcon icon={cardOutline} />
                 <div className={`${CSSprefix}-next-payment-card-details-container`}>
                   <IonText className={`${CSSprefix}-next-payment-card-details-text`}>
-                    amex
+                    {cardBrand}
                   </IonText>
                   <IonText className={`${CSSprefix}-next-payment-card-details-text`}>
-                    ************4764
+                    ************{last4}
                   </IonText>
                 </div>
               </IonItem>

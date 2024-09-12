@@ -27,7 +27,7 @@ import { getStorageValue } from "../../storage/storage.util";
 import { STORAGE_TOKEN } from "../../constant/storage.constant";
 import { reloadAuth } from "../../state/authSlice";
 import { getBusinessInformationAction, getCountriesAction, getPhoneCodesAction } from "../../state/practiceSlice";
-import { getPaymentMethodAction } from "../../state/billingSlice";
+import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsAction } from "../../state/billingSlice";
 
 import "./Tabs.scss";
 
@@ -45,13 +45,21 @@ const Tabs: React.FC = (): React.ReactElement => {
         await dispatch(getCountriesAction());
         await dispatch(getPhoneCodesAction());
 
-        if (profileResponse.payload?.providerPractices?.length > 0) {
+        if (profileResponse.payload?.providerPractices?.length > 0 && profileResponse.payload?.principal?.countryCode) {
           const [providerPractice] = profileResponse.payload.providerPractices;
           if (providerPractice) {
             await dispatch(getBusinessInformationAction(providerPractice.practiceId));
             await dispatch(getPaymentMethodAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId
+            }));
+            await dispatch(getProductDetailsAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId
+            }));
+            await dispatch(getProductsDetailsAction({
+              practiceId: providerPractice.practiceId,
+              countryCode: profileResponse.payload?.principal?.countryCode
             }));
           }
         }

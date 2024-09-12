@@ -77,7 +77,7 @@ const Branding: React.FC = (): React.ReactElement => {
     }
   };
 
-  // Waiting to update endpoint to be able to update logoUrl as empty string
+  // TODO: check functionality after update to allow empty logo url
   const removePhotoHandler = async () => {
     if (practice.businessInformation?.id) {
       try {
