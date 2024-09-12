@@ -19,7 +19,7 @@ import "./SubscriptionDetails.scss";
 const CSSprefix = 'subscription-deatils';
 
 const SubscriptionDetails: React.FC = (): React.ReactElement => {
-
+  // TODO: fill data with values from billing state once CORS issue is solved
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showMenu={false} />

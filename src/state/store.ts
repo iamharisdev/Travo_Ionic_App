@@ -3,6 +3,7 @@ import authReducer from './authSlice';
 import loadingReducer from './loadingSlice';
 import providerReducer from './providerSlice';
 import practiceReducer from './practiceSlice';
+import billingReducer from './billingSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     loading: loadingReducer,
     provider: providerReducer,
     practice: practiceReducer,
+    billing: billingReducer,
   },
 });
 

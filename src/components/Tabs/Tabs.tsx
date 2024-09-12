@@ -27,6 +27,7 @@ import { getStorageValue } from "../../storage/storage.util";
 import { STORAGE_TOKEN } from "../../constant/storage.constant";
 import { reloadAuth } from "../../state/authSlice";
 import { getBusinessInformationAction, getCountriesAction, getPhoneCodesAction } from "../../state/practiceSlice";
+import { getPaymentMethodAction } from "../../state/billingSlice";
 
 import "./Tabs.scss";
 
@@ -34,49 +35,37 @@ const Tabs: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const location = useLocation();
-  const { auth, provider } = useSelector((state: RootState) => state);
-
-  // TODO: handle error toast in a function
+  const { auth, provider, practice, billing } = useSelector((state: RootState) => state);
 
   useEffect(() => {
     const initialLoad = async () => {
-      dispatch(setLoading({ loading: true, message: 'Loading data' }));
-      const profileResponse = await dispatch<any>(getMeAction());
-      await dispatch(getCountriesAction());
-      await dispatch(getPhoneCodesAction());
+      try {
+        dispatch(setLoading({ loading: true, message: 'Loading data' }));
+        const profileResponse = await dispatch<any>(getMeAction());
+        await dispatch(getCountriesAction());
+        await dispatch(getPhoneCodesAction());
 
-      if (profileResponse.payload?.providerPractices?.length > 0) {
-        const [providerPractice] = profileResponse.payload.providerPractices;
-        if (providerPractice) {
-          const businessInformation = await dispatch(getBusinessInformationAction(providerPractice.practiceId));
-          if (businessInformation.meta.requestStatus === 'fulfilled') {
-            dispatch(setLoading({ loading: false, message: undefined }));
-          }
-
-          if (businessInformation.meta.requestStatus === 'rejected') {
-            presentToast(
-              '¡Error at loading business information!',
-              1000,
-              'top',
-              'danger'
-            );
+        if (profileResponse.payload?.providerPractices?.length > 0) {
+          const [providerPractice] = profileResponse.payload.providerPractices;
+          if (providerPractice) {
+            await dispatch(getBusinessInformationAction(providerPractice.practiceId));
+            await dispatch(getPaymentMethodAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId
+            }));
           }
         }
-      }
 
-      if (profileResponse.meta.requestStatus === 'fulfilled') {
         dispatch(setLoading({ loading: false, message: undefined }));
-      }
-
-      if (profileResponse.meta.requestStatus === 'rejected') {
+      } catch (error) {
+        dispatch(setLoading({ loading: false, message: undefined }));
         presentToast(
-          '¡Error at loading profile!',
+          '¡Error at loading data!',
           1000,
           'top',
           'danger'
         );
       }
-      dispatch(setLoading({ loading: false, message: undefined }));
     };
 
     const checkTokenHandler = async () => {
@@ -88,9 +77,12 @@ const Tabs: React.FC = (): React.ReactElement => {
     };
 
     if (
-      auth.state.success &&
-      !provider.state.success &&
-      location.pathname.includes(DASHBOARD)
+      auth.state.success && (
+        !provider.state.success &&
+        !practice.state.success &&
+        !billing.state.success
+      )
+      && location.pathname.includes(DASHBOARD)
     ) {
       initialLoad();
     }
@@ -98,7 +90,8 @@ const Tabs: React.FC = (): React.ReactElement => {
     if (!auth.state.success) {
       checkTokenHandler();
     }
-  }, [auth.state.success, provider.state.success, location.pathname, location, dispatch, presentToast]);
+  }, [auth.state.success, location.pathname]);
+  console.log('location.pathname: ', location.pathname);
 
   return (
     <IonTabs className="tabs">

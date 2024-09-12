@@ -9,6 +9,7 @@ const config: CapacitorConfig = {
       `${process.env.REACT_APP_ID_API_URL}`,
       `${process.env.REACT_APP_PROVIDER_API_URL}`,
       `${process.env.REACT_APP_PRACTICE_API_URL}`,
+      `${process.env.REACT_APP_BILLING_API_URL}`,
     ],
     androidScheme: 'https',
     iosScheme: 'https',
