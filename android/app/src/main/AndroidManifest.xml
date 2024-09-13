@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -34,22 +37,4 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
     </application>
-
-    <!-- Trigger Google Play services to install the backported photo picker module. -->
-    <!--suppress AndroidDomInspection -->
-    <service android:name="com.google.android.gms.metadata.ModuleDependencies"
-        android:enabled="false"
-        android:exported="false"
-        tools:ignore="MissingClass">
-        <intent-filter>
-            <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
-        </intent-filter>
-        <meta-data android:name="photopicker_activity:0:required" android:value="" />
-    </service>
-
-    <!-- Permissions -->
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

@@ -1,6 +1,9 @@
-ion-header {
-  /* safe area vairables */
+.ios ion-header {
   --ion-safe-area-top: 60px;
+}
+
+.md ion-header {
+  --ion-safe-area-top: 30px;
 }
 
 ion-button {
@@ -63,14 +66,19 @@ ion-tab-bar {
 }
 
 .ios ion-toolbar {
-  --background: var(--ion-trova-white);
+  --background: var(--ion-trova-page-background);
   border-bottom: 1px solid var(--ion-trova-divider);
 }
 
 .md ion-toolbar {
-  --background: var(--ion-trova-white);
+  --background: var(--ion-trova-page-background);
   border-bottom: 1px solid var(--ion-trova-divider);
   text-align: center;
+  height: 85px;
+}
+
+.md ion-header {
+  box-shadow: none;
 }
 
 .md ion-button {
