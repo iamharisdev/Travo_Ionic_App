@@ -37,49 +37,10 @@ export interface ProviderState {
   state: StatusState;
 }
 
-// TODO: remove mock values after resolve CORS issue
-const mockPayment: PaymentMethod = {
-  subscriptionActive: true,
-  cardBrand: "visa",
-  expirationMonth: "10",
-  expirationYear: "2028",
-  last4: "4242",
-  upcomingInvoiceAmountDue: 44900,
-  upcomingInvoiceDueDate: null,
-  currentStripePriceId: "price_1PeTZSKdGbegTckpFIv4DBoW",
-  primarySubscription: true
-}
-
-const mockProductDetails: ProductDetails = {
-  productName: "Starter",
-  starter: true
-}
-
-const mockProductsDetails: Array<ProductsDetails> = [
-  {
-    id: 'tb12',
-    name: 'Premium',
-    price: '999.00',
-    currency: 'ZAR',
-    currencySymbol: 'R',
-    stripePriceId: 'price_1PeTTLKdGbegTckpf113Lp5D',
-    frequency: 'Monthly'
-  },
-  {
-    id: 'pm15',
-    name: 'Starter',
-    price: '449.00',
-    currency: 'ZAR',
-    currencySymbol: 'R',
-    stripePriceId: 'price_1PeTZSKdGbegTckpFIv4DBoW',
-    frequency: 'Monthly'
-  }
-]
-
 const initialState: ProviderState = {
-  paymentMethod: mockPayment,
-  productDetails: mockProductDetails,
-  productsDetails: mockProductsDetails,
+  paymentMethod: null,
+  productDetails: null,
+  productsDetails: [],
   state: {
     success: false,
   }
@@ -94,7 +55,7 @@ export const getPaymentMethodAction = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       console.error('[getPaymentMethod]: ', error);
-      return mockPayment;
+      return null;
     }
   }
 );
@@ -108,7 +69,7 @@ export const getProductDetailsAction = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       console.error('[getProductDetails]: ', error);
-      return mockProductDetails;
+      return null;
     }
   }
 );
@@ -122,7 +83,7 @@ export const getProductsDetailsAction = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       console.error('[getProductsDetails]: ', error);
-      return mockProductsDetails;
+      return [];
     }
   }
 );
