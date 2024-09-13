@@ -24,8 +24,9 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
   const { billing } = useSelector((state: RootState) => state);
   const productName = useMemo(() => billing.productDetails?.productName, [billing.productDetails]);
   const productDetail = useMemo(() => billing.productsDetails.find(({ name }) => name === productName), [productName, billing.productsDetails]);
-  const cardBrand = useMemo(() => billing.paymentMethod?.cardBrand, [billing?.paymentMethod?.cardBrand]);
-  const last4 = useMemo(() => billing.paymentMethod?.last4, [billing.paymentMethod?.last4]);
+  // Uncomment this if it's required in the feature
+  // const cardBrand = useMemo(() => billing.paymentMethod?.cardBrand, [billing?.paymentMethod?.cardBrand]);
+  // const last4 = useMemo(() => billing.paymentMethod?.last4, [billing.paymentMethod?.last4]);
 
   return (
     <IonPage className={CSSprefix}>
@@ -56,18 +57,19 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
             <IonCardContent>
               <IonItem lines="none" className="ion-no-padding">
                 <IonIcon icon={cardOutline} />
-                <div className={`${CSSprefix}-next-payment-card-details-container`}>
+                {/* Uncomment this if it's required in the future */}
+                {/* <div className={`${CSSprefix}-next-payment-card-details-container`}>
                   <IonText className={`${CSSprefix}-next-payment-card-details-text`}>
                     {cardBrand}
                   </IonText>
                   <IonText className={`${CSSprefix}-next-payment-card-details-text`}>
                     ************{last4}
                   </IonText>
-                </div>
+                </div> */}
               </IonItem>
               <IonItem lines="none" className="ion-no-padding">
                 <IonText className={`${CSSprefix}-next-payment-description`}>
-                  For changing or adding a card, please do it on the desktop version.
+                  Only the account creator has the permission to change payment method on file. Please contact your account creator.
                   {"\n"}
                   {"\n"}
                   Please Contact Support at hello@trova.health to cancel your Subscription.
