@@ -99,7 +99,6 @@ const Tabs: React.FC = (): React.ReactElement => {
       checkTokenHandler();
     }
   }, [auth.state.success, location.pathname]);
-  console.log('location.pathname: ', location.pathname);
 
   return (
     <IonTabs className="tabs">

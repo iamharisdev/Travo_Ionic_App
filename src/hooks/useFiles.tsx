@@ -5,13 +5,18 @@ import {
   CameraSource,
 } from "@capacitor/camera";
 
+export interface FileResponse {
+  file: File | null;
+  url: string;
+}
+
 interface UseFiles {
-  takePhoto: () => Promise<File | null>;
-  pickPhoto: () => Promise<File | null>;
+  takePhoto: () => Promise<FileResponse>;
+  pickPhoto: () => Promise<FileResponse>;
 }
 
 const useFiles = (): UseFiles => {
-  const takePhoto = async (): Promise<File | null> => {
+  const takePhoto = async (): Promise<FileResponse> => {
     try {
       const image = await Camera.getPhoto({
         quality: 90,
@@ -31,16 +36,17 @@ const useFiles = (): UseFiles => {
       const file = new File([blob], `profile-picture.${"jpg"}`, {
         type: `image/${"jpg"}`,
       });
+      const url = `data:image/${image.format};base64,${image.base64String}`;
 
-      return file;
+      return { file, url };
     } catch (error) {
       console.error("takePhoto: ", error);
     }
 
-    return null;
+    return { file: null, url: '' };
   };
 
-  const pickPhoto = async (): Promise<File | null> => {
+  const pickPhoto = async (): Promise<FileResponse> => {
     try {
       const image = await Camera.getPhoto({
         quality: 90,
@@ -59,13 +65,14 @@ const useFiles = (): UseFiles => {
       const file = new File([blob], `profile-picture.${"jpg"}`, {
         type: `image/${"jpg"}`,
       });
+      const url = `data:image/${image.format};base64,${image.base64String}`;
 
-      return file;
+      return { file, url };
     } catch (error) {
       console.error("pickPhoto: ", error);
     }
 
-    return null;
+    return { file: null, url: '' };
   };
 
   return { takePhoto, pickPhoto };

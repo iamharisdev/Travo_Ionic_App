@@ -15,7 +15,7 @@ export interface BusinessInformation {
   timeZone: string;
   primaryColor: string | null;
   secondaryColor: string | null;
-  logoUrl: string;
+  logoUrl: string | null;
   practiceNumber: string;
   subdomain: string;
   fqDomain: string;
@@ -114,7 +114,7 @@ const practiceSlice = createSlice({
   name: 'practice',
   initialState,
   reducers: {
-    updateBrandingInformationAction: (state, action: PayloadAction<{ logoUrl: string }>) => {
+    updateBrandingInformationAction: (state, action: PayloadAction<{ logoUrl: string | null }>) => {
       if (state.businessInformation) {
         state.businessInformation.logoUrl = action.payload.logoUrl;
         state.state = { success: true };

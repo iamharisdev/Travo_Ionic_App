@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActionSheetButton,
   IonActionSheet,
@@ -15,7 +15,7 @@ import Header from "../../components/Header/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import usePresentToast from "../../hooks/usePresentToast";
-import useFiles from "../../hooks/useFiles";
+import useFiles, { FileResponse } from "../../hooks/useFiles";
 import { setLoading } from "../../state/loadingSlice";
 import { uploadPracticeLogo, updateBrandingInformation } from "../../api/services/practice";
 import { updateBrandingInformationAction } from "../../state/practiceSlice";
@@ -31,37 +31,48 @@ const Branding: React.FC = (): React.ReactElement => {
   const { takePhoto, pickPhoto } = useFiles();
   const [openUploadImageActionSheet, setOpenUploadImageActionSheet] =
     useState<boolean>(false);
+  const [initialLogoUrl, setInitialLogoUrl] = useState<string>('');
+  const [practiceLogo, setPracticeLogo] = useState<{
+    file: File | null;
+    url: string | null;
+  }>({ file: null, url: null });
 
-  const changePhotoHandler = async (action: "take" | "pick" | "delete") => {
+  const changePhotoHandler = async (action: 'take' | 'pick') => {
     setOpenUploadImageActionSheet(false);
-    let practiceLogo: File | null = null;
+    let practiceLogo: FileResponse = { file: null, url: '' };
 
     if (action === "take") {
       practiceLogo = await takePhoto();
-      if (!practiceLogo) return;
     }
 
     if (action === "pick") {
       practiceLogo = await pickPhoto();
-      if (!practiceLogo) return;
     }
 
-    if (practiceLogo && (action === 'take' || action === 'pick') && practice.businessInformation?.id) {
+    setPracticeLogo(practiceLogo);
+  };
+
+  const saveAndUpdateLogoHandler = async () => {
+    if (practice.businessInformation?.id) {
       try {
         dispatch(
-          setLoading({ loading: true, message: 'Uploading profile picture' })
+          setLoading({ loading: true })
         );
-        const practiceLogoResponse = await uploadPracticeLogo(practice.businessInformation.id, practiceLogo);
-
-        if (practiceLogoResponse.data.data) {
-          await updateBrandingInformation(
-            practice.businessInformation.id,
-            { logoUrl: practiceLogoResponse.data.data }
-          );
-          dispatch(updateBrandingInformationAction({
-            logoUrl: practiceLogoResponse.data.data,
-          }));
+        let logoUrl: string | null = null;
+        if (practiceLogo.file) {
+          const practiceLogoResponse = await uploadPracticeLogo(practice.businessInformation.id, practiceLogo.file);
+          logoUrl = practiceLogoResponse.data.data;
         }
+
+        await updateBrandingInformation(
+          practice.businessInformation.id,
+          { logoUrl }
+        );
+        dispatch(updateBrandingInformationAction({
+          logoUrl,
+        }));
+        setPracticeLogo({ ...practiceLogo, url: logoUrl || '' });
+        setInitialLogoUrl(logoUrl || '');
 
         dispatch(setLoading({ loading: false, message: '' }));
       } catch (error) {
@@ -72,38 +83,14 @@ const Branding: React.FC = (): React.ReactElement => {
           'top',
           'danger'
         );
+        setPracticeLogo({ file: null, url: practice.businessInformation?.logoUrl || '' });
+        setInitialLogoUrl(practice.businessInformation?.logoUrl || '');
       }
 
     }
   };
 
-  // TODO: check functionality after update to allow empty logo url
-  const removePhotoHandler = async () => {
-    if (practice.businessInformation?.id) {
-      try {
-        dispatch(
-          setLoading({ loading: true, message: 'Removing practice logo' })
-        );
-
-        await updateBrandingInformation(
-          practice.businessInformation.id,
-          { logoUrl: '' }
-        );
-        dispatch(updateBrandingInformationAction({ logoUrl: '' }));
-
-        dispatch(setLoading({ loading: false, message: '' }));
-      } catch (error) {
-        dispatch(setLoading({ loading: false, message: '' }));
-        presentToast(
-          '¡Error at remove practice logo!',
-          1000,
-          'top',
-          'danger'
-        );
-      }
-
-    }
-  };
+  const removePhotoHandler = () => setPracticeLogo({ file: null, url: '' });
 
   const uploadActions = useMemo(() => {
     const actions: (string | ActionSheetButton<any>)[] = [
@@ -133,6 +120,14 @@ const Branding: React.FC = (): React.ReactElement => {
     return actions;
   }, [changePhotoHandler]);
 
+  useEffect(() => {
+    // Initial load image
+    if (practice.businessInformation?.logoUrl && practiceLogo.url === null) {
+      setPracticeLogo({ file: null, url: practice.businessInformation.logoUrl });
+      setInitialLogoUrl(practice.businessInformation.logoUrl);
+    }
+  }, [practice.businessInformation?.logoUrl, practiceLogo.url]);
+
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showMenu={false} />
@@ -149,7 +144,7 @@ const Branding: React.FC = (): React.ReactElement => {
         </IonItem>
         <IonList>
           <IonRow className="ion-justify-content-center">
-            <IonImg src={practice.businessInformation?.logoUrl || ''} />
+            <IonImg src={practiceLogo.url || ''} />
           </IonRow>
           <IonRow className="ion-justify-content-center">
             <IonItem lines="none">
@@ -160,7 +155,7 @@ const Branding: React.FC = (): React.ReactElement => {
               >
                 Upload logo
               </IonButton>
-              {practice.businessInformation?.logoUrl !== null && (
+              {practiceLogo.url !== '' && (
                 <>
                   <div className={`${CSSprefix}-divider`} />
                   <IonButton
@@ -184,7 +179,8 @@ const Branding: React.FC = (): React.ReactElement => {
             className={`${CSSprefix}-save-button`}
             color="primary"
             expand="block"
-            onClick={() => null}
+            disabled={initialLogoUrl === practiceLogo.url}
+            onClick={saveAndUpdateLogoHandler}
           >
             Save and update
           </IonButton>

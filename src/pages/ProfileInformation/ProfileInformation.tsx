@@ -27,7 +27,7 @@ import { setLoading } from "../../state/loadingSlice";
 import { updatePracticeAction } from "../../state/providerSlice";
 import { practiceUpdateSchema } from "./validation/profileInformation.schema";
 import { uploadProfilePicture } from "../../api/services/provider";
-import useFiles from "../../hooks/useFiles";
+import useFiles, { FileResponse } from "../../hooks/useFiles";
 
 import "./ProfileInformation.scss";
 
@@ -38,6 +38,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const { takePhoto, pickPhoto } = useFiles();
+  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
   const [openUploadImageActionSheet, setOpenUploadImageActionSheet] =
     useState<boolean>(false);
   const initialValues = useMemo(() => provider.practice || {
@@ -76,7 +77,14 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
 
       if (practiceId && providerId && valid) {
         dispatch(setLoading({ loading: true }));
-        const response = await dispatch(updatePracticeAction({ practiceId, providerId, practice: values }));
+        let updatedValues = { ...values };
+        if (profilePictureFile) {
+          const profilePictureResponse = await uploadProfilePicture(providerId, profilePictureFile);
+          if (profilePictureResponse.data.data) {
+            updatedValues = { ...values, profilePictureUrl: profilePictureResponse.data.data };
+          }
+        }
+        const response = await dispatch(updatePracticeAction({ practiceId, providerId, practice: updatedValues }));
 
         if (response.meta.requestStatus === 'fulfilled') {
           dispatch(setLoading({ loading: false, message: undefined }));
@@ -95,78 +103,25 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
     },
   });
 
-  const changePhotoHandler = async (action: "take" | "pick" | "delete") => {
+  const changePhotoHandler = async (action: 'take' | 'pick') => {
     setOpenUploadImageActionSheet(false);
-    let profilePicture: File | null = null;
+    let profilePicture: FileResponse = { file: null, url: '' };
 
     if (action === "take") {
       profilePicture = await takePhoto();
-      if (!profilePicture) return;
     }
 
     if (action === "pick") {
       profilePicture = await pickPhoto();
-      if (!profilePicture) return;
     }
 
-    if (profilePicture && (action === 'take' || action === 'pick') && providerId && practiceId) {
-      try {
-        dispatch(
-          setLoading({ loading: true, message: 'Uploading profile picture' })
-        );
-        const profilePictureResponse = await uploadProfilePicture(providerId, profilePicture);
-        if (profilePictureResponse.data.data) {
-          dispatch(
-            updatePracticeAction({
-              practiceId, providerId, practice: {
-                ...formik.values,
-                profilePictureUrl: profilePictureResponse.data.data,
-              }
-            })
-          );
-        }
-
-        dispatch(setLoading({ loading: false, message: '' }));
-      } catch (error) {
-        dispatch(setLoading({ loading: false, message: '' }));
-        presentToast(
-          '¡Error at upload profile picture!',
-          1000,
-          'top',
-          'danger'
-        );
-      }
-
-    }
+    formik.setFieldValue('profilePictureUrl', profilePicture.url);
+    setProfilePictureFile(profilePicture.file);
   };
 
-  const removePhotoHandler = async () => {
-    if (providerId && practiceId) {
-      try {
-        dispatch(
-          setLoading({ loading: true, message: 'Removing profile picture' })
-        );
-        await dispatch(
-          updatePracticeAction({
-            practiceId, providerId, practice: {
-              ...formik.values,
-              profilePictureUrl: null,
-            }
-          })
-        );
-
-        dispatch(setLoading({ loading: false, message: '' }));
-      } catch (error) {
-        dispatch(setLoading({ loading: false, message: '' }));
-        presentToast(
-          '¡Error at remove profile picture!',
-          1000,
-          'top',
-          'danger'
-        );
-      }
-
-    }
+  const removePhotoHandler = () => {
+    formik.setFieldValue('profilePictureUrl', null);
+    setProfilePictureFile(null);
   };
 
   const uploadActions = useMemo(() => {
@@ -290,8 +245,8 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
                 value={formik.values.phoneNumberPrefix}
                 onIonChange={(e) => formik.setFieldValue('phoneNumberPrefix', e.detail.value)}
               >
-                {phoneCodes.map(({ countryCode, code }) => (
-                  <IonSelectOption key={countryCode} value={code}>{code}</IonSelectOption>
+                {phoneCodes.map(({ code, countryName }, index) => (
+                  <IonSelectOption key={`${countryName}-${index}`} value={code}>{code}</IonSelectOption>
                 ))}
               </IonSelect>
               <IonInput
