@@ -1,5 +1,13 @@
 .profile {
   ion-content {
-    --background: var(--ion-trova-white);
+    --background: var(--ion-trova-page-background);
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
   }
 }

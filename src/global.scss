@@ -1,6 +1,9 @@
-ion-header {
-  /* safe area vairables */
+.ios ion-header {
   --ion-safe-area-top: 60px;
+}
+
+.md ion-header {
+  --ion-safe-area-top: 30px;
 }
 
 ion-button {
@@ -21,11 +24,19 @@ ion-input.custom {
   --placeholder-opacity: 0.8;
   --padding-bottom: 8px;
   --padding-top: 0;
-  border-radius: 5px;
+  --border-radius: 5px;
+  height: 50px;
 }
 
 ion-item.custom-input {
   --background: var(--ion-trova-white, #FFF);
+  --border-radius: 5px;
+  --border-color: var(--ion-trova-divider);
+  --border-width: 1px;
+}
+
+ion-item {
+  --background: transparent;
   --border-radius: 5px;
 }
 
@@ -39,6 +50,12 @@ ion-label.custom-input {
   z-index: 10;
 }
 
+ion-textarea {
+  height: 150px;
+  width: 100%;
+  --padding-start: 0;
+}
+
 ion-loading.custom-loading {
   --spinner-color: var(--ion-color-primary);
 }
@@ -49,14 +66,19 @@ ion-tab-bar {
 }
 
 .ios ion-toolbar {
-  --background: var(--ion-trova-white);
+  --background: var(--ion-trova-page-background);
   border-bottom: 1px solid var(--ion-trova-divider);
 }
 
 .md ion-toolbar {
-  --background: var(--ion-trova-white);
+  --background: var(--ion-trova-page-background);
   border-bottom: 1px solid var(--ion-trova-divider);
   text-align: center;
+  height: 85px;
+}
+
+.md ion-header {
+  box-shadow: none;
 }
 
 .md ion-button {

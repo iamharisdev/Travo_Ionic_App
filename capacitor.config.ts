@@ -5,7 +5,12 @@ const config: CapacitorConfig = {
   appName: 'trova-provider-mobile',
   webDir: 'dist',
   server: {
-    allowNavigation: [`${process.env.REACT_APP_API_URL}`],
+    allowNavigation: [
+      `${process.env.REACT_APP_ID_API_URL}`,
+      `${process.env.REACT_APP_PROVIDER_API_URL}`,
+      `${process.env.REACT_APP_PRACTICE_API_URL}`,
+      `${process.env.REACT_APP_BILLING_API_URL}`,
+    ],
     androidScheme: 'https',
     iosScheme: 'https',
   }

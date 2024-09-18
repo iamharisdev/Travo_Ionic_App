@@ -79,7 +79,7 @@ const Login: React.FC = (): React.ReactElement => {
                   Welcome back! Please enter your details.
                 </IonText>
               </IonItem>
-              <IonItem lines="none" className="custom-input ion-margin-bottom">
+              <IonItem lines="none" className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}>
                 <IonLabel position="stacked" class="custom-input">Email address</IonLabel>
                 <IonInput
                   class="custom"
@@ -89,7 +89,7 @@ const Login: React.FC = (): React.ReactElement => {
                   onIonInput={(e) => setEmail(e.detail.value || "")}
                 />
               </IonItem>
-              <IonItem lines="none" className="custom-input ion-margin-bottom">
+              <IonItem lines="none" className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}>
                 <IonLabel position="stacked" class="custom-input">Password</IonLabel>
                 <IonInput
                   class="custom"

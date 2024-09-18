@@ -4,6 +4,9 @@
 	"webDir": "dist",
 	"server": {
 		"allowNavigation": [
+			"undefined",
+			"undefined",
+			"undefined",
 			"undefined"
 		],
 		"androidScheme": "https",

@@ -1,4 +1,9 @@
 .sign-in {
+  &-sign-in-item {
+    --border-color: transparent !important;
+    --border-width: 0px !important;
+  }
+
   &-main-container {
     width: 100%;
     flex-direction: column;
