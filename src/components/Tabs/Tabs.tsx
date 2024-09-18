@@ -28,6 +28,7 @@ import { STORAGE_TOKEN } from "../../constant/storage.constant";
 import { reloadAuth } from "../../state/authSlice";
 import { getBusinessInformationAction, getCountriesAction, getPhoneCodesAction } from "../../state/practiceSlice";
 import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsAction } from "../../state/billingSlice";
+import { getEventsAction } from "../../state/schedulingSlice";
 
 import "./Tabs.scss";
 
@@ -41,6 +42,8 @@ const Tabs: React.FC = (): React.ReactElement => {
     const initialLoad = async () => {
       try {
         dispatch(setLoading({ loading: true, message: 'Loading data' }));
+        const twoWeeksFromNow = new Date();
+        twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 2 * 7);
         const profileResponse = await dispatch<any>(getMeAction());
         await dispatch(getCountriesAction());
         await dispatch(getPhoneCodesAction());
@@ -60,6 +63,14 @@ const Tabs: React.FC = (): React.ReactElement => {
             await dispatch(getProductsDetailsAction({
               practiceId: providerPractice.practiceId,
               countryCode: profileResponse.payload?.principal?.countryCode
+            }));
+            await dispatch(getEventsAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
+              start: new Date().toDateString(),
+              end: twoWeeksFromNow.toDateString(),
+              pageNumber: 0,
+              pageSize: 999,
             }));
           }
         }
@@ -113,14 +124,14 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={BRANDING} component={Branding} />
         <Route exact path={SUBSCRIPTION_DETAILS} component={SubscriptionDetails} />
       </IonRouterOutlet>
-      <IonTabBar slot="bottom">
-        <IonTabButton tab="appointments" href={APPOINTMENTS}>
-          <IonIcon icon={clipboardOutline} />
-          <IonLabel>Appointments</IonLabel>
-        </IonTabButton>
+      <IonTabBar slot="bottom" defaultValue="appointments">
         <IonTabButton tab="calendar" href={CALENDAR}>
           <IonIcon icon={calendarOutline} />
           <IonLabel>Calendar</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="appointments" href={APPOINTMENTS}>
+          <IonIcon icon={clipboardOutline} />
+          <IonLabel>Appointments</IonLabel>
         </IonTabButton>
         <IonTabButton tab="profile" href={PROFILE}>
           <IonIcon icon={personCircleOutline} />

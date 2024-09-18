@@ -1,9 +1,11 @@
 import React, { useRef } from "react";
 import {
   IonContent,
+  IonItem,
   IonPage,
   IonRefresher,
   IonRefresherContent,
+  IonText,
   RefresherEventDetail,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
@@ -27,6 +29,12 @@ const Appointments: React.FC = (): React.ReactElement => {
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />
         </IonRefresher>
+        <IonItem lines="none">
+          <IonText className={`${CSSprefix}-from-to-date ion-text-center`}>
+            August 4 - 10
+          </IonText>
+        </IonItem>
+
       </IonContent>
     </IonPage>
   );
