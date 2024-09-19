@@ -1,1 +1,44 @@
-.appointment-card {}
+.appointment-card {
+  ion-card {
+    padding-top: 8px;
+    padding-left: 20px;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-left: 5px;
+  }
+
+  &-description {
+    color: var(--ion-trova-medium-gray);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  &-badge-text {
+    color: var(--ion-trova-medium-gray);
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 5 px;
+  }
+
+  &-meeting-icon {
+    position: fixed;
+    height: 23px;
+    width: 23px;
+    left: 275px;
+    top: 42px;
+  }
+}

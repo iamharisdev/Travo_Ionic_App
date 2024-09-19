@@ -67,8 +67,8 @@ const Tabs: React.FC = (): React.ReactElement => {
             await dispatch(getEventsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
-              start: new Date().toDateString(),
-              end: twoWeeksFromNow.toDateString(),
+              start: new Date().toISOString(),
+              end: twoWeeksFromNow.toISOString(),
               pageNumber: 0,
               pageSize: 999,
             }));

@@ -1,18 +1,84 @@
-import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonItem } from '@ionic/react';
-import React from 'react';
+import { IonBadge, IonCard, IonCol, IonGrid, IonIcon, IonItem, IonRow, IonText } from '@ionic/react';
+import React, { useMemo } from 'react';
+import { personCircleOutline } from 'ionicons/icons';
+import PersonSvg from '/assets/walk.svg';
+import MeetingSvg from '/assets/group.svg';
+import { AppointmentCardProps } from './appointmentCard.type';
+import dayjs from 'dayjs';
 
-const AppointmentCard: React.FC = (): React.ReactElement => {
+import './AppointmentCard.scss';
+
+const CSSPrefix = 'appointment-card';
+
+const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.ReactElement => {
+  // TODO: get right colors and use color property from event object
+  // TODO: add color to the badge if it's today
+  // TODO: decrease margin between cards
+  const getRandomColor = () => {
+    const random = Math.floor(Math.random() * (5 - 1 + 1) + 1);
+    switch (random) {
+      case 1:
+        return `8px solid var(--ion-trova-card-border-peter-parker)`;
+      case 2:
+        return `8px solid var(--ion-trova-card-border-homelander)`;
+      case 3:
+        return `8px solid var(--ion-trova-card-border-peter-grifin)`;
+      case 4:
+        return `8px solid var(--ion-trova-card-border-cristiano)`;
+      case 5:
+        return `8px solid var(--ion-trova-card-border-camilo)`;
+      default:
+        return `8px solid var(--ion-trova-card-border-peter-parker)`;
+    }
+  }
+
+  const { startTime, endTime }: { startTime: string, endTime: string } = useMemo(() => {
+    let startTime = '';
+    let endTime = '';
+
+    if (event?.startTime) startTime = dayjs(event.startTime).format('hh:mm A')
+    if (event?.endTime) endTime = dayjs(event.endTime).format('hh:mm A')
+
+    return { startTime, endTime };
+  }, [event?.startTime, event?.endTime]);
+
+  const locationIcon = useMemo(() => event?.location === 'Online' ? MeetingSvg : PersonSvg, [event?.location]);
+
   return (
+    <IonGrid fixed={true} className={CSSPrefix}>
+      <IonRow className="ion-margin-start">
+        <IonCol size="auto" className="ion-margin-top">
+          <IonRow>
+            <IonText className={`${CSSPrefix}-badge-text`}>Mon</IonText>
+          </IonRow>
+          <IonRow>
+            <IonBadge>9</IonBadge>
+          </IonRow>
+        </IonCol>
+        <IonCol>
+          <IonCard style={{ borderLeft: getRandomColor() }}>
+            <IonItem lines="none" className='ion-no-padding'>
+              <IonIcon icon={personCircleOutline} />
+              <IonText className={`${CSSPrefix}-title`}>{event?.patientName}</IonText>
+            </IonItem>
+            <IonRow>
+              <IonText className={`${CSSPrefix}-description`}>
+                {`${startTime} - ${endTime}`}
+              </IonText>
+              <div>
+                <IonIcon className={`${CSSPrefix}-meeting-icon`} src={locationIcon} slot="end" />
+              </div>
+            </IonRow>
+            <IonRow>
+              <IonText className={`${CSSPrefix}-description`}>
+                {event.patientServiceName}
+              </IonText>
+            </IonRow>
+          </IonCard>
+        </IonCol>
+      </IonRow>
 
-    <IonItem>
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>Card Title</IonCardTitle>
-          <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-        </IonCardHeader>
-        <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-      </IonCard>
-    </IonItem>
+    </IonGrid>
   );
 }
 
