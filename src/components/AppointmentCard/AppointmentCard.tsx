@@ -12,8 +12,6 @@ const CSSPrefix = 'appointment-card';
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.ReactElement => {
   // TODO: get right colors and use color property from event object
-  // TODO: add color to the badge if it's today
-  // TODO: decrease margin between cards
   const getRandomColor = () => {
     const random = Math.floor(Math.random() * (5 - 1 + 1) + 1);
     switch (random) {
@@ -32,27 +30,43 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.React
     }
   }
 
-  const { startTime, endTime }: { startTime: string, endTime: string } = useMemo(() => {
-    let startTime = '';
-    let endTime = '';
+  const { startTime, endTime, day, date, isToday }:
+    {
+      startTime: string,
+      endTime: string,
+      day: string,
+      date: string,
+      isToday: boolean,
+    } = useMemo(() => {
+      const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      let startTime = '';
+      let endTime = '';
+      let day = '';
+      let date = '';
+      let isToday = false;
 
-    if (event?.startTime) startTime = dayjs(event.startTime).format('hh:mm A')
-    if (event?.endTime) endTime = dayjs(event.endTime).format('hh:mm A')
+      if (event?.startTime) {
+        startTime = dayjs(event.startTime).format('hh:mm A');
+        day = weekday[dayjs(event.startTime).day()].substring(0, 3);
+        date = dayjs(event.startTime).date().toString();
+        isToday = dayjs(event.startTime).date() === dayjs().date();
+      }
+      if (event?.endTime) endTime = dayjs(event.endTime).format('hh:mm A');
 
-    return { startTime, endTime };
-  }, [event?.startTime, event?.endTime]);
+      return { startTime, endTime, day, date, isToday };
+    }, [event?.startTime, event?.endTime]);
 
   const locationIcon = useMemo(() => event?.location === 'Online' ? MeetingSvg : PersonSvg, [event?.location]);
 
   return (
-    <IonGrid fixed={true} className={CSSPrefix}>
+    <IonGrid fixed={true} className={`${CSSPrefix} ion-no-padding ion-no-margin`}>
       <IonRow className="ion-margin-start">
         <IonCol size="auto" className="ion-margin-top">
           <IonRow>
-            <IonText className={`${CSSPrefix}-badge-text`}>Mon</IonText>
+            <IonText className={`${CSSPrefix}-badge-text`}>{day}</IonText>
           </IonRow>
           <IonRow>
-            <IonBadge>9</IonBadge>
+            <IonBadge color={isToday ? 'primary' : 'none'}>{date}</IonBadge>
           </IonRow>
         </IonCol>
         <IonCol>

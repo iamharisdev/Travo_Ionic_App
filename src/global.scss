@@ -96,10 +96,12 @@ ion-badge {
   --background: var(--ion-color-primary);
   --color: var(--ion-trova-white);
   border-radius: 100px;
-  --padding-end: 12px;
-  --padding-start: 12px;
+  --padding-end: 8px;
+  --padding-start: 8px;
   --padding-top: 10px;
   --padding-bottom: 10px;
+  width: 33px;
+  height: auto;
 }
 
 ion-card {

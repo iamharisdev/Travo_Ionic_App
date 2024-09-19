@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import {
   IonContent,
   IonItem,
@@ -15,6 +15,7 @@ import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
+import dayjs from "dayjs";
 
 import "./Appointments.scss";
 
@@ -24,6 +25,9 @@ const Appointments: React.FC = (): React.ReactElement => {
   const { events } = useSelector((state: RootState) => state.scheduling);
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const appointmentsRef = useRef();
+  const sortedEvents = useMemo(() => [...events?.events || []].sort(
+    (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
+  ), [events?.events]);
 
   return (
     <IonPage ref={appointmentsRef} className={CSSprefix} id="appointments-content">
@@ -40,8 +44,8 @@ const Appointments: React.FC = (): React.ReactElement => {
               August 4 - 10
             </IonText>
           </IonItem>
-          {events?.events.map((event) => (
-            <IonItem key={event.id} lines="none" className="ion-no-padding">
+          {sortedEvents.map((event) => (
+            <IonItem key={event.id} lines="none" className="ion-no-padding ion-no-margin">
               <AppointmentCard event={event} />
             </IonItem>
           ))}
