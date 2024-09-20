@@ -17,6 +17,9 @@ import dayjs from "dayjs";
 import { useLocation } from "react-router";
 import { months, weekday } from "../../shared/constants/dates";
 import { callOutline, copyOutline, mailOutline, personCircleOutline, pricetagOutline, timerOutline, videocamOutline } from "ionicons/icons";
+import { getAppointmentColor } from "../../shared/utils/appointments.util";
+import { CALENDAR_SLOTS } from "../../shared/types/appointment.type";
+import { Clipboard } from "@capacitor/clipboard";
 
 import "./AppointmentDetails.scss";
 
@@ -85,6 +88,14 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
   const isOnline = useMemo(() => event?.location === 'Online', [event?.location]);
 
+  const barColor = useMemo(() => getAppointmentColor(event?.color as CALENDAR_SLOTS), [event?.color]);
+
+  const copyOnlineMeetUrl = async () => {
+    await Clipboard.write({
+      string: event?.onlineMeetUrl
+    });
+  };
+
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showEdit showMenu={false} />
@@ -93,8 +104,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
           <IonRow>
             <IonCol size="auto">
               <IonItem lines="none">
-                {/* TODO: add color based in event color */}
-                <div className={`${CSSprefix}-bar`} />
+                <div className={`${CSSprefix}-bar`} style={{ background: barColor }} />
               </IonItem>
             </IonCol>
             <IonCol>
@@ -102,7 +112,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                 <IonText className={`${CSSprefix}-service`}>{event?.patientServiceName}</IonText>
               </IonItem>
               <IonItem lines="none" className="ion-no-padding">
-                {/* <IonText className={`${CSSprefix}-details`}>Wednesday, Aug 7, 3:30 PM - 4:30 PM</IonText> */}
                 <IonText className={`${CSSprefix}-details`}>{`${day}, ${month} ${date}, ${startTime} - ${endTime}`}</IonText>
               </IonItem>
               <IonItem lines="none" className="ion-no-padding">
@@ -132,22 +141,33 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
         <IonItem lines="none">
           <IonIcon icon={callOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
           <IonText className={`${CSSprefix}-link`}>
-            {`${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}
+            <a style={{ textDecoration: 'none' }} href={`tel:${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}>
+              {`${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}
+            </a>
           </IonText>
         </IonItem>
         <IonItem lines="none">
           <IonIcon icon={mailOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
           <IonText className={`${CSSprefix}-link`}>
-            {`${provider.practice?.userName}`}
+            <a style={{ textDecoration: 'none' }} href={`mailto:${provider.practice?.userName}`}>
+              {`${provider.practice?.userName}`}
+            </a>
           </IonText>
         </IonItem>
         {isOnline && (
           <IonItem lines="none">
             <IonIcon icon={videocamOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
             <IonText className={`${CSSprefix}-link`}>
-              {`${event?.onlineMeetUrl}`}
+              <a style={{ textDecoration: 'none' }} href={event?.onlineMeetUrl} target="_blank">
+                {`${event?.onlineMeetUrl}`}
+              </a>
             </IonText>
-            <IonIcon icon={copyOutline} slot="end" style={{ color: 'var(--ion-trova-medium-gray)' }} />
+            <IonIcon
+              icon={copyOutline}
+              slot="end"
+              style={{ color: 'var(--ion-trova-medium-gray)' }}
+              onClick={copyOnlineMeetUrl}
+            />
           </IonItem>
         )}
         <IonButton

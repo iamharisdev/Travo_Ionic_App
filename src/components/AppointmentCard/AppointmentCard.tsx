@@ -57,7 +57,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.React
           </IonRow>
         </IonCol>
         <IonCol>
-          <IonCard style={{ borderLeft: getAppointmentColor(event?.color || '') }} onClick={() => history.push(`${APPOINTMENT_DETAILS}/${event?.id}`, { eventId: event?.id })}>
+          <IonCard style={{ borderLeft: `8px solid ${getAppointmentColor(event?.color || '')}` }} onClick={() => history.push(`${APPOINTMENT_DETAILS}/${event?.id}`, { eventId: event?.id })}>
             <IonItem lines="none" className='ion-no-padding'>
               <IonIcon icon={personCircleOutline} />
               <IonText className={`${CSSPrefix}-title`}>{event?.patientName}</IonText>
