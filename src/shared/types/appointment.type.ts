@@ -144,6 +144,15 @@ export interface PatientInsuranceResponseDto {
   valid: boolean;
 }
 
+export enum CALENDAR_SLOTS {
+  ORANGE = 'orange',
+  PINK = 'pink',
+  PURPLE = 'purple',
+  BLUE = 'blue',
+  GREEN = 'green',
+  TEAL = 'teal',
+};
+
 export interface IAppointment extends Identifiable {
   appointmentNumber?: string;
   patientId?: string;
@@ -161,7 +170,7 @@ export interface IAppointment extends Identifiable {
   patientServiceName?: string;
   additionalParticipants?: any[];
   location?: string;
-  color?: string;
+  color?: CALENDAR_SLOTS;
   timeZone?: string;
   status?: string;
   cancellationReason?: string | null;

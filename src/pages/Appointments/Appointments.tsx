@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import {
   IonContent,
   IonItem,
@@ -22,7 +22,8 @@ import "./Appointments.scss";
 const CSSprefix = 'appointments';
 
 const Appointments: React.FC = (): React.ReactElement => {
-  const { events } = useSelector((state: RootState) => state.scheduling);
+  const { scheduling: { events } } = useSelector((state: RootState) => state);
+
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const appointmentsRef = useRef();
   const sortedEvents = useMemo(() => [...events?.events || []].sort(

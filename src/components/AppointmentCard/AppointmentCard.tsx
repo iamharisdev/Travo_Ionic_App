@@ -1,34 +1,35 @@
 import { IonBadge, IonCard, IonCol, IonGrid, IonIcon, IonItem, IonRow, IonText } from '@ionic/react';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { personCircleOutline } from 'ionicons/icons';
 import PersonSvg from '/assets/walk.svg';
 import MeetingSvg from '/assets/group.svg';
 import { AppointmentCardProps } from './appointmentCard.type';
 import dayjs from 'dayjs';
+import { CALENDAR_SLOTS } from '../../shared/types/appointment.type';
 
 import './AppointmentCard.scss';
 
 const CSSPrefix = 'appointment-card';
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.ReactElement => {
-  // TODO: get right colors and use color property from event object
-  const getRandomColor = () => {
-    const random = Math.floor(Math.random() * (5 - 1 + 1) + 1);
-    switch (random) {
-      case 1:
-        return `8px solid var(--ion-trova-card-border-peter-parker)`;
-      case 2:
-        return `8px solid var(--ion-trova-card-border-homelander)`;
-      case 3:
-        return `8px solid var(--ion-trova-card-border-peter-grifin)`;
-      case 4:
-        return `8px solid var(--ion-trova-card-border-cristiano)`;
-      case 5:
-        return `8px solid var(--ion-trova-card-border-camilo)`;
+  const getCardColor = useCallback(() => {
+    switch (event?.color) {
+      case CALENDAR_SLOTS.ORANGE:
+        return `8px solid var(--ion-trova-orange-color)`;
+      case CALENDAR_SLOTS.PINK:
+        return `8px solid var(--ion-trova-pink-color)`;
+      case CALENDAR_SLOTS.PURPLE:
+        return `8px solid var(--ion-trova-purple-color)`;
+      case CALENDAR_SLOTS.BLUE:
+        return `8px solid var(--ion-trova-blue-color)`;
+      case CALENDAR_SLOTS.GREEN:
+        return `8px solid var(--ion-trova-green-color)`;
+      case CALENDAR_SLOTS.TEAL:
+        return `8px solid var(--ion-trova-teal-color)`;
       default:
-        return `8px solid var(--ion-trova-card-border-peter-parker)`;
+        return `8px solid var(--ion-trova-orange-color)`;
     }
-  }
+  }, [event?.color]);
 
   const { startTime, endTime, day, date, isToday }:
     {
@@ -70,7 +71,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.React
           </IonRow>
         </IonCol>
         <IonCol>
-          <IonCard style={{ borderLeft: getRandomColor() }}>
+          <IonCard style={{ borderLeft: getCardColor() }}>
             <IonItem lines="none" className='ion-no-padding'>
               <IonIcon icon={personCircleOutline} />
               <IonText className={`${CSSPrefix}-title`}>{event?.patientName}</IonText>
