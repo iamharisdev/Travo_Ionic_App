@@ -1,35 +1,21 @@
 import { IonBadge, IonCard, IonCol, IonGrid, IonIcon, IonItem, IonRow, IonText } from '@ionic/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { personCircleOutline } from 'ionicons/icons';
 import PersonSvg from '/assets/walk.svg';
 import MeetingSvg from '/assets/group.svg';
 import { AppointmentCardProps } from './appointmentCard.type';
 import dayjs from 'dayjs';
-import { CALENDAR_SLOTS } from '../../shared/types/appointment.type';
+import { useHistory } from 'react-router';
+import { APPOINTMENT_DETAILS } from '../../shared/routes/routes';
+import { getAppointmentColor } from '../../shared/utils/appointments.util';
+import { weekday } from '../../shared/constants/dates';
 
 import './AppointmentCard.scss';
 
 const CSSPrefix = 'appointment-card';
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.ReactElement => {
-  const getCardColor = useCallback(() => {
-    switch (event?.color) {
-      case CALENDAR_SLOTS.ORANGE:
-        return `8px solid var(--ion-trova-orange-color)`;
-      case CALENDAR_SLOTS.PINK:
-        return `8px solid var(--ion-trova-pink-color)`;
-      case CALENDAR_SLOTS.PURPLE:
-        return `8px solid var(--ion-trova-purple-color)`;
-      case CALENDAR_SLOTS.BLUE:
-        return `8px solid var(--ion-trova-blue-color)`;
-      case CALENDAR_SLOTS.GREEN:
-        return `8px solid var(--ion-trova-green-color)`;
-      case CALENDAR_SLOTS.TEAL:
-        return `8px solid var(--ion-trova-teal-color)`;
-      default:
-        return `8px solid var(--ion-trova-orange-color)`;
-    }
-  }, [event?.color]);
+  const history = useHistory();
 
   const { startTime, endTime, day, date, isToday }:
     {
@@ -39,7 +25,6 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.React
       date: string,
       isToday: boolean,
     } = useMemo(() => {
-      const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       let startTime = '';
       let endTime = '';
       let day = '';
@@ -52,6 +37,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.React
         date = dayjs(event.startTime).date().toString();
         isToday = dayjs(event.startTime).date() === dayjs().date();
       }
+
       if (event?.endTime) endTime = dayjs(event.endTime).format('hh:mm A');
 
       return { startTime, endTime, day, date, isToday };
@@ -71,7 +57,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ event }): React.React
           </IonRow>
         </IonCol>
         <IonCol>
-          <IonCard style={{ borderLeft: getCardColor() }}>
+          <IonCard style={{ borderLeft: getAppointmentColor(event?.color || '') }} onClick={() => history.push(`${APPOINTMENT_DETAILS}/${event?.id}`, { eventId: event?.id })}>
             <IonItem lines="none" className='ion-no-padding'>
               <IonIcon icon={personCircleOutline} />
               <IonText className={`${CSSPrefix}-title`}>{event?.patientName}</IonText>

@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
 import { Redirect, Route, useLocation } from "react-router-dom";
-import { APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Calendar from "../../pages/Calendar/Calendar";
 import Profile from "../../pages/Profile/Profile";
@@ -29,6 +29,7 @@ import { reloadAuth } from "../../state/authSlice";
 import { getBusinessInformationAction, getCountriesAction, getPhoneCodesAction } from "../../state/practiceSlice";
 import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsAction } from "../../state/billingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
+import AppointmentDetails from "../../pages/AppointmentDetails/AppointmentDetails";
 
 import "./Tabs.scss";
 
@@ -123,6 +124,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={BUSINESS_INFORMATION} component={BusinessInformation} />
         <Route exact path={BRANDING} component={Branding} />
         <Route exact path={SUBSCRIPTION_DETAILS} component={SubscriptionDetails} />
+        <Route exact path={`${APPOINTMENT_DETAILS}/:id`} component={AppointmentDetails} />
       </IonRouterOutlet>
       <IonTabBar slot="bottom" defaultValue="appointments">
         <IonTabButton tab="calendar" href={CALENDAR}>

@@ -1,0 +1,58 @@
+.appointment-details {
+  ion-content {
+    --background: var(--ion-trova-white);
+  }
+
+  ion-icon {
+    margin-right: 10px;
+  }
+
+  &-bar {
+    width: 8px;
+    align-self: stretch;
+    border-radius: 8px;
+    background: #F81;
+    height: 120px;
+    margin-top: 5px;
+  }
+
+  &-service {
+    color: var(--ion-trova-gray-text);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  &-details {
+    color: var(--ion-trova-medium-gray);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  &-link {
+    color: var(--ion-color-primary);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 85%;
+  }
+
+  &-divider {
+    width: 90%;
+    height: 1px;
+    align-self: stretch;
+    background: var(--ion-trova-divider);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+}
