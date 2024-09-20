@@ -14,12 +14,13 @@ import Header from "../../components/Header/Header";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import dayjs from "dayjs";
-import { useLocation } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { months, weekday } from "../../shared/constants/dates";
 import { callOutline, copyOutline, mailOutline, personCircleOutline, pricetagOutline, timerOutline, videocamOutline } from "ionicons/icons";
 import { getAppointmentColor } from "../../shared/utils/appointments.util";
 import { CALENDAR_SLOTS } from "../../shared/types/appointment.type";
 import { Clipboard } from "@capacitor/clipboard";
+import { APPOINTMENT_DETAILS_EDIT } from "../../shared/routes/routes";
 
 import "./AppointmentDetails.scss";
 
@@ -27,6 +28,7 @@ const CSSprefix = 'appointment-details';
 
 const AppointmentDetails: React.FC = (): React.ReactElement => {
   const location = useLocation<{ eventId?: string }>();
+  const history = useHistory();
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
 
   const event = useMemo(() => events?.events?.find(({ id }) => id === location?.state?.eventId), [events?.events, location?.state?.eventId]);
@@ -96,9 +98,17 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     });
   };
 
+  const editAppointmentHandler = () => history.push(`${APPOINTMENT_DETAILS_EDIT}/${event?.id}`, {
+    patientName: event?.patientName || '',
+    patientServiceName: event?.patientServiceName || '',
+    price: event?.price || '',
+    location: event?.location || '',
+    duration,
+  });
+
   return (
     <IonPage className={CSSprefix}>
-      <Header showBack showEdit showMenu={false} />
+      <Header showBack showEdit showMenu={false} editCB={editAppointmentHandler} />
       <IonContent fullscreen={true}>
         <IonGrid className="ion-margin-top ion-padding-top">
           <IonRow>

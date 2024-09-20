@@ -9,6 +9,7 @@ export const PASSWORD_CHANGED_SUCCESSFULLY = '/password-changed-successfully';
 export const DASHBOARD = '/dashboard';
 export const APPOINTMENTS = '/dashboard/appointments';
 export const APPOINTMENT_DETAILS = '/dashboard/appointments/appointment/details';
+export const APPOINTMENT_DETAILS_EDIT = '/dashboard/appointments/appointment/details/edit';
 export const CALENDAR = '/dashboard/calendar';
 export const PROFILE = '/dashboard/profile';
 export const MY_PROFILE = '/dashboard/profile/my-profile';

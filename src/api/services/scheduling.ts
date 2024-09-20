@@ -25,3 +25,5 @@ export const getEvents = async (
     }
   });
 }
+
+// TODO: create services get service
