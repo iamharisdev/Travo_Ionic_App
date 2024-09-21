@@ -27,6 +27,25 @@
     line-height: normal;
   }
 
+  &-description {
+    color: var(--ion-trova-medium-gray);
+    font-family: Poppins;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  &-info-icon {
+    position: relative;
+    top: 2px;
+    margin-left: 4px;
+  }
+
+  &-label-disabled {
+    opacity: 0.5;
+  }
+
   &-save-button {
     margin-top: 24px;
   }

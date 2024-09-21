@@ -28,7 +28,7 @@ import { STORAGE_TOKEN } from "../../constant/storage.constant";
 import { reloadAuth } from "../../state/authSlice";
 import { getBusinessInformationAction, getCountriesAction, getPhoneCodesAction } from "../../state/practiceSlice";
 import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsAction } from "../../state/billingSlice";
-import { getEventsAction } from "../../state/schedulingSlice";
+import { getEventsAction, getServicesAction } from "../../state/schedulingSlice";
 import AppointmentDetails from "../../pages/AppointmentDetails/AppointmentDetails";
 import AppointmentDetailsEdit from "../../pages/AppointmentDetailsEdit/AppointmentDetailsEdit";
 
@@ -71,6 +71,12 @@ const Tabs: React.FC = (): React.ReactElement => {
               providerId: providerPractice.providerId,
               start: new Date().toISOString(),
               end: twoWeeksFromNow.toISOString(),
+              pageNumber: 0,
+              pageSize: 999,
+            }));
+            await dispatch(getServicesAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
               pageNumber: 0,
               pageSize: 999,
             }));

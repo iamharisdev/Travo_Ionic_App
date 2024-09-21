@@ -191,3 +191,36 @@ export interface IAppointment extends Identifiable {
   insuranceDetails?: PatientInsuranceResponseDto;
   patientArchived?: boolean;
 }
+
+export interface SessionTimeRequest extends TimePeriod {
+  day: string;
+}
+
+export interface Services {
+  id: string;
+  name: string;
+  patientType: string;
+  description: string;
+  practiceId: string;
+  providerId: string;
+  serviceType: ServiceType;
+  duration: number;
+  price: number;
+  currency: string;
+  clientType: string;
+  location: string;
+  bookingStartTime: string;
+  bufferTime: number;
+  procedureCode: string;
+  procedureDescription: string | null;
+  calendarColor: string;
+  paymentType: string;
+  active: boolean
+  archived: boolean;
+  local: boolean;
+  restrictedTimes?: SessionTimeRequest[];
+  externalSchedulerLink: string;
+  externalSchedulerId: string;
+  showPriceOnPublicBookingPage: boolean;
+  order: number | null;
+}

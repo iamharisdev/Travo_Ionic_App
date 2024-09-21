@@ -1,17 +1,22 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
-import { EventsResponse, getEvents } from '../api/services/scheduling';
+import { EventsResponse, getEvents, getServices, ServicesResponse } from '../api/services/scheduling';
 
 export interface SchedulingState {
   events: EventsResponse | null;
+  services: ServicesResponse | null;
   state: StatusState;
 }
 
 const initialState: SchedulingState = {
   events: {
     total: 0,
-    events: []
+    events: [],
+  },
+  services: {
+    totalPatientServices: 0,
+    patientServiceRequestDtos: []
   },
   state: {
     success: false,
@@ -48,6 +53,30 @@ export const getEventsAction = createAsyncThunk(
   }
 );
 
+export const getServicesAction = createAsyncThunk(
+  'scheduling/getServices',
+  async ({
+    practiceId,
+    providerId,
+    pageNumber,
+    pageSize,
+  }: {
+    practiceId: string;
+    providerId: string;
+    pageNumber: number;
+    pageSize: number;
+  }): Promise<ServicesResponse | null> => {
+    try {
+      const response = await getServices(practiceId, providerId, pageNumber, pageSize);
+
+      return response.data;
+    } catch (error: any) {
+      console.error('[getServices]: ', error);
+      return null;
+    }
+  }
+);
+
 const schedulingSlice = createSlice({
   name: 'scheduling',
   initialState,
@@ -61,6 +90,14 @@ const schedulingSlice = createSlice({
         state.state = { ...state.state, success: true, error: null, message: '' };
       })
       .addCase(getEventsAction.rejected, (state) => {
+        state = initialState;
+      })
+      .addCase(getServicesAction.pending, () => console.log('pending get services'))
+      .addCase(getServicesAction.fulfilled, (state, action: PayloadAction<ServicesResponse | null>) => {
+        state.services = action.payload;
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(getServicesAction.rejected, (state) => {
         state = initialState;
       });
   }

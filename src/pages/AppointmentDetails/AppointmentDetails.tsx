@@ -99,6 +99,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   };
 
   const editAppointmentHandler = () => history.push(`${APPOINTMENT_DETAILS_EDIT}/${event?.id}`, {
+    patientServiceId: event?.patientServiceId || '',
     patientName: event?.patientName || '',
     patientServiceName: event?.patientServiceName || '',
     price: event?.price || '',

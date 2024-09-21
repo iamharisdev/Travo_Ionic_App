@@ -1,9 +1,14 @@
-import { IAppointment } from "../../shared/types/appointment.type";
+import { IAppointment, Services } from "../../shared/types/appointment.type";
 import { schedulingApiInstance } from "../axios.instance";
 
 export interface EventsResponse {
   total: number;
   events: IAppointment[];
+}
+
+export interface ServicesResponse {
+  totalPatientServices: number;
+  patientServiceRequestDtos: Services[];
 }
 
 export const getEvents = async (
@@ -26,4 +31,16 @@ export const getEvents = async (
   });
 }
 
-// TODO: create services get service
+export const getServices = async (
+  practiceId: string,
+  providerId: string,
+  pageNumber: number,
+  pageSize: number,
+) => {
+  return await schedulingApiInstance.get<ServicesResponse>(`/practices/${practiceId}/providers/${providerId}/services`, {
+    params: {
+      pageNumber,
+      pageSize,
+    }
+  });
+}
