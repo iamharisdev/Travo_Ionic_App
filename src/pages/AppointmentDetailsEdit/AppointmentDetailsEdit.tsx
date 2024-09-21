@@ -19,27 +19,81 @@ import { useFormik } from "formik";
 import { useLocation } from "react-router";
 import { caretDownOutline, caretUpOutline, informationCircle } from "ionicons/icons";
 import { AppointmentDetailsEditState } from "./AppointmentDetailsEdit.type";
-import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state/store";
+import { editAppointmentSchema } from "./validation/appointmentDetailsEdit.schema";
+import { setLoading } from "../../state/loadingSlice";
+import { editAppointmentAction } from "../../state/schedulingSlice";
+import usePresentToast from "../../hooks/usePresentToast";
 
 import "./AppointmentDetailsEdit.scss";
 
 const CSSprefix = 'appointment-details-edit';
 
 const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
-  const { scheduling: { services } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { services } } = useSelector((state: RootState) => state);
   const location = useLocation<AppointmentDetailsEditState>();
+  const dispatch = useDispatch<AppDispatch>();
+  const [presentToast] = usePresentToast();
   const initialValues = useMemo(() => ({
     patientName: location.state.patientName || '',
     patientServiceName: location.state.patientServiceName || '',
     price: location.state.price || '',
     location: location.state.location || '',
+    startTime: location.state.startTime || '',
+    endTime: location.state.endTime || '',
+    patientServiceId: location.state.patientServiceId || '',
   }), [location.state]);
+
+  const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
+    let practiceId = '';
+    let providerId = '';
+
+    if (provider.providerPractices.length > 0) {
+      const [providerPractice] = provider.providerPractices;
+
+      return { practiceId: providerPractice.practiceId, providerId: providerPractice.providerId };
+    }
+
+    return { practiceId, providerId };
+  }, [provider.providerPractices]);
 
   const formik = useFormik({
     initialValues,
     enableReinitialize: true,
-    onSubmit: async (values) => { },
+    onSubmit: async (values) => {
+      const valid = await editAppointmentSchema.validate(values);
+
+      if (valid && practiceId && providerId && location.state.appointmentId) {
+        dispatch(setLoading({ loading: true }));
+        const response = await dispatch(editAppointmentAction({
+          practiceId,
+          providerId,
+          appointmentId: location.state.appointmentId,
+          payload: {
+            location: formik.values.location,
+            patientServiceId: formik.values.patientServiceId,
+            startTime: formik.values.startTime,
+            endTime: formik.values.endTime
+          }
+        }));
+
+        if (response.meta.requestStatus === 'fulfilled') {
+          dispatch(setLoading({ loading: false, message: undefined }));
+        }
+
+        if (response.meta.requestStatus === 'rejected') {
+          presentToast(
+            '¡Error at edit appointment location!',
+            1000,
+            'top',
+            'danger'
+          );
+        }
+
+        dispatch(setLoading({ loading: false, message: undefined }));
+      }
+    },
   });
 
   const paymentType = useMemo(() => services?.patientServiceRequestDtos.find(

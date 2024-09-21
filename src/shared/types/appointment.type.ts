@@ -224,3 +224,11 @@ export interface Services {
   showPriceOnPublicBookingPage: boolean;
   order: number | null;
 }
+
+export interface UpdateAppointmentPayload extends Partial<IAppointment> {
+  location: string;
+  patientServiceId: string;
+  startTime: string;
+  endTime: string;
+
+}

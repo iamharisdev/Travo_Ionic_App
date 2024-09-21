@@ -1,4 +1,4 @@
-import { IAppointment, Services } from "../../shared/types/appointment.type";
+import { IAppointment, Services, UpdateAppointmentPayload } from "../../shared/types/appointment.type";
 import { schedulingApiInstance } from "../axios.instance";
 
 export interface EventsResponse {
@@ -44,3 +44,17 @@ export const getServices = async (
     }
   });
 }
+
+export const editAppointment = async (
+  practiceId: string,
+  providerId: string,
+  appointmentId: string,
+  payload: UpdateAppointmentPayload,
+
+) => {
+  return await schedulingApiInstance.put<void>(
+    `/practices/${practiceId}/providers/${providerId}/appointments/${appointmentId}/edit`,
+    payload
+  );
+}
+
