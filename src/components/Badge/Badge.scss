@@ -1,0 +1,16 @@
+.badge {
+  &-badge-text {
+    color: var(--ion-trova-medium-gray);
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 5px;
+    position: relative;
+    left: 5px;
+  }
+}

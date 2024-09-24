@@ -1,4 +1,9 @@
-import { CALENDAR_SLOTS } from "../types/appointment.type";
+import { CALENDAR_SLOTS, IAppointment } from "../types/appointment.type";
+
+export interface GroupedAppointments {
+  date: string;
+  appointments: IAppointment[];
+}
 
 export const getAppointmentColor = (color: CALENDAR_SLOTS | '') => {
   switch (color) {
@@ -19,3 +24,26 @@ export const getAppointmentColor = (color: CALENDAR_SLOTS | '') => {
       return 'var(--ion-trova-orange-color)';
   }
 };
+
+export const groupAppointmentsByDate = (events: IAppointment[]): Array<GroupedAppointments> => {
+  const groups = events.reduce((groups: any, event) => {
+    if (event?.startTime && typeof event.startTime === 'string') {
+      const date = event.startTime.split('T')[0];
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(event);
+      return groups;
+    }
+
+    return {};
+  }, {});
+
+  // Edit: to add it in the array format instead
+  return Object.keys(groups).map((date) => {
+    return {
+      date,
+      appointments: groups[date]
+    };
+  });
+}
