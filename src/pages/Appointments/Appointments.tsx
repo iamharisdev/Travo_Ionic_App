@@ -16,21 +16,24 @@ import {
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
-import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state/store";
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
 import dayjs from "dayjs";
 import { groupAppointmentsByDate } from "../../shared/utils/appointments.util";
 import Badge from "../../components/Badge/Badge";
+import DatePicker from "../../components/DatePicker/DatePicker";
+import { getEventsAction } from "../../state/schedulingSlice";
+import { setLoading } from "../../state/loadingSlice";
 
 import "./Appointments.scss";
-import DatePicker from "../../components/DatePicker/DatePicker";
 
 const CSSprefix = 'appointments';
+const today = dayjs().format('YYYY-MM-DD');
 
 const Appointments: React.FC = (): React.ReactElement => {
-  const { scheduling: { events } } = useSelector((state: RootState) => state);
-
+  const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
+  const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const appointmentsRef = useRef();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
@@ -39,17 +42,42 @@ const Appointments: React.FC = (): React.ReactElement => {
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
+  const [selectedDates, setSelectedDates] = useState<string[]>([today, today]);
 
   const openDatePickerHandler = useCallback((e: any) => {
-    console.log('datePickerRef: ', datePickerRef);
     if (datePickerRef.current) {
-      console.log('e: ', e);
       datePickerRef.current!.event = e;
     }
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
-  console.log('datePickerOpen_ ', datePickerOpen);
-  console.log('datePickerRef ', datePickerRef);
+
+  const getAppointmentsHandler = async (dates: string[]) => {
+    try {
+      setDatePickerOpen(false);
+      setSelectedDates(dates);
+      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+
+      const [providerPractice] = provider.providerPractices;
+      if (providerPractice) {
+        await dispatch(getEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(dates[0]).startOf('day').toISOString(),
+          end: dayjs(dates[1]).endOf('day').toISOString(),
+          pageNumber: 0,
+          pageSize: 999,
+        }));
+      }
+
+      dispatch(setLoading({ loading: false, message: '' }));
+    } catch (error) {
+      dispatch(setLoading({ loading: false, message: '' }));
+      setSelectedDates([]);
+      console.error('error at load appointments by date: ', error);
+    }
+  }
+
+  // TODO: remove mock datePickerText and August 4 - 10
 
   return (
     <IonPage ref={appointmentsRef} className={CSSprefix} id="appointments-content">
@@ -96,7 +124,7 @@ const Appointments: React.FC = (): React.ReactElement => {
         onDidDismiss={() => setDatePickerOpen(false)}
       >
         <IonContent fullscreen={true}>
-          <DatePicker />
+          <DatePicker dates={selectedDates} onSelectedDates={getAppointmentsHandler} />
         </IonContent>
       </IonPopover>
     </IonPage>
