@@ -22,4 +22,15 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+  &-date-picker-popover {
+    --width: 100%;
+    --background: transparent;
+
+    ion-content {
+      --width: 100%;
+      display: flex;
+      align-items: center;
+    }
+  }
 }

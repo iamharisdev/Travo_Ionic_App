@@ -110,6 +110,10 @@ ion-card {
   height: 110px;
 }
 
+ion-content {
+  --background: var(--ion-trova-page-background);
+}
+
 body {
   --ion-background-color: linear-gradient(149deg, #E9F8F8 0%, #FAF5EE 100%);
 }

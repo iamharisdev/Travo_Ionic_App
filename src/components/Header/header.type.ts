@@ -8,6 +8,9 @@ export interface HeaderProps {
   menuId?: string;
   showCancel?: boolean;
   customBackRoute?: string;
+  showDatePicker?: boolean;
+  datePickerText?: string;
   editCB?: () => void;
   cancelCB?: () => void;
+  datePickerCB?: (e: any) => void;
 }

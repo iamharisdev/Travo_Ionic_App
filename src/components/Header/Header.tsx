@@ -3,16 +3,19 @@ import {
   IonButtons,
   IonHeader,
   IonIcon,
+  IonText,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
 import React from "react";
 import { HeaderProps } from "./header.type";
 import { useHistory } from "react-router";
-import { menu } from "ionicons/icons";
+import { caretDownOutline, menu } from "ionicons/icons";
 import { menuController } from '@ionic/core/components';
 
 import './Header.scss';
+
+const CSSPrefix = 'header';
 
 const Header: React.FC<HeaderProps> = ({
   className,
@@ -24,8 +27,11 @@ const Header: React.FC<HeaderProps> = ({
   menuId,
   showCancel = false,
   customBackRoute,
+  showDatePicker,
+  datePickerText,
   editCB,
   cancelCB,
+  datePickerCB,
 }): React.ReactElement => {
   const history = useHistory();
 
@@ -35,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <IonHeader
-      className={className}
+      className={`${className} ${CSSPrefix}`}
       translucent={translucent}
       collapse={collapse}
     >
@@ -79,6 +85,20 @@ const Header: React.FC<HeaderProps> = ({
               onClick={editCB}
             >
               Edit
+            </IonButton>
+          </IonButtons>
+        )}
+        {showDatePicker && (
+          <IonButtons slot="end">
+            <IonButton
+              className="header-button"
+              color="dark"
+              onClick={datePickerCB}
+            >
+              <IonText className={`${CSSPrefix}-date-text`}>
+                {datePickerText}
+              </IonText>
+              <IonIcon className={`${CSSPrefix}-date-icon`} icon={caretDownOutline} size="small" />
             </IonButton>
           </IonButtons>
         )}

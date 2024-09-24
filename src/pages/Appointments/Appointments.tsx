@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   IonCol,
   IonContent,
@@ -6,6 +6,7 @@ import {
   IonItem,
   IonList,
   IonPage,
+  IonPopover,
   IonRefresher,
   IonRefresherContent,
   IonRow,
@@ -23,6 +24,7 @@ import { groupAppointmentsByDate } from "../../shared/utils/appointments.util";
 import Badge from "../../components/Badge/Badge";
 
 import "./Appointments.scss";
+import DatePicker from "../../components/DatePicker/DatePicker";
 
 const CSSprefix = 'appointments';
 
@@ -31,15 +33,34 @@ const Appointments: React.FC = (): React.ReactElement => {
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const appointmentsRef = useRef();
+  const datePickerRef = useRef<HTMLIonPopoverElement>(null);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
   const sortedEvents = useMemo(() => [...events?.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
 
+  const openDatePickerHandler = useCallback((e: any) => {
+    console.log('datePickerRef: ', datePickerRef);
+    if (datePickerRef.current) {
+      console.log('e: ', e);
+      datePickerRef.current!.event = e;
+    }
+    setDatePickerOpen(true);
+  }, [datePickerRef.current]);
+  console.log('datePickerOpen_ ', datePickerOpen);
+  console.log('datePickerRef ', datePickerRef);
+
   return (
     <IonPage ref={appointmentsRef} className={CSSprefix} id="appointments-content">
       <SwipeGesture parentRef={appointmentsRef} menuId="appointments-menu" />
-      <Header showMenu menuId="appointments-menu" />
+      <Header
+        showMenu
+        menuId="appointments-menu"
+        showDatePicker={true}
+        datePickerText="August"
+        datePickerCB={openDatePickerHandler}
+      />
       <Menu menuId="appointments-menu" contentId="appointments-content" />
       <IonContent fullscreen={true}>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
@@ -67,6 +88,17 @@ const Appointments: React.FC = (): React.ReactElement => {
           ))}
         </IonList>
       </IonContent>
+      <IonPopover
+        ref={datePickerRef}
+        className={`${CSSprefix}-date-picker-popover`}
+        isOpen={datePickerOpen}
+        size="auto"
+        onDidDismiss={() => setDatePickerOpen(false)}
+      >
+        <IonContent fullscreen={true}>
+          <DatePicker />
+        </IonContent>
+      </IonPopover>
     </IonPage>
   );
 };
