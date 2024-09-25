@@ -31,6 +31,7 @@ import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsActi
 import { getEventsAction, getServicesAction } from "../../state/schedulingSlice";
 import AppointmentDetails from "../../pages/AppointmentDetails/AppointmentDetails";
 import AppointmentDetailsEdit from "../../pages/AppointmentDetailsEdit/AppointmentDetailsEdit";
+import dayjs from "dayjs";
 
 import "./Tabs.scss";
 
@@ -44,8 +45,6 @@ const Tabs: React.FC = (): React.ReactElement => {
     const initialLoad = async () => {
       try {
         dispatch(setLoading({ loading: true, message: 'Loading data' }));
-        const twoWeeksFromNow = new Date();
-        twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 2 * 7);
         const profileResponse = await dispatch<any>(getMeAction());
         await dispatch(getCountriesAction());
         await dispatch(getPhoneCodesAction());
@@ -69,8 +68,8 @@ const Tabs: React.FC = (): React.ReactElement => {
             await dispatch(getEventsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
-              start: new Date().toISOString(),
-              end: twoWeeksFromNow.toISOString(),
+              start: dayjs().toISOString(),
+              end: dayjs().toISOString(),
               pageNumber: 0,
               pageSize: 999,
             }));

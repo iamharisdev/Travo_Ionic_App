@@ -25,6 +25,7 @@ import Badge from "../../components/Badge/Badge";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import { getEventsAction } from "../../state/schedulingSlice";
 import { setLoading } from "../../state/loadingSlice";
+import { months } from "../../shared/constants/dates";
 
 import "./Appointments.scss";
 
@@ -43,6 +44,25 @@ const Appointments: React.FC = (): React.ReactElement => {
   ), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
   const [selectedDates, setSelectedDates] = useState<string[]>([today, today]);
+  const dateText = useMemo(() => {
+    if (selectedDates.length > 0) {
+      const [date] = selectedDates;
+      return months[dayjs(date).month()];
+    }
+
+    return '';
+  }, [selectedDates]);
+
+  const fromToDateText = useMemo(() => {
+    if (selectedDates.length === 2) {
+      const [start, end] = selectedDates;
+      return `
+        ${months[dayjs(start).month()]} ${dayjs(start).date()} - ${months[dayjs(end).month()]} ${dayjs(end).date()}
+      `;
+    }
+
+    return '';
+  }, [selectedDates]);
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -86,7 +106,7 @@ const Appointments: React.FC = (): React.ReactElement => {
         showMenu
         menuId="appointments-menu"
         showDatePicker={true}
-        datePickerText="August"
+        datePickerText={dateText}
         datePickerCB={openDatePickerHandler}
       />
       <Menu menuId="appointments-menu" contentId="appointments-content" />
@@ -97,7 +117,7 @@ const Appointments: React.FC = (): React.ReactElement => {
         <IonList>
           <IonItem lines="none">
             <IonText className={`${CSSprefix}-from-to-date ion-text-center`}>
-              August 4 - 10
+              {fromToDateText}
             </IonText>
           </IonItem>
           {groupedAppointments.map((event) => (
