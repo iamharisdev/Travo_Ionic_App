@@ -124,7 +124,7 @@ const Appointments: React.FC = (): React.ReactElement => {
         onDidDismiss={() => setDatePickerOpen(false)}
       >
         <IonContent fullscreen={true}>
-          <DatePicker dates={selectedDates} onSelectedDates={getAppointmentsHandler} />
+          <DatePicker dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
         </IonContent>
       </IonPopover>
     </IonPage>
