@@ -4,6 +4,7 @@ import loadingReducer from './loadingSlice';
 import providerReducer from './providerSlice';
 import practiceReducer from './practiceSlice';
 import billingReducer from './billingSlice';
+import schedulingReducer from './schedulingSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     provider: providerReducer,
     practice: practiceReducer,
     billing: billingReducer,
+    scheduling: schedulingReducer,
   },
 });
 

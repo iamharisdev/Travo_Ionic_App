@@ -92,6 +92,41 @@ ion-tab-bar {
   min-height: 48px;
 }
 
+ion-badge {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-trova-white);
+  border-radius: 100px;
+  --padding-end: 8px;
+  --padding-start: 8px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  width: 33px;
+  height: auto;
+}
+
+ion-card {
+  --background: var(--ion-trova-white);
+  border-radius: 8px;
+  height: 110px;
+}
+
+ion-content {
+  --background: var(--ion-trova-page-background);
+}
+
+ion-datetime::part(calendar-day) {
+  color: var(--ion-trova-gray-text);
+}
+
+ion-datetime::part(calendar-day active) {
+  color: var(--ion-trova-white) !important;
+  background: var(--ion-color-primary);
+}
+
+ion-datetime::part(calendar-day today) {
+  color: var(--ion-color-primary);
+}
+
 body {
   --ion-background-color: linear-gradient(149deg, #E9F8F8 0%, #FAF5EE 100%);
 }

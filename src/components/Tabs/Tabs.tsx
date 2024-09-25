@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
 import { Redirect, Route, useLocation } from "react-router-dom";
-import { APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Calendar from "../../pages/Calendar/Calendar";
 import Profile from "../../pages/Profile/Profile";
@@ -28,6 +28,10 @@ import { STORAGE_TOKEN } from "../../constant/storage.constant";
 import { reloadAuth } from "../../state/authSlice";
 import { getBusinessInformationAction, getCountriesAction, getPhoneCodesAction } from "../../state/practiceSlice";
 import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsAction } from "../../state/billingSlice";
+import { getEventsAction, getServicesAction } from "../../state/schedulingSlice";
+import AppointmentDetails from "../../pages/AppointmentDetails/AppointmentDetails";
+import AppointmentDetailsEdit from "../../pages/AppointmentDetailsEdit/AppointmentDetailsEdit";
+import dayjs from "dayjs";
 
 import "./Tabs.scss";
 
@@ -60,6 +64,20 @@ const Tabs: React.FC = (): React.ReactElement => {
             await dispatch(getProductsDetailsAction({
               practiceId: providerPractice.practiceId,
               countryCode: profileResponse.payload?.principal?.countryCode
+            }));
+            await dispatch(getEventsAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
+              start: dayjs().toISOString(),
+              end: dayjs().toISOString(),
+              pageNumber: 0,
+              pageSize: 999,
+            }));
+            await dispatch(getServicesAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
+              pageNumber: 0,
+              pageSize: 999,
             }));
           }
         }
@@ -112,15 +130,17 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={BUSINESS_INFORMATION} component={BusinessInformation} />
         <Route exact path={BRANDING} component={Branding} />
         <Route exact path={SUBSCRIPTION_DETAILS} component={SubscriptionDetails} />
+        <Route exact path={`${APPOINTMENT_DETAILS}/:id`} component={AppointmentDetails} />
+        <Route exact path={`${APPOINTMENT_DETAILS_EDIT}/:id`} component={AppointmentDetailsEdit} />
       </IonRouterOutlet>
-      <IonTabBar slot="bottom">
-        <IonTabButton tab="appointments" href={APPOINTMENTS}>
-          <IonIcon icon={clipboardOutline} />
-          <IonLabel>Appointments</IonLabel>
-        </IonTabButton>
+      <IonTabBar slot="bottom" defaultValue="appointments">
         <IonTabButton tab="calendar" href={CALENDAR}>
           <IonIcon icon={calendarOutline} />
           <IonLabel>Calendar</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="appointments" href={APPOINTMENTS}>
+          <IonIcon icon={clipboardOutline} />
+          <IonLabel>Appointments</IonLabel>
         </IonTabButton>
         <IonTabButton tab="profile" href={PROFILE}>
           <IonIcon icon={personCircleOutline} />
