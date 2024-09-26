@@ -17,6 +17,11 @@ const Menu: React.FC<MenuProps> = ({ menuId, contentId }) => {
   const location = useLocation();
   const { closeMenuHandler } = useMenu();
 
+  const navigateHandler = async (route: string) => {
+    await closeMenuHandler(getMenuIdByLocation(location.pathname));
+    history.push(route);
+  }
+
   return (
     <IonMenu menuId={menuId} contentId={contentId}>
       <IonContent className={`${CSSprefix} ion-padding`}>
@@ -27,38 +32,23 @@ const Menu: React.FC<MenuProps> = ({ menuId, contentId }) => {
             alt='Trova Logo'
           />
         </IonItem>
-        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => {
-          await closeMenuHandler(getMenuIdByLocation(location.pathname));
-          history.push(APPOINTMENTS);
-        }}>
+        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => navigateHandler(APPOINTMENTS)}>
           <IonIcon aria-hidden="true" icon={listOutline} slot="start" />
           <IonLabel>Schedule</IonLabel>
         </IonItem>
-        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => {
-          await closeMenuHandler(getMenuIdByLocation(location.pathname));
-          history.push(CALENDAR);
-        }}>
+        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => navigateHandler(CALENDAR)}>
           <IonIcon aria-hidden="true" icon={calendarNumberOutline} slot="start" />
           <IonLabel>Day</IonLabel>
         </IonItem>
-        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => {
-          await closeMenuHandler(getMenuIdByLocation(location.pathname));
-          history.push(CALENDAR);
-        }}>
+        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => navigateHandler(CALENDAR)}>
           <IonIcon aria-hidden="true" icon={calendarClearOutline} slot="start" />
           <IonLabel>Week</IonLabel>
         </IonItem>
-        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => {
-          await closeMenuHandler(getMenuIdByLocation(location.pathname));
-          history.push(CALENDAR);
-        }}>
+        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => navigateHandler(CALENDAR)}>
           <IonIcon aria-hidden="true" icon={calendarOutline} slot="start" />
           <IonLabel>Month</IonLabel>
         </IonItem>
-        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => {
-          await closeMenuHandler(getMenuIdByLocation(location.pathname));
-          history.push(APPOINTMENTS);
-        }}>
+        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => navigateHandler(APPOINTMENTS)}>
           <IonIcon aria-hidden="true" icon={enterOutline} slot="start" />
           <IonLabel>Appointment Requests</IonLabel>
         </IonItem>
