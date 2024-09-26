@@ -1,5 +1,5 @@
-import { APPOINTMENTS_MENU_ID, CALENDAR_MENU_ID, PROFILE_MENU_ID } from "../constants/menu";
-import { APPOINTMENTS, CALENDAR, PROFILE } from "../routes/routes";
+import { APPOINTMENT_REQUESTS_MENU_ID, APPOINTMENTS_MENU_ID, CALENDAR_MENU_ID, PROFILE_MENU_ID } from "../constants/menu";
+import { APPOINTMENT_REQUESTS, APPOINTMENTS, CALENDAR, PROFILE } from "../routes/routes";
 
 export const getMenuIdByLocation = (location: string): string => {
   switch (location) {
@@ -9,6 +9,8 @@ export const getMenuIdByLocation = (location: string): string => {
       return APPOINTMENTS_MENU_ID;
     case PROFILE:
       return PROFILE_MENU_ID;
+    case APPOINTMENT_REQUESTS:
+      return APPOINTMENT_REQUESTS_MENU_ID;
 
     default:
       return '';

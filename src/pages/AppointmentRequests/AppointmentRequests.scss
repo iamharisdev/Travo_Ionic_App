@@ -1,0 +1,36 @@
+.appointment-requests {
+  ion-content {
+    --background: var(--ion-trova-white);
+  }
+
+  ion-list {
+    background: var(--ion-trova-white);
+  }
+
+  &-from-to-date {
+    color: var(--ion-trova-black);
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 1px;
+    align-content: center;
+    position: relative;
+    float: left;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &-date-picker-popover {
+    --width: 100%;
+    --background: transparent;
+
+    ion-content {
+      --width: 100%;
+      display: flex;
+      align-items: center;
+    }
+  }
+}
