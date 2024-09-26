@@ -26,6 +26,7 @@ import DatePicker from "../../components/DatePicker/DatePicker";
 import { getEventsAction } from "../../state/schedulingSlice";
 import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
+import { APPOINTMENTS_MENU_ID } from "../../shared/constants/menu";
 
 import "./Appointments.scss";
 
@@ -97,57 +98,57 @@ const Appointments: React.FC = (): React.ReactElement => {
     }
   }
 
-  // TODO: remove mock datePickerText and August 4 - 10
-
   return (
-    <IonPage ref={appointmentsRef} className={CSSprefix} id="appointments-content">
-      <SwipeGesture parentRef={appointmentsRef} menuId="appointments-menu" />
-      <Header
-        showMenu
-        menuId="appointments-menu"
-        showDatePicker={true}
-        datePickerText={dateText}
-        datePickerCB={openDatePickerHandler}
-      />
-      <Menu menuId="appointments-menu" contentId="appointments-content" />
-      <IonContent fullscreen={true}>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent />
-        </IonRefresher>
-        <IonList>
-          <IonItem lines="none">
-            <IonText className={`${CSSprefix}-from-to-date ion-text-center`}>
-              {fromToDateText}
-            </IonText>
-          </IonItem>
-          {groupedAppointments.map((event) => (
-            <IonGrid key={event.date} fixed={true} className="ion-no-padding ion-no-margin">
-              <IonRow className="ion-margin-start ion-no-margin">
-                <IonCol size="auto" className="ion-margin-top">
-                  <Badge appointmentDate={event.date} />
-                </IonCol>
-                <IonCol>
-                  {event.appointments.map((appointment) => (
-                    <AppointmentCard key={appointment?.id} appointment={appointment} />
-                  ))}
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          ))}
-        </IonList>
-      </IonContent>
-      <IonPopover
-        ref={datePickerRef}
-        className={`${CSSprefix}-date-picker-popover`}
-        isOpen={datePickerOpen}
-        size="auto"
-        onDidDismiss={() => setDatePickerOpen(false)}
-      >
+    <>
+      <Menu menuId={APPOINTMENTS_MENU_ID} contentId="appointments-content" />
+      <IonPage ref={appointmentsRef} className={CSSprefix} id="appointments-content">
+        <SwipeGesture parentRef={appointmentsRef} menuId={APPOINTMENTS_MENU_ID} />
+        <Header
+          showMenu
+          menuId={APPOINTMENTS_MENU_ID}
+          showDatePicker={true}
+          datePickerText={dateText}
+          datePickerCB={openDatePickerHandler}
+        />
         <IonContent fullscreen={true}>
-          <DatePicker dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent />
+          </IonRefresher>
+          <IonList>
+            <IonItem lines="none">
+              <IonText className={`${CSSprefix}-from-to-date ion-text-center`}>
+                {fromToDateText}
+              </IonText>
+            </IonItem>
+            {groupedAppointments.map((event) => (
+              <IonGrid key={event.date} fixed={true} className="ion-no-padding ion-no-margin">
+                <IonRow className="ion-margin-start ion-no-margin">
+                  <IonCol size="auto" className="ion-margin-top">
+                    <Badge appointmentDate={event.date} />
+                  </IonCol>
+                  <IonCol>
+                    {event.appointments.map((appointment) => (
+                      <AppointmentCard key={appointment?.id} appointment={appointment} />
+                    ))}
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            ))}
+          </IonList>
         </IonContent>
-      </IonPopover>
-    </IonPage>
+        <IonPopover
+          ref={datePickerRef}
+          className={`${CSSprefix}-date-picker-popover`}
+          isOpen={datePickerOpen}
+          size="auto"
+          onDidDismiss={() => setDatePickerOpen(false)}
+        >
+          <IonContent fullscreen={true}>
+            <DatePicker dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
+          </IonContent>
+        </IonPopover>
+      </IonPage>
+    </>
   );
 };
 
