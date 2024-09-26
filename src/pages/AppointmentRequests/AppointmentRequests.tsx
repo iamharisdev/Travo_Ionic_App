@@ -1,15 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-  IonCol,
   IonContent,
-  IonGrid,
   IonItem,
   IonList,
   IonPage,
   IonPopover,
   IonRefresher,
   IonRefresherContent,
-  IonRow,
   IonText,
   RefresherEventDetail,
 } from "@ionic/react";
@@ -18,21 +15,24 @@ import Menu from "../../components/Menu/Menu";
 import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
-// TODO: create AppointmentRequestCard component
-import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
 import dayjs from "dayjs";
 import { groupAppointmentsByDate } from "../../shared/utils/appointments.util";
-import Badge from "../../components/Badge/Badge";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import { getEventsAction } from "../../state/schedulingSlice";
 import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
 import { APPOINTMENT_REQUESTS_MENU_ID } from "../../shared/constants/menu";
+import AppointmentRequestCard from "../../components/AppointmentRequestCard/AppointmentRequestCard";
+import isToday from 'dayjs/plugin/isToday';
+import isTomorrow from 'dayjs/plugin/isTomorrow';
 
 import "./AppointmentRequests.scss";
 
 const CSSprefix = 'appointment-requests';
 const today = dayjs().format('YYYY-MM-DD');
+// TODO check how this plugins works
+dayjs.extend(isToday);
+dayjs.extend(isTomorrow);
 
 const AppointmentRequests: React.FC = (): React.ReactElement => {
   // TODO replace events for appointment requests
@@ -56,16 +56,17 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     return '';
   }, [selectedDates]);
 
-  const fromToDateText = useMemo(() => {
-    if (selectedDates.length === 2) {
-      const [start, end] = selectedDates;
-      return `
-        ${months[dayjs(start).month()]} ${dayjs(start).date()} - ${months[dayjs(end).month()]} ${dayjs(end).date()}
-      `;
+  const getDateHandler = (date: string) => {
+    if (dayjs(date).isToday()) {
+      return 'TODAY';
     }
 
-    return '';
-  }, [selectedDates]);
+    if (dayjs(date).isTomorrow()) {
+      return 'TOMORROW';
+    }
+
+    return dayjs(date).format('dddd, MMMM, DD').toUpperCase();
+  };
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -118,24 +119,19 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
             <IonRefresherContent />
           </IonRefresher>
           <IonList>
-            <IonItem lines="none">
-              <IonText className={`${CSSprefix}-from-to-date ion-text-center`}>
-                {fromToDateText}
-              </IonText>
-            </IonItem>
             {groupedAppointments.map((event) => (
-              <IonGrid key={event.date} fixed={true} className="ion-no-padding ion-no-margin">
-                <IonRow className="ion-margin-start ion-no-margin">
-                  <IonCol size="auto" className="ion-margin-top">
-                    <Badge appointmentDate={event.date} />
-                  </IonCol>
-                  <IonCol>
-                    {event.appointments.map((appointment) => (
-                      <AppointmentCard key={appointment?.id} appointment={appointment} />
-                    ))}
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
+              <>
+                <IonItem key={event.date} lines="none">
+                  <IonText className={`${CSSprefix}-from-to-date`}>
+                    {getDateHandler(event.date)}
+                  </IonText>
+                </IonItem>
+                {event.appointments.map((appointment) => (
+                  <IonItem key={appointment?.id} lines="none">
+                    <AppointmentRequestCard appointment={appointment} />
+                  </IonItem>
+                ))}
+              </>
             ))}
           </IonList>
         </IonContent>
