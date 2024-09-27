@@ -2,15 +2,18 @@ import React, { useMemo } from 'react';
 import { IonButton, IonCol, IonGrid, IonIcon, IonItem, IonRow, IonText } from '@ionic/react';
 import './AppointmentRequestCard.scss';
 import { getAppointmentColor, getDateWithoutTime } from '../../shared/utils/appointments.util';
-import { CALENDAR_SLOTS } from '../../shared/types/appointment.type';
+import { AppointmentDetailTypeEnum, CALENDAR_SLOTS } from '../../shared/types/appointment.type';
 import { AppointmentRequestProps } from './appointmentRequest.type';
 import dayjs from 'dayjs';
 import { months, weekday } from '../../shared/constants/dates';
 import { personCircleOutline } from 'ionicons/icons';
+import { useHistory } from 'react-router';
+import { APPOINTMENT_DETAILS } from '../../shared/routes/routes';
 
 const CSSprefix = 'appointment-request-card';
 
 const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment }) => {
+  const history = useHistory();
   const barColor = useMemo(() => getAppointmentColor(appointment?.color as CALENDAR_SLOTS), [appointment?.color]);
 
   const { startTime, endTime, day, month, date, duration }:
@@ -61,7 +64,13 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
     }, [appointment?.startTime, appointment?.endTime]);
 
   return (
-    <IonGrid className="ion-margin-top ion-padding-top">
+    <IonGrid
+      className="ion-margin-top ion-padding-top"
+      onClick={() => history.push(`${APPOINTMENT_DETAILS}/${appointment?.id}`, {
+        eventId: appointment?.id,
+        type: AppointmentDetailTypeEnum.ACCEPT
+      })}
+    >
       <IonRow>
         <IonCol className="ion-margin-end" size="auto">
           <div className={`${CSSprefix}-bar`} style={{ background: barColor }} />

@@ -172,7 +172,7 @@ export interface IAppointment extends Identifiable {
   location?: string;
   color?: CALENDAR_SLOTS;
   timeZone?: string;
-  status?: string;
+  status?: AppointmentStatusEnum;
   cancellationReason?: string | null;
   cancellationDetails?: string | null;
   onlineMeetingProvider?: string;
@@ -230,5 +230,15 @@ export interface UpdateAppointmentPayload extends Partial<IAppointment> {
   patientServiceId: string;
   startTime: string;
   endTime: string;
+}
 
+export enum AppointmentDetailTypeEnum {
+  ACCEPT = 'accept',
+  RESCHEDULE = 'reschedule',
+}
+
+export enum AppointmentStatusEnum {
+  PENDING = 'PENDING',
+  CONFIRMEND = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
 }

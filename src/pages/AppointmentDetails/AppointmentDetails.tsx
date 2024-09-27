@@ -18,7 +18,7 @@ import { useHistory, useLocation } from "react-router";
 import { months, weekday } from "../../shared/constants/dates";
 import { callOutline, copyOutline, mailOutline, personCircleOutline, pricetagOutline, timerOutline, videocamOutline } from "ionicons/icons";
 import { getAppointmentColor } from "../../shared/utils/appointments.util";
-import { CALENDAR_SLOTS } from "../../shared/types/appointment.type";
+import { AppointmentDetailTypeEnum, CALENDAR_SLOTS } from "../../shared/types/appointment.type";
 import { Clipboard } from "@capacitor/clipboard";
 import { APPOINTMENT_DETAILS_EDIT } from "../../shared/routes/routes";
 
@@ -27,11 +27,21 @@ import "./AppointmentDetails.scss";
 const CSSprefix = 'appointment-details';
 
 const AppointmentDetails: React.FC = (): React.ReactElement => {
-  const location = useLocation<{ eventId?: string }>();
+  const location = useLocation<{ eventId?: string, type?: AppointmentDetailTypeEnum }>();
   const history = useHistory();
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
 
-  const event = useMemo(() => events?.events?.find(({ id }) => id === location?.state?.eventId), [events?.events, location?.state?.eventId]);
+  const event = useMemo(() => events?.events?.find(({ id, status, ...rest }) => {
+    if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE && id === location?.state?.eventId) {
+      return { id, status, ...rest };
+    }
+
+    if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT && id === location?.state?.eventId && status === 'PENDING') {
+      return { id, status, ...rest };
+    }
+
+    return { id, ...rest };
+  }), [events?.events, location?.state?.eventId]);
 
   const { startTime, endTime, day, month, date, duration }:
     {
@@ -91,6 +101,18 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const isOnline = useMemo(() => event?.location === 'Online', [event?.location]);
 
   const barColor = useMemo(() => getAppointmentColor(event?.color as CALENDAR_SLOTS), [event?.color]);
+
+  const { positiveLabel, negativeLabel }: { positiveLabel: string, negativeLabel: string } = useMemo(() => {
+    if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
+      return { positiveLabel: 'Accept appointment', negativeLabel: 'Decline appointment' };
+    }
+
+    if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
+      return { positiveLabel: 'Reschedule appointment', negativeLabel: 'Cancel appointment' };
+    }
+
+    return { positiveLabel: 'Reschedule appointment', negativeLabel: 'Cancel appointment' };
+  }, [location?.state?.type]);
 
   const copyOnlineMeetUrl = async () => {
     await Clipboard.write({
@@ -184,28 +206,32 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
             />
           </IonItem>
         )}
+        {location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE && (
+          <>
+            <IonButton
+              className="ion-padding"
+              expand="block"
+            >
+              Start
+            </IonButton>
+            <div className={`${CSSprefix}-divider`} />
+          </>
+        )}
         <IonButton
           className="ion-padding"
           expand="block"
-        >
-          Start
-        </IonButton>
-        <div className={`${CSSprefix}-divider`} />
-        <IonButton
-          className="ion-padding"
-          expand="block"
-          fill="outline"
+          fill={location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE ? 'outline' : 'solid'}
           color="primary"
         >
-          Reschedule appointment
+          {positiveLabel}
         </IonButton>
         <IonButton
           className="ion-padding ion-no-margin"
           expand="block"
-          fill="clear"
+          fill={location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE ? 'clear' : 'outline'}
           color="danger"
         >
-          Cancel appointment
+          {negativeLabel}
         </IonButton>
       </IonContent>
     </IonPage>

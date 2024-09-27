@@ -58,3 +58,5 @@ export const editAppointment = async (
   );
 }
 
+// TODO: create cancel appointment endpoint
+

@@ -66,6 +66,7 @@ const Tabs: React.FC = (): React.ReactElement => {
               practiceId: providerPractice.practiceId,
               countryCode: profileResponse.payload?.principal?.countryCode
             }));
+            // TODO: add param to return just confirmed events
             await dispatch(getEventsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
