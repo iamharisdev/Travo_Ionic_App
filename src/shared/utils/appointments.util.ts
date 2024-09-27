@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { CALENDAR_SLOTS, IAppointment } from "../types/appointment.type";
 
 export interface GroupedAppointments {
@@ -25,10 +26,12 @@ export const getAppointmentColor = (color: CALENDAR_SLOTS | '') => {
   }
 };
 
+export const getDateWithoutTime = (date: string) => date.split('T')[0];
+
 export const groupAppointmentsByDate = (events: IAppointment[]): Array<GroupedAppointments> => {
   const groups = events.reduce((groups: any, event) => {
     if (event?.startTime && typeof event.startTime === 'string') {
-      const date = event.startTime.split('T')[0];
+      const date = getDateWithoutTime(event.startTime);
       if (!groups[date]) {
         groups[date] = [];
       }
@@ -46,4 +49,16 @@ export const groupAppointmentsByDate = (events: IAppointment[]): Array<GroupedAp
       appointments: groups[date]
     };
   });
+}
+
+export const getDatesBetween = (start: string, end: string) => {
+  const dateArray = [];
+  let currentDate = dayjs(start);
+
+  while (currentDate.valueOf() <= dayjs(end).valueOf()) {
+    dateArray.push(dayjs(currentDate).format('YYYY-MM-DD'));
+    currentDate = currentDate.add(1, 'day');
+  }
+
+  return dateArray;
 }

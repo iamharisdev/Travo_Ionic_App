@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { IonButton, IonCol, IonGrid, IonIcon, IonItem, IonRow, IonText } from '@ionic/react';
 import './AppointmentRequestCard.scss';
-import { getAppointmentColor } from '../../shared/utils/appointments.util';
+import { getAppointmentColor, getDateWithoutTime } from '../../shared/utils/appointments.util';
 import { CALENDAR_SLOTS } from '../../shared/types/appointment.type';
 import { AppointmentRequestProps } from './appointmentRequest.type';
 import dayjs from 'dayjs';
@@ -32,9 +32,9 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
       if (appointment?.startTime) {
         const start = dayjs(appointment.startTime);
         startTime = start.format('hh:mm A');
-        day = weekday[start.day()];
+        day = weekday[dayjs(getDateWithoutTime(start.toISOString())).day()].substring(0, 3);
         month = months[start.month()].substring(0, 3);
-        date = start.date().toString();
+        date = dayjs(getDateWithoutTime(start.toISOString())).date().toString();
       }
 
       if (appointment?.endTime) endTime = dayjs(appointment.endTime).format('hh:mm A');

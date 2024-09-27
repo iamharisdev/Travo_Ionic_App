@@ -32,9 +32,9 @@ import { getEventsAction, getServicesAction } from "../../state/schedulingSlice"
 import AppointmentDetails from "../../pages/AppointmentDetails/AppointmentDetails";
 import AppointmentDetailsEdit from "../../pages/AppointmentDetailsEdit/AppointmentDetailsEdit";
 import dayjs from "dayjs";
+import AppointmentRequests from "../../pages/AppointmentRequests/AppointmentRequests";
 
 import "./Tabs.scss";
-import AppointmentRequests from "../../pages/AppointmentRequests/AppointmentRequests";
 
 const Tabs: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
@@ -70,7 +70,7 @@ const Tabs: React.FC = (): React.ReactElement => {
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               start: dayjs().toISOString(),
-              end: dayjs().toISOString(),
+              end: dayjs().add(7, 'days').toISOString(),
               pageNumber: 0,
               pageSize: 999,
             }));

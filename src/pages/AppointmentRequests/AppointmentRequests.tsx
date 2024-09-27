@@ -23,16 +23,11 @@ import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
 import { APPOINTMENT_REQUESTS_MENU_ID } from "../../shared/constants/menu";
 import AppointmentRequestCard from "../../components/AppointmentRequestCard/AppointmentRequestCard";
-import isToday from 'dayjs/plugin/isToday';
-import isTomorrow from 'dayjs/plugin/isTomorrow';
 
 import "./AppointmentRequests.scss";
 
 const CSSprefix = 'appointment-requests';
 const today = dayjs().format('YYYY-MM-DD');
-// TODO check how this plugins works
-dayjs.extend(isToday);
-dayjs.extend(isTomorrow);
 
 const AppointmentRequests: React.FC = (): React.ReactElement => {
   // TODO replace events for appointment requests
@@ -57,11 +52,15 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   }, [selectedDates]);
 
   const getDateHandler = (date: string) => {
-    if (dayjs(date).isToday()) {
+    const today = dayjs().format('YYYY-MM-DD');
+    const tomorrow = dayjs().add(1, 'day').format('YYYY-MM-DD');
+    const preparedDate = dayjs(date).startOf('day').format('YYYY-MM-DD');
+
+    if (today === preparedDate) {
       return 'TODAY';
     }
 
-    if (dayjs(date).isTomorrow()) {
+    if (tomorrow === preparedDate) {
       return 'TOMORROW';
     }
 

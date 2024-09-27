@@ -32,6 +32,7 @@ import "./Appointments.scss";
 
 const CSSprefix = 'appointments';
 const today = dayjs().format('YYYY-MM-DD');
+const sevenDaysFromToday = dayjs().add(7, 'days').format('YYYY-MM-DD');
 
 const Appointments: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
@@ -44,7 +45,7 @@ const Appointments: React.FC = (): React.ReactElement => {
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
-  const [selectedDates, setSelectedDates] = useState<string[]>([today, today]);
+  const [selectedDates, setSelectedDates] = useState<string[]>([today, sevenDaysFromToday]);
   const dateText = useMemo(() => {
     if (selectedDates.length > 0) {
       const [date] = selectedDates;
