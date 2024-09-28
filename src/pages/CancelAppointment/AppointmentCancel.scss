@@ -1,0 +1,37 @@
+.appointment-cancel {
+  ion-content {
+    --background: var(--ion-trova-page-background);
+    padding: 8px 16px;
+  }
+
+  ion-list {
+    background: transparent;
+    padding: 8px 16px;
+    align-items: center;
+    gap: 16px;
+    align-self: stretch;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  &-description {
+    color: var(--ion-trova-medium-gray);
+    font-family: Poppins;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  &-cancel-button {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+}

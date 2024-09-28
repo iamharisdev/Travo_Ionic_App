@@ -36,14 +36,14 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const initialValues = useMemo(() => ({
-    patientName: location.state.patientName || '',
-    patientServiceName: location.state.patientServiceName || '',
-    price: location.state.price || '',
-    location: location.state.location || '',
-    startTime: location.state.startTime || '',
-    endTime: location.state.endTime || '',
-    patientServiceId: location.state.patientServiceId || '',
-  }), [location.state]);
+    patientName: location?.state?.patientName || '',
+    patientServiceName: location?.state?.patientServiceName || '',
+    price: location?.state?.price || '',
+    location: location?.state?.location || '',
+    startTime: location?.state?.startTime || '',
+    endTime: location?.state?.endTime || '',
+    patientServiceId: location?.state?.patientServiceId || '',
+  }), [location?.state]);
 
   const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
     let practiceId = '';

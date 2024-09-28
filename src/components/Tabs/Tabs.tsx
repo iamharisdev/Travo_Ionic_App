@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
 import { Redirect, Route, useLocation } from "react-router-dom";
-import { APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
+import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Calendar from "../../pages/Calendar/Calendar";
 import Profile from "../../pages/Profile/Profile";
@@ -33,9 +33,9 @@ import AppointmentDetails from "../../pages/AppointmentDetails/AppointmentDetail
 import AppointmentDetailsEdit from "../../pages/AppointmentDetailsEdit/AppointmentDetailsEdit";
 import dayjs from "dayjs";
 import AppointmentRequests from "../../pages/AppointmentRequests/AppointmentRequests";
+import AppointmentCancel from "../../pages/CancelAppointment/AppointmentCancel";
 
 import "./Tabs.scss";
-import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
 
 const Tabs: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
@@ -135,6 +135,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={`${APPOINTMENT_DETAILS}/:id`} component={AppointmentDetails} />
         <Route exact path={`${APPOINTMENT_DETAILS_EDIT}/:id`} component={AppointmentDetailsEdit} />
         <Route exact path={APPOINTMENT_REQUESTS} component={AppointmentRequests} />
+        <Route exact path={APPOINTMENT_CANCEL} component={AppointmentCancel} />
       </IonRouterOutlet>
       <IonTabBar slot="bottom" defaultValue="appointments">
         <IonTabButton tab="calendar" href={CALENDAR}>

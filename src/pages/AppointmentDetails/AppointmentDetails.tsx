@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   IonButton,
   IonCol,
@@ -20,7 +20,7 @@ import { callOutline, copyOutline, mailOutline, personCircleOutline, pricetagOut
 import { getAppointmentColor } from "../../shared/utils/appointments.util";
 import { AppointmentDetailTypeEnum, AppointmentStatusEnum, CALENDAR_SLOTS } from "../../shared/types/appointment.type";
 import { Clipboard } from "@capacitor/clipboard";
-import { APPOINTMENT_DETAILS_EDIT } from "../../shared/routes/routes";
+import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS_EDIT } from "../../shared/routes/routes";
 
 import "./AppointmentDetails.scss";
 
@@ -132,6 +132,13 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     duration,
   });
 
+  const negativeHandler = useCallback(async () => {
+    // Cancel events
+    if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
+      history.push(APPOINTMENT_CANCEL, { appointmentId: location?.state?.eventId })
+    }
+  }, [location?.state?.type, location?.state?.eventId]);
+
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showEdit showMenu={false} editCB={editAppointmentHandler} />
@@ -230,6 +237,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
           expand="block"
           fill={location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE ? 'clear' : 'outline'}
           color="danger"
+          onClick={negativeHandler}
         >
           {negativeLabel}
         </IonButton>

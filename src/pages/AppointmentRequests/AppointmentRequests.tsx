@@ -119,8 +119,8 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
           </IonRefresher>
           <IonList>
             {groupedAppointments.map((event) => (
-              <>
-                <IonItem key={event.date} lines="none">
+              <div key={event.date}>
+                <IonItem lines="none">
                   <IonText className={`${CSSprefix}-from-to-date`}>
                     {getDateHandler(event.date)}
                   </IonText>
@@ -130,7 +130,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
                     <AppointmentRequestCard appointment={appointment} />
                   </IonItem>
                 ))}
-              </>
+              </div>
             ))}
           </IonList>
         </IonContent>
