@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
 import { editAppointment, EventsResponse, getEvents, getServices, ServicesResponse } from '../api/services/scheduling';
-import { UpdateAppointmentPayload } from '../shared/types/appointment.type';
+import { AppointmentStatusEnum, UpdateAppointmentPayload } from '../shared/types/appointment.type';
 
 export interface SchedulingState {
   events: EventsResponse;
@@ -33,7 +33,8 @@ export const getEventsAction = createAsyncThunk(
     end,
     pageNumber,
     pageSize,
-    filter
+    filter,
+    status,
   }: {
     practiceId: string;
     providerId: string;
@@ -42,9 +43,10 @@ export const getEventsAction = createAsyncThunk(
     pageNumber: number;
     pageSize: number;
     filter?: any;
+    status?: AppointmentStatusEnum;
   }): Promise<EventsResponse> => {
     try {
-      const response = await getEvents(practiceId, providerId, start, end, pageNumber, pageSize, filter);
+      const response = await getEvents(practiceId, providerId, start, end, pageNumber, pageSize, filter, status);
 
       return response.data;
     } catch (error: any) {

@@ -238,7 +238,12 @@ export enum AppointmentDetailTypeEnum {
 }
 
 export enum AppointmentStatusEnum {
-  PENDING = 'PENDING',
-  CONFIRMEND = 'CONFIRMED',
-  CANCELLED = 'CANCELLED',
+  PENDING = 'Pending',
+  CONFIRMEND = 'Confirmed',
+  CANCELLED = 'Cancelled',
+}
+
+export interface CancelAppointmentPayload {
+  additionalDetails: string;
+  reason: string;
 }

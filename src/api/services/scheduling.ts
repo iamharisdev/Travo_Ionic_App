@@ -1,4 +1,4 @@
-import { IAppointment, Services, UpdateAppointmentPayload } from "../../shared/types/appointment.type";
+import { AppointmentStatusEnum, CancelAppointmentPayload, IAppointment, Services, UpdateAppointmentPayload } from "../../shared/types/appointment.type";
 import { schedulingApiInstance } from "../axios.instance";
 
 export interface EventsResponse {
@@ -19,6 +19,7 @@ export const getEvents = async (
   pageNumber: number,
   pageSize: number,
   filter?: any,
+  status?: AppointmentStatusEnum,
 ) => {
   return await schedulingApiInstance.get<EventsResponse>(`/practices/${practiceId}/providers/${providerId}/calendar`, {
     params: {
@@ -26,7 +27,8 @@ export const getEvents = async (
       end,
       pageNumber,
       pageSize,
-      filter
+      filter,
+      status,
     }
   });
 }
@@ -58,5 +60,16 @@ export const editAppointment = async (
   );
 }
 
-// TODO: create cancel appointment endpoint
+export const cancelAppointment = async (
+  practiceId: string,
+  providerId: string,
+  appointmentId: string,
+  payload: CancelAppointmentPayload,
+
+) => {
+  return await schedulingApiInstance.put<void>(
+    `/practices/${practiceId}/providers/${providerId}/appointments/${appointmentId}/cancel`,
+    payload
+  );
+}
 

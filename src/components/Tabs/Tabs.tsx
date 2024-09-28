@@ -35,6 +35,7 @@ import dayjs from "dayjs";
 import AppointmentRequests from "../../pages/AppointmentRequests/AppointmentRequests";
 
 import "./Tabs.scss";
+import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
 
 const Tabs: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
@@ -66,7 +67,6 @@ const Tabs: React.FC = (): React.ReactElement => {
               practiceId: providerPractice.practiceId,
               countryCode: profileResponse.payload?.principal?.countryCode
             }));
-            // TODO: add param to return just confirmed events
             await dispatch(getEventsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,

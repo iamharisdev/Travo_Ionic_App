@@ -29,6 +29,7 @@ import { months } from "../../shared/constants/dates";
 import { APPOINTMENTS_MENU_ID } from "../../shared/constants/menu";
 
 import "./Appointments.scss";
+import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
 
 const CSSprefix = 'appointments';
 const today = dayjs().format('YYYY-MM-DD');
@@ -43,7 +44,7 @@ const Appointments: React.FC = (): React.ReactElement => {
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const sortedEvents = useMemo(() => [...events?.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-  ), [events?.events]);
+  ).filter(({ status }) => status === AppointmentStatusEnum.CONFIRMEND), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
   const [selectedDates, setSelectedDates] = useState<string[]>([today, sevenDaysFromToday]);
   const dateText = useMemo(() => {
