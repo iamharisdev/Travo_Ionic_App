@@ -74,7 +74,6 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
 
-  // TODO: replace this to getAppointmentRequests
   const getAppointmentsHandler = async (dates: string[]) => {
     try {
       setDatePickerOpen(false);

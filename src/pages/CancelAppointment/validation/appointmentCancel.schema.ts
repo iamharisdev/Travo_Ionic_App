@@ -1,8 +1,20 @@
-import { boolean, object } from 'yup';
+import { boolean, object, string } from 'yup';
 
 export const cancelAppointmentSchema = object({
-  notAcceptingNewClients: boolean().required(),
-  notWithinScopeOfExpertise: boolean().required(),
-  needReferral: boolean().required(),
-  other: boolean().required(),
+  notAcceptingNewClients: object({
+    checked: boolean().required(),
+    value: string(),
+  }),
+  notWithinScopeOfExpertise: object({
+    checked: boolean().required(),
+    value: string(),
+  }),
+  needReferral: object({
+    checked: boolean().required(),
+    value: string(),
+  }),
+  other: object({
+    checked: boolean().required(),
+    value: string(),
+  }),
 });

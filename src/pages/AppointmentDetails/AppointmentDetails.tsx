@@ -39,8 +39,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT && id === location?.state?.eventId && status === AppointmentStatusEnum.PENDING) {
       return { id, status, ...rest };
     }
-
-    return { id, ...rest };
   }), [events?.events, location?.state?.eventId]);
 
   const { startTime, endTime, day, month, date, duration }:

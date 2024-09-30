@@ -9,10 +9,11 @@ import {
   IonPage,
   IonRow,
   IonText,
+  IonTextarea,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { useFormik } from "formik";
-import { useLocation } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { CancelAppointmentState } from "./appointmentCancel.type";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -20,6 +21,7 @@ import { setLoading } from "../../state/loadingSlice";
 import { cancelAppointmentAction } from "../../state/schedulingSlice";
 import usePresentToast from "../../hooks/usePresentToast";
 import { cancelAppointmentSchema } from "./validation/appointmentCancel.schema";
+import { APPOINTMENTS } from "../../shared/routes/routes";
 
 import "./AppointmentCancel.scss";
 
@@ -30,11 +32,25 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
   const location = useLocation<CancelAppointmentState>();
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
+  const history = useHistory();
+
   const initialValues = {
-    notAcceptingNewClients: false,
-    notWithinScopeOfExpertise: false,
-    needReferral: false,
-    other: false,
+    notAcceptingNewClients: {
+      checked: false,
+      value: 'Not accepting new clients',
+    },
+    notWithinScopeOfExpertise: {
+      checked: false,
+      value: 'Not within scope of expertise',
+    },
+    needReferral: {
+      checked: false,
+      value: 'Need referral',
+    },
+    other: {
+      checked: false,
+      value: '',
+    },
   };
 
   const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
@@ -50,53 +66,80 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
     return { practiceId, providerId };
   }, [provider.providerPractices]);
 
+  const preparePayloadHandler = (values: { [key: string]: { checked: boolean, value: string } }) => {
+    for (const key in values) {
+      const fieldValue = values[key];
+
+      if (fieldValue.checked && key === 'other') {
+        return { additionalDetails: fieldValue.value, reason: 'Other' };
+      } else {
+        return { additionalDetails: '', reason: fieldValue.value };
+      }
+    }
+
+    return { additionalDetails: '', reason: '' };
+  }
+
   const formik = useFormik({
     initialValues,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      const valid = await cancelAppointmentSchema.validate(values);
+      try {
+        const valid = await cancelAppointmentSchema.validate(values);
 
-      if (valid && practiceId && providerId && location.state.appointmentId) {
-        dispatch(setLoading({ loading: true }));
-        const response = await dispatch(cancelAppointmentAction({
-          practiceId,
-          providerId,
-          appointmentId: location.state.appointmentId,
-          payload: {
-            additionalDetails: '',
-            reason: '',
+        if (valid && practiceId && providerId && location.state.appointmentId) {
+          dispatch(setLoading({ loading: true }));
+
+          const payload = preparePayloadHandler(formik.values);
+
+          const response = await dispatch(cancelAppointmentAction({
+            practiceId,
+            providerId,
+            appointmentId: location.state.appointmentId,
+            payload
+          }));
+
+          if (response.meta.requestStatus === 'fulfilled') {
+            dispatch(setLoading({ loading: false, message: undefined }));
           }
-        }));
 
-        if (response.meta.requestStatus === 'fulfilled') {
+          if (response.meta.requestStatus === 'rejected') {
+            presentToast(
+              '¡Error at cancel appointment!',
+              1000,
+              'top',
+              'danger'
+            );
+          }
+
           dispatch(setLoading({ loading: false, message: undefined }));
+          formik.resetForm();
+          history.push(APPOINTMENTS);
         }
-
-        if (response.meta.requestStatus === 'rejected') {
-          presentToast(
-            '¡Error at cancel appointment!',
-            1000,
-            'top',
-            'danger'
-          );
-        }
-
+      } catch (error) {
+        formik.resetForm();
         dispatch(setLoading({ loading: false, message: undefined }));
+        presentToast(
+          '¡Error at cancel appointment!',
+          1000,
+          'top',
+          'danger'
+        );
       }
     },
   });
 
   const checkItemHandler = (field: string) => {
     for (const key in formik.values) {
+      const fieldValue = (formik.values as { [key: string]: { checked: boolean, value: string } })[key];
+
       if (key === field) {
-        formik.setFieldValue(field, true);
+        formik.setFieldValue(field, { ...fieldValue, checked: true });
       } else {
-        formik.setFieldValue(key, false);
+        formik.setFieldValue(key, { checked: false, value: key === 'other' ? '' : fieldValue.value });
       }
     }
   };
-
-  console.log('formik.values: ', formik.values);
 
   return (
     <IonPage className={CSSprefix}>
@@ -118,7 +161,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
           <IonItem lines="none">
             <IonCheckbox
               justify="space-between"
-              checked={formik.values.notAcceptingNewClients}
+              checked={formik.values.notAcceptingNewClients.checked}
               onIonChange={(e) => checkItemHandler('notAcceptingNewClients')}
             >
               Not accepting new clients
@@ -127,7 +170,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
           <IonItem lines="none">
             <IonCheckbox
               justify="space-between"
-              checked={formik.values.notWithinScopeOfExpertise}
+              checked={formik.values.notWithinScopeOfExpertise.checked}
               onIonChange={(e) => checkItemHandler('notWithinScopeOfExpertise')}
             >
               Not within scope of expertise
@@ -136,7 +179,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
           <IonItem lines="none">
             <IonCheckbox
               justify="space-between"
-              checked={formik.values.needReferral}
+              checked={formik.values.needReferral.checked}
               onIonChange={(e) => checkItemHandler('needReferral')}
             >
               Need referral
@@ -145,12 +188,24 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
           <IonItem lines="none">
             <IonCheckbox
               justify="space-between"
-              checked={formik.values.other}
+              checked={formik.values.other.checked}
               onIonChange={(e) => checkItemHandler('other')}
             >
               Other
             </IonCheckbox>
           </IonItem>
+          {formik.values.other.checked && (
+            <IonItem lines="none">
+              <IonTextarea
+                className={`${CSSprefix}-other`}
+                name="other"
+                autoGrow
+                aria-label="other"
+                value={formik.values.other.value}
+                onIonInput={(e) => formik.setFieldValue('other', { ...formik.values.other, value: e.detail.value })}
+              />
+            </IonItem>
+          )}
         </IonList>
         <IonButton
           className={`${CSSprefix}-cancel-button ion-padding`}
