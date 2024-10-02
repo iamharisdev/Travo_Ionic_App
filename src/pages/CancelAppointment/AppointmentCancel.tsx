@@ -24,6 +24,7 @@ import { cancelAppointmentSchema } from "./validation/appointmentCancel.schema";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
 
 import "./AppointmentCancel.scss";
+import { APPOINTMENT_REQUESTS, APPOINTMENTS } from "../../shared/routes/routes";
 
 const CSSprefix = 'appointment-cancel';
 
@@ -128,7 +129,13 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
 
           dispatch(setLoading({ loading: false, message: undefined }));
           formik.resetForm();
-          history.goBack();
+          if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
+            history.push(APPOINTMENTS);
+          }
+
+          if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
+            history.push(APPOINTMENT_REQUESTS);
+          }
         }
       } catch (error) {
         formik.resetForm();
