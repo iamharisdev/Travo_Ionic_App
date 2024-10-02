@@ -18,20 +18,25 @@ import { AppDispatch, RootState } from "../../state/store";
 import dayjs from "dayjs";
 import { groupAppointmentsByDate } from "../../shared/utils/appointments.util";
 import DatePicker from "../../components/DatePicker/DatePicker";
-import { getEventsAction } from "../../state/schedulingSlice";
+import { confirmAppointmentAction, getEventsAction } from "../../state/schedulingSlice";
 import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
 import { APPOINTMENT_REQUESTS_MENU_ID } from "../../shared/constants/menu";
 import AppointmentRequestCard from "../../components/AppointmentRequestCard/AppointmentRequestCard";
 
 import "./AppointmentRequests.scss";
-import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
+import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
+import { useHistory } from "react-router";
+import { APPOINTMENT_CANCEL } from "../../shared/routes/routes";
+import usePresentToast from "../../hooks/usePresentToast";
 
 const CSSprefix = 'appointment-requests';
 const today = dayjs().format('YYYY-MM-DD');
+const sevenDaysFromToday = dayjs().add(7, 'days').format('YYYY-MM-DD');
 
 const AppointmentRequests: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
+  const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const appointmentRequestsRef = useRef();
@@ -41,7 +46,8 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ).filter(({ status }) => status === AppointmentStatusEnum.PENDING), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
-  const [selectedDates, setSelectedDates] = useState<string[]>([today, today]);
+  const [presentToast] = usePresentToast();
+  const [selectedDates, setSelectedDates] = useState<string[]>([today, sevenDaysFromToday]);
   const dateText = useMemo(() => {
     if (selectedDates.length > 0) {
       const [date] = selectedDates;
@@ -50,6 +56,18 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
 
     return '';
   }, [selectedDates]);
+  const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
+    let practiceId = '';
+    let providerId = '';
+
+    if (provider.providerPractices.length > 0) {
+      const [providerPractice] = provider.providerPractices;
+
+      return { practiceId: providerPractice.practiceId, providerId: providerPractice.providerId };
+    }
+
+    return { practiceId, providerId };
+  }, [provider.providerPractices]);
 
   const getDateHandler = (date: string) => {
     const today = dayjs().format('YYYY-MM-DD');
@@ -100,6 +118,55 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     }
   }
 
+  const acceptHandler = async (appointmentId: string) => {
+    try {
+
+      if (practiceId && providerId && appointmentId) {
+        dispatch(setLoading({ loading: true }));
+
+        const response = await dispatch(confirmAppointmentAction({
+          practiceId,
+          providerId,
+          appointmentId,
+          payload: {}
+        }));
+
+        if (response.meta.requestStatus === 'fulfilled') {
+          dispatch(setLoading({ loading: false, message: undefined }));
+        }
+
+        if (response.meta.requestStatus === 'rejected') {
+          presentToast(
+            '¡Error at confirm appointment!',
+            1000,
+            'top',
+            'danger'
+          );
+        }
+
+        dispatch(setLoading({ loading: false, message: undefined }));
+        presentToast(
+          '¡Appointment confimed!',
+          1000,
+          'top',
+          'success'
+        );
+      }
+    } catch (error) {
+      dispatch(setLoading({ loading: false, message: undefined }));
+      presentToast(
+        '¡Error at cancel appointment!',
+        1000,
+        'top',
+        'danger'
+      );
+    }
+  };
+
+  const declineHandler = (appointmentId: string) => {
+    history.push(APPOINTMENT_CANCEL, { appointmentId, type: AppointmentDetailTypeEnum.ACCEPT });
+  }
+
   return (
     <>
       <Menu menuId={APPOINTMENT_REQUESTS_MENU_ID} contentId="appointment-requests-content" />
@@ -126,7 +193,11 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
                 </IonItem>
                 {event.appointments.map((appointment) => (
                   <IonItem key={appointment?.id} lines="none">
-                    <AppointmentRequestCard appointment={appointment} />
+                    <AppointmentRequestCard
+                      appointment={appointment}
+                      acceptCB={acceptHandler}
+                      declineCB={declineHandler}
+                    />
                   </IonItem>
                 ))}
               </div>

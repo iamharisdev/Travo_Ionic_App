@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
-import { cancelAppointment, editAppointment, EventsResponse, getEvents, getServices, ServicesResponse } from '../api/services/scheduling';
-import { AppointmentStatusEnum, CancelAppointmentPayload, UpdateAppointmentPayload } from '../shared/types/appointment.type';
+import { cancelAppointment, confirmAppointment, editAppointment, EventsResponse, getEvents, getServices, ServicesResponse } from '../api/services/scheduling';
+import { AppointmentStatusEnum, CancelAppointmentPayload, ConfirmAppointmentPayload, UpdateAppointmentPayload } from '../shared/types/appointment.type';
 
 export interface SchedulingState {
   events: EventsResponse;
@@ -128,6 +128,30 @@ export const cancelAppointmentAction = createAsyncThunk(
   }
 );
 
+export const confirmAppointmentAction = createAsyncThunk(
+  'scheduling/confirmAppointment',
+  async ({
+    practiceId,
+    providerId,
+    appointmentId,
+    payload
+  }: {
+    practiceId: string;
+    providerId: string;
+    appointmentId: string;
+    payload: ConfirmAppointmentPayload
+  }): Promise<{ appointmentId: string } | null> => {
+    try {
+      await confirmAppointment(practiceId, providerId, appointmentId, payload);
+
+      return { appointmentId };
+    } catch (error: any) {
+      console.error('[confirmAppointment]: ', error);
+      return null;
+    }
+  }
+);
+
 const schedulingSlice = createSlice({
   name: 'scheduling',
   initialState,
@@ -185,6 +209,24 @@ const schedulingSlice = createSlice({
         state.state = { ...state.state, success: true, error: null, message: '' };
       })
       .addCase(cancelAppointmentAction.rejected, (state) => {
+        state = initialState;
+      })
+      .addCase(confirmAppointmentAction.pending, () => console.log('pending confirm appointment'))
+      .addCase(confirmAppointmentAction.fulfilled, (state, action: PayloadAction<{ appointmentId: string } | null>) => {
+        let updatedEvents = [...state.events?.events];
+        updatedEvents = updatedEvents.map((event) => {
+          if (event.id === action.payload?.appointmentId) {
+            return { ...event, status: AppointmentStatusEnum.CONFIRMEND };
+          }
+
+          return event;
+        })
+
+        state.events.events = updatedEvents;
+        state.events.total = updatedEvents.length;
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(confirmAppointmentAction.rejected, (state) => {
         state = initialState;
       });
   }

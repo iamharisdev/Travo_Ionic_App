@@ -21,7 +21,7 @@ import { setLoading } from "../../state/loadingSlice";
 import { cancelAppointmentAction } from "../../state/schedulingSlice";
 import usePresentToast from "../../hooks/usePresentToast";
 import { cancelAppointmentSchema } from "./validation/appointmentCancel.schema";
-import { APPOINTMENTS } from "../../shared/routes/routes";
+import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
 
 import "./AppointmentCancel.scss";
 
@@ -80,6 +80,20 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
     return { additionalDetails: '', reason: '' };
   }
 
+  const { title, description, buttonText }: { title: string, description: string, buttonText: string } = useMemo(() => {
+    let title = 'Cancel appointment';
+    let description = 'Select a reason to cancel the appointment';
+    let buttonText = 'Cancel appointment';
+
+    if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
+      title = 'Appointment request not accepted';
+      description = 'Select a reason to not accepting the request';
+      buttonText = 'Decline request';
+    }
+
+    return { title, description, buttonText }
+  }, [location?.state?.type]);
+
   const formik = useFormik({
     initialValues,
     enableReinitialize: true,
@@ -114,7 +128,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
 
           dispatch(setLoading({ loading: false, message: undefined }));
           formik.resetForm();
-          history.push(APPOINTMENTS);
+          history.goBack();
         }
       } catch (error) {
         formik.resetForm();
@@ -148,12 +162,12 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
         <IonGrid className="ion-padding">
           <IonRow>
             <IonText className={`${CSSprefix}-title ion-margin-top`}>
-              Cancel appointment
+              {title}
             </IonText>
           </IonRow>
           <IonRow>
             <IonText className={`${CSSprefix}-description`}>
-              Select a reason to cancel the appointment
+              {description}
             </IonText>
           </IonRow>
         </IonGrid>
@@ -214,7 +228,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
           disabled={!formik.dirty}
           onClick={() => formik.submitForm()}
         >
-          Cancel appointment
+          {buttonText}
         </IonButton>
       </IonContent>
     </IonPage >

@@ -12,7 +12,7 @@ import { APPOINTMENT_DETAILS } from '../../shared/routes/routes';
 
 const CSSprefix = 'appointment-request-card';
 
-const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment }) => {
+const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment, acceptCB, declineCB }) => {
   const history = useHistory();
   const barColor = useMemo(() => getAppointmentColor(appointment?.color as CALENDAR_SLOTS), [appointment?.color]);
 
@@ -64,14 +64,13 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
     }, [appointment?.startTime, appointment?.endTime]);
 
   return (
-    <IonGrid
-      className="ion-margin-top ion-padding-top"
-      onClick={() => history.push(`${APPOINTMENT_DETAILS}/${appointment?.id}`, {
-        eventId: appointment?.id,
-        type: AppointmentDetailTypeEnum.ACCEPT
-      })}
-    >
-      <IonRow>
+    <IonGrid className="ion-margin-top ion-padding-top">
+      <IonRow
+        onClick={() => history.push(`${APPOINTMENT_DETAILS}/${appointment?.id}`, {
+          eventId: appointment?.id,
+          type: AppointmentDetailTypeEnum.ACCEPT
+        })}
+      >
         <IonCol className="ion-margin-end" size="auto">
           <div className={`${CSSprefix}-bar`} style={{ background: barColor }} />
         </IonCol>
@@ -105,6 +104,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
             className='ion-padding'
             color="primary"
             expand="block"
+            onClick={() => acceptCB(appointment?.id || '')}
           >
             Accept
           </IonButton>
@@ -115,6 +115,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
             fill="outline"
             color="danger"
             expand="block"
+            onClick={() => declineCB(appointment?.id || '')}
           >
             Decline
           </IonButton>

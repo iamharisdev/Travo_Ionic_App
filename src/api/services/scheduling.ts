@@ -1,4 +1,4 @@
-import { AppointmentStatusEnum, CancelAppointmentPayload, IAppointment, Services, UpdateAppointmentPayload } from "../../shared/types/appointment.type";
+import { AppointmentStatusEnum, CancelAppointmentPayload, ConfirmAppointmentPayload, IAppointment, Services, UpdateAppointmentPayload } from "../../shared/types/appointment.type";
 import { schedulingApiInstance } from "../axios.instance";
 
 export interface EventsResponse {
@@ -69,6 +69,19 @@ export const cancelAppointment = async (
 ) => {
   return await schedulingApiInstance.put<void>(
     `/practices/${practiceId}/providers/${providerId}/appointments/${appointmentId}/cancel`,
+    payload
+  );
+}
+
+export const confirmAppointment = async (
+  practiceId: string,
+  providerId: string,
+  appointmentId: string,
+  payload: ConfirmAppointmentPayload,
+
+) => {
+  return await schedulingApiInstance.put<void>(
+    `/practices/${practiceId}/providers/${providerId}/appointments/${appointmentId}/confirm`,
     payload
   );
 }

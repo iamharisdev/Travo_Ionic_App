@@ -131,10 +131,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   });
 
   const negativeHandler = useCallback(async () => {
-    // Cancel events
-    if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
-      history.push(APPOINTMENT_CANCEL, { appointmentId: location?.state?.eventId })
-    }
+    history.push(APPOINTMENT_CANCEL, { appointmentId: location?.state?.eventId, type: location?.state?.type });
   }, [location?.state?.type, location?.state?.eventId]);
 
   return (

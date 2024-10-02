@@ -247,3 +247,10 @@ export interface CancelAppointmentPayload {
   additionalDetails: string;
   reason: string;
 }
+
+export interface ConfirmAppointmentPayload {
+  patientServiceId?: string;
+  price?: string;
+  location?: string;
+  invoiceDataId?: string;
+}
