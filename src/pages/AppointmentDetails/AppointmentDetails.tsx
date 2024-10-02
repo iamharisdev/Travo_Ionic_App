@@ -11,8 +11,8 @@ import {
   IonText,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
-import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state/store";
 import dayjs from "dayjs";
 import { useHistory, useLocation } from "react-router";
 import { months, weekday } from "../../shared/constants/dates";
@@ -21,6 +21,9 @@ import { getAppointmentColor } from "../../shared/utils/appointments.util";
 import { AppointmentDetailTypeEnum, AppointmentStatusEnum, CALENDAR_SLOTS } from "../../shared/types/appointment.type";
 import { Clipboard } from "@capacitor/clipboard";
 import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS_EDIT } from "../../shared/routes/routes";
+import usePresentToast from "../../hooks/usePresentToast";
+import { setLoading } from "../../state/loadingSlice";
+import { confirmAppointmentAction } from "../../state/schedulingSlice";
 
 import "./AppointmentDetails.scss";
 
@@ -28,6 +31,8 @@ const CSSprefix = 'appointment-details';
 
 const AppointmentDetails: React.FC = (): React.ReactElement => {
   const location = useLocation<{ eventId?: string, type?: AppointmentDetailTypeEnum }>();
+  const dispatch = useDispatch<AppDispatch>();
+  const [presentToast] = usePresentToast();
   const history = useHistory();
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
 
@@ -112,6 +117,19 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     return { positiveLabel: 'Reschedule appointment', negativeLabel: 'Cancel appointment' };
   }, [location?.state?.type]);
 
+  const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
+    let practiceId = '';
+    let providerId = '';
+
+    if (provider.providerPractices.length > 0) {
+      const [providerPractice] = provider.providerPractices;
+
+      return { practiceId: providerPractice.practiceId, providerId: providerPractice.providerId };
+    }
+
+    return { practiceId, providerId };
+  }, [provider.providerPractices]);
+
   const copyOnlineMeetUrl = async () => {
     await Clipboard.write({
       string: event?.onlineMeetUrl
@@ -132,6 +150,53 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
   const negativeHandler = useCallback(async () => {
     history.push(APPOINTMENT_CANCEL, { appointmentId: location?.state?.eventId, type: location?.state?.type });
+  }, [location?.state?.type, location?.state?.eventId]);
+
+  const positiveHandler = useCallback(async () => {
+    if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
+      try {
+        if (practiceId && providerId && location?.state?.eventId) {
+          dispatch(setLoading({ loading: true }));
+
+          const response = await dispatch(confirmAppointmentAction({
+            practiceId,
+            providerId,
+            appointmentId: location?.state?.eventId,
+            payload: {}
+          }));
+
+          if (response.meta.requestStatus === 'fulfilled') {
+            dispatch(setLoading({ loading: false, message: undefined }));
+          }
+
+          if (response.meta.requestStatus === 'rejected') {
+            presentToast(
+              '¡Error at confirm appointment!',
+              1000,
+              'top',
+              'danger'
+            );
+          }
+
+          dispatch(setLoading({ loading: false, message: undefined }));
+          presentToast(
+            '¡Appointment confimed!',
+            1000,
+            'top',
+            'success'
+          );
+          history.goBack();
+        }
+      } catch (error) {
+        dispatch(setLoading({ loading: false, message: undefined }));
+        presentToast(
+          '¡Error at cancel appointment!',
+          1000,
+          'top',
+          'danger'
+        );
+      }
+    }
   }, [location?.state?.type, location?.state?.eventId]);
 
   return (
@@ -224,6 +289,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
           expand="block"
           fill={location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE ? 'outline' : 'solid'}
           color="primary"
+          onClick={positiveHandler}
         >
           {positiveLabel}
         </IonButton>

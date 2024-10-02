@@ -120,7 +120,6 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
 
   const acceptHandler = async (appointmentId: string) => {
     try {
-
       if (practiceId && providerId && appointmentId) {
         dispatch(setLoading({ loading: true }));
 
