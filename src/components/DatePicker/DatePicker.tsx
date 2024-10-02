@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { DatePickerProps } from './datePicker.type';
 import { IonDatetime } from '@ionic/react';
 import _ from 'lodash';
+import { getDatesBetween } from '../../shared/utils/appointments.util';
 
 import './DatePicker.scss';
 
@@ -10,9 +11,18 @@ const CSSPrefix = 'date-picker';
 const DatePicker: React.FC<DatePickerProps> = ({ dates, onSelectedDates, onTriggerAction }) => {
   const [selectedDates, setSelectedDates] = useState<string[] | undefined>();
 
+  const datesBetween = useMemo(() => {
+    if (selectedDates?.length === 2) {
+      const [start, end] = selectedDates;
+      return getDatesBetween(start, end);
+    }
+
+    return [];
+  }, [selectedDates]);
+
   const highlightedDates = useMemo(() => {
-    if (selectedDates && selectedDates.length > 0) {
-      return selectedDates.map((date) => ({
+    if (datesBetween.length > 0) {
+      return datesBetween.map((date) => ({
         date,
         textColor: 'var(--ion-trova-white) !important',
         backgroundColor: 'var(--ion-color-primary) !important',
@@ -20,7 +30,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ dates, onSelectedDates, onTrigg
     }
 
     return undefined;
-  }, [selectedDates]);
+  }, [datesBetween]);
 
   const minDate = useMemo(() => {
     if (selectedDates && selectedDates?.length > 0) {
@@ -61,10 +71,10 @@ const DatePicker: React.FC<DatePickerProps> = ({ dates, onSelectedDates, onTrigg
 
   useEffect(() => {
     if (dates.length > 0 && !_.isEqual(dates, selectedDates)) {
-      setSelectedDates(dates);
+      setSelectedDates([dates[0]]);
+      setTimeout(() => setSelectedDates(dates), 50);
     }
   }, [dates]);
-
 
   return (
     <IonDatetime

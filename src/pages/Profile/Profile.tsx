@@ -14,6 +14,7 @@ import { caretForwardOutline } from "ionicons/icons";
 import { MY_PROFILE, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 import Menu from "../../components/Menu/Menu";
+import { PROFILE_MENU_ID } from "../../shared/constants/menu";
 
 import "./Profile.scss";
 
@@ -24,37 +25,39 @@ const Profile: React.FC = (): React.ReactElement => {
   const history = useHistory();
 
   return (
-    <IonPage ref={profileRef} className={CSSprefix} id="profile-content">
-      <SwipeGesture parentRef={profileRef} menuId="profile-menu" />
-      <Header showMenu menuId="profile-menu" />
-      <Menu menuId="profile-menu" contentId="profile-content" />
-      <IonContent fullscreen={true} className={CSSprefix}>
-        <IonItem className="ion-margin-vertical" lines="none">
-          <IonText className={`${CSSprefix}-title`}>
-            Profile settings
-          </IonText>
-        </IonItem>
-        <IonItem
-          className="ion-margin-vertical"
-          lines="none"
-          onClick={() => history.push(MY_PROFILE)}
-        >
-          <IonText>My profile</IonText>
-          <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
-            <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
-          </IonButton>
-        </IonItem>
-        <IonItem
-          lines="none"
-          onClick={() => history.push(SUBSCRIPTION_DETAILS)}
-        >
-          <IonText>Subscription details</IonText>
-          <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
-            <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
-          </IonButton>
-        </IonItem>
-      </IonContent>
-    </IonPage>
+    <>
+      <Menu menuId={PROFILE_MENU_ID} contentId="profile-content" />
+      <IonPage ref={profileRef} className={CSSprefix} id="profile-content">
+        <SwipeGesture parentRef={profileRef} menuId={PROFILE_MENU_ID} />
+        <Header showMenu menuId={PROFILE_MENU_ID} />
+        <IonContent fullscreen={true} className={CSSprefix}>
+          <IonItem className="ion-margin-vertical" lines="none">
+            <IonText className={`${CSSprefix}-title`}>
+              Profile settings
+            </IonText>
+          </IonItem>
+          <IonItem
+            className="ion-margin-vertical"
+            lines="none"
+            onClick={() => history.push(MY_PROFILE)}
+          >
+            <IonText>My profile</IonText>
+            <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
+              <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
+            </IonButton>
+          </IonItem>
+          <IonItem
+            lines="none"
+            onClick={() => history.push(SUBSCRIPTION_DETAILS)}
+          >
+            <IonText>Subscription details</IonText>
+            <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
+              <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
+            </IonButton>
+          </IonItem>
+        </IonContent>
+      </IonPage>
+    </>
   );
 };
 

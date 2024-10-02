@@ -9,6 +9,7 @@ import {
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
+import { CALENDAR_MENU_ID } from "../../shared/constants/menu";
 
 import "./Calendar.scss";
 
@@ -19,16 +20,18 @@ const Calendar: React.FC = (): React.ReactElement => {
   const calendarRef = useRef();
 
   return (
-    <IonPage ref={calendarRef} className={CSSprefix} id="calendar-content">
-      <SwipeGesture parentRef={calendarRef} menuId="calendar-menu" />
-      <Header showMenu menuId="calendar-menu" />
-      <Menu menuId="calendar-menu" contentId="calendar-content" />
-      <IonContent fullscreen={true}>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent />
-        </IonRefresher>
-      </IonContent>
-    </IonPage>
+    <>
+      <Menu menuId={CALENDAR_MENU_ID} contentId="calendar-content" />
+      <IonPage ref={calendarRef} className={CSSprefix} id="calendar-content">
+        <SwipeGesture parentRef={calendarRef} menuId={CALENDAR_MENU_ID} />
+        <Header showMenu menuId={CALENDAR_MENU_ID} />
+        <IonContent fullscreen={true}>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent />
+          </IonRefresher>
+        </IonContent>
+      </IonPage>
+    </>
   );
 };
 

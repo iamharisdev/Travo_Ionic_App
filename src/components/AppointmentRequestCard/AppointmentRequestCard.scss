@@ -1,0 +1,45 @@
+.appointment-request-card {
+  ion-content {
+    --background: var(--ion-trova-white);
+  }
+
+  ion-icon {
+    margin-right: 10px;
+  }
+
+  &-bar {
+    width: 8px;
+    align-self: stretch;
+    border-radius: 8px;
+    height: 82px;
+    margin-top: 5px;
+  }
+
+  &-patient {
+    color: var(--ion-trova-gray-text);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  &-person-icon {
+    color: var(--ion-trova-gray-text);
+    margin-right: 4px;
+    width: 24px;
+    height: 24px;
+    align-self: flex-start;
+  }
+
+  &-details {
+    color: var(--ion-trova-medium-gray);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+}
+
+.custom-margin-bottom {
+  margin-bottom: 8px;
+}
