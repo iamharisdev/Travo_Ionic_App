@@ -4,7 +4,7 @@ import { MenuProps } from './menu.type';
 import TrovaLogo from '../../../public/assets/TrovaLogo.png';
 import { calendarClearOutline, calendarNumberOutline, calendarOutline, enterOutline, listOutline } from 'ionicons/icons';
 import { useHistory, useLocation } from 'react-router';
-import { APPOINTMENT_REQUESTS, APPOINTMENTS, CALENDAR } from '../../shared/routes/routes';
+import { APPOINTMENT_REQUESTS, APPOINTMENTS, CALENDAR, CALENDAR_DAY } from '../../shared/routes/routes';
 import useMenu from '../../hooks/useMenu';
 import { getMenuIdByLocation } from '../../shared/utils/menu.util';
 
@@ -36,7 +36,7 @@ const Menu: React.FC<MenuProps> = ({ menuId, contentId }) => {
           <IonIcon aria-hidden="true" icon={listOutline} slot="start" />
           <IonLabel>Schedule</IonLabel>
         </IonItem>
-        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => navigateHandler(CALENDAR)}>
+        <IonItem className="ion-margin-bottom" lines="none" onClick={async () => navigateHandler(CALENDAR_DAY)}>
           <IonIcon aria-hidden="true" icon={calendarNumberOutline} slot="start" />
           <IonLabel>Day</IonLabel>
         </IonItem>

@@ -10,6 +10,7 @@ import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import { CALENDAR_MENU_ID } from "../../shared/constants/menu";
+import Scheduling from "../../components/Scheduling/Scheduling";
 
 import "./Calendar.scss";
 
@@ -29,6 +30,7 @@ const Calendar: React.FC = (): React.ReactElement => {
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
             <IonRefresherContent />
           </IonRefresher>
+          <Scheduling />
         </IonContent>
       </IonPage>
     </>

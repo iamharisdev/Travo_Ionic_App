@@ -34,6 +34,9 @@ import '@ionic/react/css/display.css';
 import './theme/variables.scss';
 import './global.scss';
 
+/* Big calendar */
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 setupIonicReact();
 
 const App: React.FC = () => {

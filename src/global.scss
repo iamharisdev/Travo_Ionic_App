@@ -127,6 +127,18 @@ ion-datetime::part(calendar-day today) {
   color: var(--ion-color-primary);
 }
 
+.rbc-time-content>.rbc-day-slot {
+  background-color: transparent;
+}
+
+.rbc-row-content {
+  background-color: var(--ion-trova-page-background) !important;
+}
+
+.rbc-current-time-indicator {
+  background-color: var(--ion-trova-medium-gray) !important;
+}
+
 body {
   --ion-background-color: linear-gradient(149deg, #E9F8F8 0%, #FAF5EE 100%);
 }
