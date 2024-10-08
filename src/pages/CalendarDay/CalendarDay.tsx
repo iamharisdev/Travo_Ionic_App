@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import EventCard from "../../components/EventCard/EventCard";
 import DatePicker from "../../components/DatePicker/DatePicker";
-import { months, SEVEN_DAYS_FROM_TODAY, TODAY } from "../../shared/constants/dates";
+import { months, TODAY } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 
@@ -32,6 +32,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const calendarDayRef = useRef();
+  // TODO: filter events by selected date
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs().date()).map((event) => ({
     id: event?.id,
     title: JSON.stringify({
@@ -45,15 +46,15 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [selectedDates, setSelectedDates] = useState<string[]>([TODAY, SEVEN_DAYS_FROM_TODAY]);
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(TODAY);
   const dateText = useMemo(() => {
-    if (selectedDates.length > 0) {
-      const [date] = selectedDates;
+    if (selectedDate && selectedDate.length > 0) {
+      const [date] = selectedDate;
       return months[dayjs(date).month()];
     }
 
     return '';
-  }, [selectedDates]);
+  }, [selectedDate]);
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -62,10 +63,10 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
 
-  const getAppointmentsHandler = async (dates: string[]) => {
+  const getAppointmentsHandler = async (date: string | string[]) => {
     try {
       setDatePickerOpen(false);
-      setSelectedDates(dates);
+      setSelectedDate(date as string);
       dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
 
       const [providerPractice] = provider.providerPractices;
@@ -73,8 +74,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         await dispatch(getEventsAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          start: dayjs(dates[0]).startOf('day').toISOString(),
-          end: dayjs(dates[1]).endOf('day').toISOString(),
+          start: dayjs((date as string)).startOf('day').toISOString(),
+          end: dayjs((date as string)).endOf('day').toISOString(),
           pageNumber: 0,
           pageSize: 999,
         }));
@@ -83,7 +84,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
       dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
-      setSelectedDates([]);
+      setSelectedDate(undefined);
       console.error('error at load appointments by date: ', error);
     }
   }
@@ -115,6 +116,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             }}
             timeslots={2}
             components={{
+              // TODO: use selected date instead of today's date
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>
                   <IonText className={`${CSSprefix}-date`}>
@@ -137,7 +139,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           onDidDismiss={() => setDatePickerOpen(false)}
         >
           <IonContent fullscreen={true}>
-            <DatePicker dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
+            <DatePicker date={selectedDate} onSelectedDate={setSelectedDate} onTriggerAction={getAppointmentsHandler} />
           </IonContent>
         </IonPopover>
       </IonPage>

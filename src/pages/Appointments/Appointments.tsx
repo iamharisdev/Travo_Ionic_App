@@ -74,10 +74,10 @@ const Appointments: React.FC = (): React.ReactElement => {
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
 
-  const getAppointmentsHandler = async (dates: string[]) => {
+  const getAppointmentsHandler = async (dates: string[] | string) => {
     try {
       setDatePickerOpen(false);
-      setSelectedDates(dates);
+      setSelectedDates(dates as string[]);
       dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
 
       const [providerPractice] = provider.providerPractices;
@@ -146,7 +146,7 @@ const Appointments: React.FC = (): React.ReactElement => {
           onDidDismiss={() => setDatePickerOpen(false)}
         >
           <IonContent fullscreen={true}>
-            <DatePicker dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
+            <DatePicker multiple={true} dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
           </IonContent>
         </IonPopover>
       </IonPage>
