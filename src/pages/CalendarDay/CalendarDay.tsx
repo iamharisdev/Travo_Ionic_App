@@ -1,6 +1,7 @@
-import React, { useMemo, useRef } from "react";
+import React, { cloneElement, useMemo, useRef } from "react";
 import {
   IonContent,
+  IonItem,
   IonPage,
   IonRefresher,
   IonRefresherContent,
@@ -15,6 +16,7 @@ import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
+import EventCard from "../../components/EventCard/EventCard";
 
 import "./CalendarDay.scss";
 
@@ -28,7 +30,11 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const calendarDayRef = useRef();
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs().date()).map((event) => ({
     id: event?.id,
-    title: event?.patientServiceName,
+    title: JSON.stringify({
+      service: event?.patientServiceName,
+      patient: event?.patientName,
+      color: event?.color,
+    }),
     start: dayjs(event?.startTime || '').toDate(),
     end: dayjs(event.endTime || '').toDate(),
   })), [events.events]);
@@ -43,14 +49,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
             <IonRefresherContent />
           </IonRefresher>
-          <div className={`${CSSprefix}-date-container`}>
-            <IonText className={`${CSSprefix}-date`}>
-              {dayjs().format('dddd')}
-            </IonText>
-            <IonText className={`${CSSprefix}-day`}>
-              {dayjs().date()}
-            </IonText>
-          </div>
           <Calendar
             defaultDate={dayjs().toISOString()}
             defaultView={Views.DAY}
@@ -61,6 +59,19 @@ const CalendarDay: React.FC = (): React.ReactElement => {
               day: true
             }}
             timeslots={2}
+            components={{
+              timeGutterHeader: () => (
+                <div className={`${CSSprefix}-date-container`}>
+                  <IonText className={`${CSSprefix}-date`}>
+                    {dayjs().format('dddd')}
+                  </IonText>
+                  <IonText className={`${CSSprefix}-day`}>
+                    {dayjs().date()}
+                  </IonText>
+                </div>
+              ),
+              eventWrapper: (props) => <EventCard {...props} />,
+            }}
           />
         </IonContent>
       </IonPage>
