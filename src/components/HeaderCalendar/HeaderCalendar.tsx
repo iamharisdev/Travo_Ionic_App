@@ -1,0 +1,25 @@
+// @flow 
+import { IonText } from '@ionic/react';
+import * as React from 'react';
+import { weekday } from '../../shared/constants/dates';
+import dayjs from 'dayjs';
+import { HeaderProps } from 'react-big-calendar';
+
+import './HeaderCalendar.scss';
+
+const CSSPrefix = 'header-calendar';
+
+const HeaderCalendar: React.FC<HeaderProps> = ({ date }): React.ReactElement => {
+  return (
+    <div className={`${CSSPrefix}`}>
+      <IonText className={`${CSSPrefix}-day`}>
+        {weekday[dayjs(date).day()].substring(0, 1).toUpperCase()}
+      </IonText>
+      <IonText className={`${CSSPrefix}-date`} style={{ color: dayjs(date).date() === dayjs().date() ? 'var(--ion-color-primary)' : '' }}>
+        {dayjs(date).date()}
+      </IonText>
+    </div>
+  );
+}
+
+export default HeaderCalendar

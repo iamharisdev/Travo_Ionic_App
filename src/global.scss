@@ -140,15 +140,22 @@ ion-datetime::part(calendar-day today) {
 }
 
 .rbc-allday-cell {
-  .rbc-row-bg {
-    .rbc-today {
+  display: none;
+  /* uncomment if we will see all day events
+    .rbc-row-bg {
+      .rbc-today {
+        background-color: var(--ion-trova-white) !important;
+      }
+    }
+
+    .rbc-row-content {
       background-color: var(--ion-trova-white) !important;
     }
-  }
+  */
+}
 
-  .rbc-row-content {
-    background-color: var(--ion-trova-white) !important;
-  }
+.rbc-today {
+  background-color: var(--ion-trova-white) !important;
 }
 
 body {

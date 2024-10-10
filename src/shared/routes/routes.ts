@@ -14,6 +14,7 @@ export const APPOINTMENT_REQUESTS = '/dashboard/appointments/appointment/request
 export const APPOINTMENT_CANCEL = '/dashboard/appointments/appointment/cancel';
 export const CALENDAR = '/dashboard/calendar';
 export const CALENDAR_DAY = '/dashboard/calendar/day';
+export const CALENDAR_WEEK = '/dashboard/calendar/week';
 export const PROFILE = '/dashboard/profile';
 export const MY_PROFILE = '/dashboard/profile/my-profile';
 export const PROFILE_INFORMATION = '/dashboard/profile/my-profile/profile-information';

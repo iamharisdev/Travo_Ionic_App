@@ -1,0 +1,44 @@
+.calendar-week {
+  ion-content {
+    --background: var(--ion-trova-white);
+  }
+
+  &-date-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &-date {
+    color: var(--ion-trova-medium-grayv);
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  &-day {
+    color: var(--ion-trova-gray-text);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  &-date-picker-popover {
+    --width: 100%;
+    --background: transparent;
+
+    ion-content {
+      --width: 100%;
+      display: flex;
+      align-items: center;
+    }
+  }
+}

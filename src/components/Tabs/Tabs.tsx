@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
 import { Redirect, Route, useLocation } from "react-router-dom";
-import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, CALENDAR_DAY, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
+import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR, CALENDAR_DAY, CALENDAR_WEEK, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Calendar from "../../pages/Calendar/Calendar";
 import Profile from "../../pages/Profile/Profile";
@@ -37,6 +37,7 @@ import AppointmentCancel from "../../pages/CancelAppointment/AppointmentCancel";
 import CalendarDay from "../../pages/CalendarDay/CalendarDay";
 
 import "./Tabs.scss";
+import CalendarWeek from "../../pages/CalendarWeek/CalendarWeek";
 
 const Tabs: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
@@ -128,6 +129,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={APPOINTMENTS} component={Appointments} />
         <Route exact path={CALENDAR} component={Calendar} />
         <Route exact path={CALENDAR_DAY} component={CalendarDay} />
+        <Route exact path={CALENDAR_WEEK} component={CalendarWeek} />
         <Route exact path={PROFILE} component={Profile} />
         <Route exact path={MY_PROFILE} component={MyProfile} />
         <Route exact path={PROFILE_INFORMATION} component={ProfileInformation} />
