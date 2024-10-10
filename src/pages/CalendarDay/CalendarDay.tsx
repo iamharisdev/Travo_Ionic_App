@@ -32,8 +32,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const calendarDayRef = useRef();
-  // TODO: filter events by selected date
-  const mappedEvents = useMemo(() => events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs().date()).map((event) => ({
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(TODAY);
+  const mappedEvents = useMemo(() => events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs(selectedDate).date()).map((event) => ({
     id: event?.id,
     title: JSON.stringify({
       service: event?.patientServiceName,
@@ -46,7 +46,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string | undefined>(TODAY);
   const dateText = useMemo(() => {
     if (selectedDate && selectedDate.length > 0) {
       const [date] = selectedDate;
@@ -116,14 +115,13 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             }}
             timeslots={2}
             components={{
-              // TODO: use selected date instead of today's date
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>
                   <IonText className={`${CSSprefix}-date`}>
-                    {dayjs().format('dddd')}
+                    {dayjs(selectedDate).format('dddd')}
                   </IonText>
                   <IonText className={`${CSSprefix}-day`}>
-                    {dayjs().date()}
+                    {dayjs(selectedDate).date()}
                   </IonText>
                 </div>
               ),
