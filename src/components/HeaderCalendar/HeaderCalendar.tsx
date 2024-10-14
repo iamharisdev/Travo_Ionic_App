@@ -1,6 +1,5 @@
-// @flow 
 import { IonText } from '@ionic/react';
-import * as React from 'react';
+import React from 'react';
 import { weekday } from '../../shared/constants/dates';
 import dayjs from 'dayjs';
 import { HeaderProps } from 'react-big-calendar';

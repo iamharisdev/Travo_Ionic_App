@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import EventCard from "../../components/EventCard/EventCard";
 import DatePicker from "../../components/DatePicker/DatePicker";
-import { months, SEVEN_DAYS_FROM_TODAY, TODAY, weekday } from "../../shared/constants/dates";
+import { months, SEVEN_DAYS_FROM_TODAY, TODAY } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
@@ -32,6 +32,8 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const calendarWeekRef = useRef();
+  // TODO: replace this with a dispatch of an action create date slide in redux toolkit
+  const [currentDate, setCurrentDate] = useState<Date>(dayjs().toDate());
   const [selectedDates, setSelectedDates] = useState<string[]>([TODAY, SEVEN_DAYS_FROM_TODAY]);
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
     dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
@@ -46,8 +48,6 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     start: dayjs(event?.startTime || '').toDate(),
     end: dayjs(event.endTime || '').toDate(),
   })), [events.events]);
-  console.log('mappedEvents: ', mappedEvents);
-  console.log('selectedDates: ', selectedDates);
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -93,11 +93,24 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     }
   }
 
+  const nextWeekHandler = (newDate: Date) => {
+    console.log('nextWeekHandler: ', newDate);
+    setCurrentDate(newDate);
+  };
+
+  const prevWeekHandler = (newDate: Date) => setCurrentDate(newDate);
+  console.log('currentDate: ', currentDate);
   return (
     <>
       <Menu menuId={CALENDAR_WEEK_MENU_ID} contentId="calendar-week-content" />
       <IonPage ref={calendarWeekRef} className={CSSprefix} id="calendar-week-content">
-        <SwipeGesture parentRef={calendarWeekRef} menuId={CALENDAR_WEEK_MENU_ID} />
+        <SwipeGesture
+          parentRef={calendarWeekRef}
+          menuId={CALENDAR_WEEK_MENU_ID}
+          date={currentDate}
+          onNextWeek={nextWeekHandler}
+          onPrevWeek={prevWeekHandler}
+        />
         <Header
           showMenu
           menuId={CALENDAR_WEEK_MENU_ID}
@@ -109,8 +122,10 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
             <IonRefresherContent />
           </IonRefresher>
+          {/* TODO: handle week change */}
           <Calendar
-            defaultDate={dayjs().toISOString()}
+            defaultDate={currentDate}
+            date={currentDate}
             defaultView={Views.WEEK}
             events={mappedEvents}
             localizer={localizer}

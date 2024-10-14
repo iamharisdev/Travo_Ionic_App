@@ -42,7 +42,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }),
     start: dayjs(event?.startTime || '').toDate(),
     end: dayjs(event.endTime || '').toDate(),
-  })), [events.events]);
+  })), [events.events, selectedDate]);
+  console.log('events: ', events.events);
+  console.log('mappedEvents: ', mappedEvents);
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -105,7 +107,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             <IonRefresherContent />
           </IonRefresher>
           <Calendar
-            defaultDate={dayjs().toISOString()}
+            defaultDate={selectedDate}
             defaultView={Views.DAY}
             events={mappedEvents}
             localizer={localizer}
