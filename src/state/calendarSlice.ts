@@ -12,7 +12,10 @@ interface CalendarState {
 
 const initialState: CalendarState = {
   selectedDate: dayjs().startOf('week').toDate().toISOString(),
-  selectedDates: [],
+  selectedDates: [
+    dayjs().startOf('week').format('YYYY-MM-DD'),
+    dayjs().endOf('week').format('YYYY-MM-DD')
+  ],
   state: {
     success: false,
   }
@@ -23,10 +26,20 @@ const calendarSlice = createSlice({
   initialState,
   reducers: {
     setNextWeek: (state) => {
-      state.selectedDate = nextWeek(state.selectedDate).toISOString();
+      const newDate = nextWeek(state.selectedDate);
+      const start = dayjs(newDate).startOf('week');
+      const end = dayjs(newDate).endOf('week');
+
+      state.selectedDate = newDate.toISOString();
+      state.selectedDates = [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')];
     },
     setPrevWeek: (state) => {
-      state.selectedDate = prevWeek(state.selectedDate).toISOString();
+      const newDate = prevWeek(state.selectedDate);
+      const start = dayjs(newDate).startOf('week');
+      const end = dayjs(newDate).endOf('week');
+
+      state.selectedDate = newDate.toISOString();
+      state.selectedDates = [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')];
     },
     setSelectedDates: (state, action: PayloadAction<{ selectedDates: Array<string> }>) => {
       const { selectedDates } = action.payload;

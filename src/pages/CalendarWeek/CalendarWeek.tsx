@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import {
   IonContent,
   IonPage,
@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import EventCard from "../../components/EventCard/EventCard";
-import { months, SEVEN_DAYS_FROM_TODAY, TODAY } from "../../shared/constants/dates";
+import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
@@ -28,12 +28,11 @@ const localizer = dayjsLocalizer(dayjs);
 const CSSprefix = 'calendar-week';
 
 const CalendarWeek: React.FC = (): React.ReactElement => {
-  const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const calendarWeekRef = useRef();
   const calendarRef = useRef<HTMLDivElement | null>(null);
   // TODO: replace this with a dispatch of an action create date slide in redux toolkit
-  const [selectedDates, setSelectedDates] = useState<string[]>([TODAY, SEVEN_DAYS_FROM_TODAY]);
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
     dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
     dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
@@ -50,10 +49,8 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const dateText = useMemo(() => months[dayjs(selectedDate).month()], [selectedDate]);
 
-  // TODO: getAppointmentsHandler over the week
-  const getAppointmentsHandler = async (dates: string[] | string) => {
+  const getAppointmentsHandler = async () => {
     try {
-      setSelectedDates(dates as string[]);
       dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
 
       const [providerPractice] = provider.providerPractices;
@@ -61,8 +58,8 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
         await dispatch(getEventsAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          start: dayjs(dates[0]).startOf('day').toISOString(),
-          end: dayjs(dates[1]).endOf('day').toISOString(),
+          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
+          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
           pageNumber: 0,
           pageSize: 999,
         }));
@@ -71,10 +68,15 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
       dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
-      setSelectedDates([]);
       console.error('error at load appointments by date: ', error);
     }
   }
+
+  useEffect(() => {
+    if (selectedDates.length === 2) {
+      getAppointmentsHandler();
+    }
+  }, [selectedDates, state.success]);
 
   return (
     <>
