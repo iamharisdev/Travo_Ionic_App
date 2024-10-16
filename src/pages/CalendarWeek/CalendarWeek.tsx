@@ -1,8 +1,7 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonPage,
-  IonPopover,
   IonRefresher,
   IonRefresherContent,
   RefresherEventDetail,
@@ -16,11 +15,11 @@ import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import EventCard from "../../components/EventCard/EventCard";
-import DatePicker from "../../components/DatePicker/DatePicker";
 import { months, SEVEN_DAYS_FROM_TODAY, TODAY } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
+import CalendarSwipeGesture from "../../components/CalendarSwipeGesture/CalendarSwipeGesture";
 
 import "./CalendarWeek.scss";
 
@@ -29,11 +28,11 @@ const localizer = dayjsLocalizer(dayjs);
 const CSSprefix = 'calendar-week';
 
 const CalendarWeek: React.FC = (): React.ReactElement => {
-  const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const calendarWeekRef = useRef();
+  const calendarRef = useRef<HTMLDivElement | null>(null);
   // TODO: replace this with a dispatch of an action create date slide in redux toolkit
-  const [currentDate, setCurrentDate] = useState<Date>(dayjs().toDate());
   const [selectedDates, setSelectedDates] = useState<string[]>([TODAY, SEVEN_DAYS_FROM_TODAY]);
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
     dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
@@ -49,27 +48,11 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     end: dayjs(event.endTime || '').toDate(),
   })), [events.events]);
   const dispatch = useDispatch<AppDispatch>();
-  const datePickerRef = useRef<HTMLIonPopoverElement>(null);
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const dateText = useMemo(() => {
-    if (selectedDates.length > 0) {
-      const [date] = selectedDates;
-      return months[dayjs(date).month()];
-    }
+  const dateText = useMemo(() => months[dayjs(selectedDate).month()], [selectedDate]);
 
-    return '';
-  }, [selectedDates]);
-
-  const openDatePickerHandler = useCallback((e: any) => {
-    if (datePickerRef.current) {
-      datePickerRef.current!.event = e;
-    }
-    setDatePickerOpen(true);
-  }, [datePickerRef.current]);
-
+  // TODO: getAppointmentsHandler over the week
   const getAppointmentsHandler = async (dates: string[] | string) => {
     try {
-      setDatePickerOpen(false);
       setSelectedDates(dates as string[]);
       dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
 
@@ -93,13 +76,6 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     }
   }
 
-  const nextWeekHandler = (newDate: Date) => {
-    console.log('nextWeekHandler: ', newDate);
-    setCurrentDate(newDate);
-  };
-
-  const prevWeekHandler = (newDate: Date) => setCurrentDate(newDate);
-  console.log('currentDate: ', currentDate);
   return (
     <>
       <Menu menuId={CALENDAR_WEEK_MENU_ID} contentId="calendar-week-content" />
@@ -107,50 +83,37 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
         <SwipeGesture
           parentRef={calendarWeekRef}
           menuId={CALENDAR_WEEK_MENU_ID}
-          date={currentDate}
-          onNextWeek={nextWeekHandler}
-          onPrevWeek={prevWeekHandler}
         />
         <Header
           showMenu
           menuId={CALENDAR_WEEK_MENU_ID}
-          showDatePicker={true}
-          datePickerText={dateText}
-          datePickerCB={openDatePickerHandler}
+          leftLabel={dateText}
         />
         <IonContent fullscreen={true}>
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
             <IonRefresherContent />
           </IonRefresher>
-          {/* TODO: handle week change */}
-          <Calendar
-            defaultDate={currentDate}
-            date={currentDate}
-            defaultView={Views.WEEK}
-            events={mappedEvents}
-            localizer={localizer}
-            toolbar={false}
-            views={{
-              week: true
-            }}
-            timeslots={2}
-            components={{
-              eventWrapper: (props) => <EventCard {...props} />,
-              header: (props) => <HeaderCalendar {...props} />,
-            }}
-          />
+          <div ref={calendarRef}>
+            <CalendarSwipeGesture parentRef={calendarRef} />
+            <Calendar
+              defaultDate={selectedDate}
+              date={selectedDate}
+              defaultView={Views.WEEK}
+              events={mappedEvents}
+              localizer={localizer}
+              toolbar={false}
+              views={{
+                week: true
+              }}
+              timeslots={2}
+              components={{
+                eventWrapper: (props) => <EventCard {...props} />,
+                header: (props) => <HeaderCalendar {...props} />,
+              }}
+              onNavigate={() => { }}
+            />
+          </div>
         </IonContent>
-        <IonPopover
-          ref={datePickerRef}
-          className={`${CSSprefix}-date-picker-popover`}
-          isOpen={datePickerOpen}
-          size="auto"
-          onDidDismiss={() => setDatePickerOpen(false)}
-        >
-          <IonContent fullscreen={true}>
-            <DatePicker multiple={true} dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
-          </IonContent>
-        </IonPopover>
       </IonPage>
     </>
   );

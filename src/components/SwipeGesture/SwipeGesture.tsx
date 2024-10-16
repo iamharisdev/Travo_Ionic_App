@@ -1,12 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { SwipeProps } from './swipeGesture.type';
 import { createGesture, GestureDetail } from '@ionic/react';
 import { useHistory, useLocation } from 'react-router';
 import { menuController } from '@ionic/core/components';
-import { APPOINTMENTS, CALENDAR, CALENDAR_DAY, CALENDAR_WEEK, DASHBOARD, FORGOT_PASSWORD, PASSWORD_CHANGED_SUCCESSFULLY, PROFILE, RESET_PASSWORD, SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
-import { nextWeek, prevWeek } from '../../shared/utils/dates.util';
+import { APPOINTMENTS, CALENDAR, DASHBOARD, FORGOT_PASSWORD, PASSWORD_CHANGED_SUCCESSFULLY, PROFILE, RESET_PASSWORD, SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 
-const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId, date, onNextWeek, onPrevWeek }): null => {
+const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId }): null => {
   const location = useLocation();
   const history = useHistory();
 
@@ -38,11 +37,6 @@ const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId, date, onNextWee
       ) {
         history.push(SING_IN);
       }
-
-      if (pathname === CALENDAR_WEEK && date && onPrevWeek) {
-        // TODO: replace this with a dispatch of an action create date slide in redux toolkit
-        onPrevWeek(prevWeek(date));
-      }
     }
 
     if (ev.deltaX < 0) {
@@ -53,13 +47,8 @@ const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId, date, onNextWee
       ) {
         closeMenuHandler();
       }
-
-      if (pathname === CALENDAR_WEEK && date && onNextWeek) {
-        // TODO: replace this with a dispatch of an action create date slide in redux toolkit
-        onNextWeek(nextWeek(date));
-      }
     }
-  }, [parentRef.current, location.pathname, history, menuId, date, onNextWeek, onPrevWeek]);
+  }, [parentRef.current, location.pathname, history, menuId]);
 
   useEffect(() => {
     if (
@@ -67,8 +56,6 @@ const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId, date, onNextWee
       location.pathname === DASHBOARD ||
       location.pathname === APPOINTMENTS ||
       location.pathname === CALENDAR ||
-      location.pathname === CALENDAR_DAY ||
-      location.pathname === CALENDAR_WEEK ||
       location.pathname === PROFILE ||
       location.pathname === FORGOT_PASSWORD ||
       location.pathname === VERIFY_EMAIL ||
@@ -87,7 +74,7 @@ const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId, date, onNextWee
 
       gesture.enable(true);
     }
-  }, [parentRef.current, location.pathname, menuId, date]);
+  }, [parentRef.current, location.pathname, menuId]);
 
 
   return null;
