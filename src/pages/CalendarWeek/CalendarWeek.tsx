@@ -2,9 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import {
   IonContent,
   IonPage,
-  IonRefresher,
-  IonRefresherContent,
-  RefresherEventDetail,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
@@ -29,10 +27,8 @@ const CSSprefix = 'calendar-week';
 
 const CalendarWeek: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
-  const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const calendarWeekRef = useRef();
   const calendarRef = useRef<HTMLDivElement | null>(null);
-  // TODO: replace this with a dispatch of an action create date slide in redux toolkit
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
     dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
     dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
@@ -78,6 +74,10 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     }
   }, [selectedDates, state.success]);
 
+  useIonViewWillEnter(() => {
+    getAppointmentsHandler();
+  }, []);
+
   return (
     <>
       <Menu menuId={CALENDAR_WEEK_MENU_ID} contentId="calendar-week-content" />
@@ -92,9 +92,6 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
           leftLabel={dateText}
         />
         <IonContent fullscreen={true}>
-          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-            <IonRefresherContent />
-          </IonRefresher>
           <div ref={calendarRef}>
             <CalendarSwipeGesture parentRef={calendarRef} />
             <Calendar

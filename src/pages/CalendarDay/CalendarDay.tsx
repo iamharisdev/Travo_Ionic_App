@@ -1,12 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonPage,
   IonPopover,
-  IonRefresher,
-  IonRefresherContent,
   IonText,
-  RefresherEventDetail,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
@@ -18,9 +16,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import EventCard from "../../components/EventCard/EventCard";
 import DatePicker from "../../components/DatePicker/DatePicker";
-import { months, TODAY } from "../../shared/constants/dates";
+import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
+import { setDate } from "../../state/calendarSlice";
 
 import "./CalendarDay.scss";
 
@@ -29,10 +28,8 @@ const localizer = dayjsLocalizer(dayjs);
 const CSSprefix = 'calendar-day';
 
 const CalendarDay: React.FC = (): React.ReactElement => {
-  const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
-  const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
+  const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const calendarDayRef = useRef();
-  const [selectedDate, setSelectedDate] = useState<string | undefined>(TODAY);
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs(selectedDate).date()).map((event) => ({
     id: event?.id,
     title: JSON.stringify({
@@ -43,15 +40,12 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     start: dayjs(event?.startTime || '').toDate(),
     end: dayjs(event.endTime || '').toDate(),
   })), [events.events, selectedDate]);
-  console.log('events: ', events.events);
-  console.log('mappedEvents: ', mappedEvents);
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => {
-    if (selectedDate && selectedDate.length > 0) {
-      const [date] = selectedDate;
-      return months[dayjs(date).month()];
+    if (selectedDate) {
+      return months[dayjs(selectedDate).month()];
     }
 
     return '';
@@ -64,10 +58,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
 
-  const getAppointmentsHandler = async (date: string | string[]) => {
+  const getAppointmentsHandler = async () => {
     try {
       setDatePickerOpen(false);
-      setSelectedDate(date as string);
       dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
 
       const [providerPractice] = provider.providerPractices;
@@ -75,8 +68,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         await dispatch(getEventsAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          start: dayjs((date as string)).startOf('day').toISOString(),
-          end: dayjs((date as string)).endOf('day').toISOString(),
+          start: dayjs(selectedDate).startOf('day').toISOString(),
+          end: dayjs(selectedDate).endOf('day').toISOString(),
           pageNumber: 0,
           pageSize: 999,
         }));
@@ -85,10 +78,19 @@ const CalendarDay: React.FC = (): React.ReactElement => {
       dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
-      setSelectedDate(undefined);
       console.error('error at load appointments by date: ', error);
     }
   }
+
+  useEffect(() => {
+    if (selectedDate) {
+      getAppointmentsHandler();
+    }
+  }, [selectedDate]);
+
+  useIonViewWillEnter(() => {
+    getAppointmentsHandler();
+  }, []);
 
   return (
     <>
@@ -103,11 +105,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           datePickerCB={openDatePickerHandler}
         />
         <IonContent fullscreen={true}>
-          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-            <IonRefresherContent />
-          </IonRefresher>
           <Calendar
             defaultDate={selectedDate}
+            date={selectedDate}
             defaultView={Views.DAY}
             events={mappedEvents}
             localizer={localizer}
@@ -129,6 +129,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
               ),
               eventWrapper: (props) => <EventCard {...props} />,
             }}
+            onNavigate={() => { }}
           />
         </IonContent>
         <IonPopover
@@ -139,7 +140,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           onDidDismiss={() => setDatePickerOpen(false)}
         >
           <IonContent fullscreen={true}>
-            <DatePicker date={selectedDate} onSelectedDate={setSelectedDate} onTriggerAction={getAppointmentsHandler} />
+            <DatePicker date={selectedDate} onSelectedDate={(date) => dispatch(setDate(date as string))} onTriggerAction={getAppointmentsHandler} />
           </IonContent>
         </IonPopover>
       </IonPage>

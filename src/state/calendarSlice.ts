@@ -11,7 +11,7 @@ interface CalendarState {
 }
 
 const initialState: CalendarState = {
-  selectedDate: dayjs().startOf('week').toDate().toISOString(),
+  selectedDate: dayjs().toDate().toISOString(),
   selectedDates: [
     dayjs().startOf('week').format('YYYY-MM-DD'),
     dayjs().endOf('week').format('YYYY-MM-DD')
@@ -27,19 +27,26 @@ const calendarSlice = createSlice({
   reducers: {
     setNextWeek: (state) => {
       const newDate = nextWeek(state.selectedDate);
-      const start = dayjs(newDate).startOf('week');
-      const end = dayjs(newDate).endOf('week');
+      const start = dayjs(newDate).startOf('week').format('YYYY-MM-DD');
+      const end = dayjs(newDate).endOf('week').format('YYYY-MM-DD');
 
       state.selectedDate = newDate.toISOString();
-      state.selectedDates = [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')];
+      state.selectedDates = [start, end];
     },
     setPrevWeek: (state) => {
       const newDate = prevWeek(state.selectedDate);
-      const start = dayjs(newDate).startOf('week');
-      const end = dayjs(newDate).endOf('week');
+      const start = dayjs(newDate).startOf('week').format('YYYY-MM-DD');
+      const end = dayjs(newDate).endOf('week').format('YYYY-MM-DD');
 
       state.selectedDate = newDate.toISOString();
-      state.selectedDates = [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')];
+      state.selectedDates = [start, end];
+    },
+    setDate: (state, action: PayloadAction<string>) => {
+      const start = dayjs(action.payload).startOf('week').format('YYYY-MM-DD');
+      const end = dayjs(action.payload).endOf('week').format('YYYY-MM-DD');
+
+      state.selectedDate = action.payload;
+      state.selectedDates = [start, end];
     },
     setSelectedDates: (state, action: PayloadAction<{ selectedDates: Array<string> }>) => {
       const { selectedDates } = action.payload;
@@ -51,6 +58,6 @@ const calendarSlice = createSlice({
   }
 });
 
-export const { setNextWeek, setPrevWeek } = calendarSlice.actions
+export const { setNextWeek, setPrevWeek, setDate } = calendarSlice.actions
 
 export default calendarSlice.reducer;

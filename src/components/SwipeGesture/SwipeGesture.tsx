@@ -3,7 +3,7 @@ import { SwipeProps } from './swipeGesture.type';
 import { createGesture, GestureDetail } from '@ionic/react';
 import { useHistory, useLocation } from 'react-router';
 import { menuController } from '@ionic/core/components';
-import { APPOINTMENTS, CALENDAR, DASHBOARD, FORGOT_PASSWORD, PASSWORD_CHANGED_SUCCESSFULLY, PROFILE, RESET_PASSWORD, SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
+import { APPOINTMENTS, CALENDAR, CALENDAR_DAY, DASHBOARD, FORGOT_PASSWORD, PASSWORD_CHANGED_SUCCESSFULLY, PROFILE, RESET_PASSWORD, SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 
 const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId }): null => {
   const location = useLocation();
@@ -25,7 +25,8 @@ const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId }): null => {
       if (
         pathname === APPOINTMENTS ||
         pathname === CALENDAR ||
-        pathname === PROFILE
+        pathname === PROFILE ||
+        pathname === CALENDAR_DAY
       ) {
         openMenuHandler();
       }
@@ -43,7 +44,8 @@ const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId }): null => {
       if (
         pathname === APPOINTMENTS ||
         pathname === CALENDAR ||
-        pathname === PROFILE
+        pathname === PROFILE ||
+        pathname === CALENDAR_DAY
       ) {
         closeMenuHandler();
       }
@@ -60,7 +62,8 @@ const SwipeGesture: React.FC<SwipeProps> = ({ parentRef, menuId }): null => {
       location.pathname === FORGOT_PASSWORD ||
       location.pathname === VERIFY_EMAIL ||
       location.pathname === RESET_PASSWORD ||
-      location.pathname === PASSWORD_CHANGED_SUCCESSFULLY
+      location.pathname === PASSWORD_CHANGED_SUCCESSFULLY ||
+      location.pathname === CALENDAR_DAY
     ) {
       const gesture = createGesture({
         el: parentRef.current,
