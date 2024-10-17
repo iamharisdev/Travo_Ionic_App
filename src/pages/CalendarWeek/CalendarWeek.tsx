@@ -6,7 +6,6 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
-import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import { CALENDAR_WEEK_MENU_ID } from "../../shared/constants/menu";
 import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
@@ -17,7 +16,8 @@ import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
-import CalendarSwipeGesture from "../../components/CalendarSwipeGesture/CalendarSwipeGesture";
+import { useSwipeable } from "react-swipeable";
+import { setNextWeek, setPrevWeek } from "../../state/calendarSlice";
 
 import "./CalendarWeek.scss";
 
@@ -28,7 +28,6 @@ const CSSprefix = 'calendar-week';
 const CalendarWeek: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
-  const calendarRef = useRef<HTMLDivElement | null>(null);
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
     dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
     dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
@@ -68,6 +67,18 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     }
   }
 
+  const handlers = useSwipeable({
+    onSwipedLeft: () => dispatch(setNextWeek()),
+    onSwipedRight: () => dispatch(setPrevWeek()),
+    delta: 10,
+    preventScrollOnSwipe: false,
+    trackTouch: true,
+    trackMouse: false,
+    rotationAngle: 0,
+    swipeDuration: Infinity,
+    touchEventOptions: { passive: true },
+  });
+
   useEffect(() => {
     if (selectedDates.length === 2) {
       getAppointmentsHandler();
@@ -82,36 +93,29 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     <>
       <Menu menuId={CALENDAR_WEEK_MENU_ID} contentId="calendar-week-content" />
       <IonPage ref={calendarWeekRef} className={CSSprefix} id="calendar-week-content">
-        <SwipeGesture
-          parentRef={calendarWeekRef}
-          menuId={CALENDAR_WEEK_MENU_ID}
-        />
         <Header
           showMenu
           menuId={CALENDAR_WEEK_MENU_ID}
           leftLabel={dateText}
         />
-        <IonContent fullscreen={true}>
-          <div ref={calendarRef}>
-            <CalendarSwipeGesture parentRef={calendarRef} />
-            <Calendar
-              defaultDate={selectedDate}
-              date={selectedDate}
-              defaultView={Views.WEEK}
-              events={mappedEvents}
-              localizer={localizer}
-              toolbar={false}
-              views={{
-                week: true
-              }}
-              timeslots={2}
-              components={{
-                eventWrapper: (props) => <EventCard {...props} />,
-                header: (props) => <HeaderCalendar {...props} />,
-              }}
-              onNavigate={() => { }}
-            />
-          </div>
+        <IonContent {...handlers}>
+          <Calendar
+            defaultDate={selectedDate}
+            date={selectedDate}
+            defaultView={Views.WEEK}
+            events={mappedEvents}
+            localizer={localizer}
+            toolbar={false}
+            views={{
+              week: true
+            }}
+            timeslots={2}
+            components={{
+              eventWrapper: (props) => <EventCard {...props} />,
+              header: (props) => <HeaderCalendar {...props} />,
+            }}
+            onNavigate={() => { }}
+          />
         </IonContent>
       </IonPage>
     </>
