@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
+  createGesture,
   IonIcon,
   IonLabel,
   IonRouterOutlet,
@@ -35,9 +36,9 @@ import dayjs from "dayjs";
 import AppointmentRequests from "../../pages/AppointmentRequests/AppointmentRequests";
 import AppointmentCancel from "../../pages/CancelAppointment/AppointmentCancel";
 import CalendarDay from "../../pages/CalendarDay/CalendarDay";
+import CalendarWeek from "../../pages/CalendarWeek/CalendarWeek";
 
 import "./Tabs.scss";
-import CalendarWeek from "../../pages/CalendarWeek/CalendarWeek";
 
 const Tabs: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();

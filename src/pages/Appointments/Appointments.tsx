@@ -15,7 +15,6 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
-import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
@@ -27,19 +26,22 @@ import { getEventsAction } from "../../state/schedulingSlice";
 import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
 import { APPOINTMENTS_MENU_ID } from "../../shared/constants/menu";
+import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./Appointments.scss";
-import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
 
 const CSSprefix = 'appointments';
 const today = dayjs().format('YYYY-MM-DD');
 const sevenDaysFromToday = dayjs().add(7, 'days').format('YYYY-MM-DD');
 
 const Appointments: React.FC = (): React.ReactElement => {
+  const pageRef = useRef<any>();
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
-  const appointmentsRef = useRef();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const sortedEvents = useMemo(() => [...events?.events || []].sort(
@@ -100,11 +102,17 @@ const Appointments: React.FC = (): React.ReactElement => {
     }
   }
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: pageRef,
+    onSwipedLeft: async () => closeMenuHandler(APPOINTMENTS_MENU_ID),
+    onSwipedRight: async () => openMenuHandler(APPOINTMENTS_MENU_ID),
+  });
+
   return (
     <>
       <Menu menuId={APPOINTMENTS_MENU_ID} contentId="appointments-content" />
-      <IonPage ref={appointmentsRef} className={CSSprefix} id="appointments-content">
-        <SwipeGesture parentRef={appointmentsRef} menuId={APPOINTMENTS_MENU_ID} />
+      <IonPage className={CSSprefix} id="appointments-content" {...handlers} ref={refPassthrough}>
+        <SwipeHandler parentRef={pageRef} />
         <Header
           showMenu
           menuId={APPOINTMENTS_MENU_ID}

@@ -8,7 +8,6 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
-import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import { CALENDAR_DAY_MENU_ID } from "../../shared/constants/menu";
 import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
@@ -20,6 +19,9 @@ import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import { setDate } from "../../state/calendarSlice";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./CalendarDay.scss";
 
@@ -28,8 +30,8 @@ const localizer = dayjsLocalizer(dayjs);
 const CSSprefix = 'calendar-day';
 
 const CalendarDay: React.FC = (): React.ReactElement => {
+  const pageRef = useRef();
   const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
-  const calendarDayRef = useRef();
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs(selectedDate).date()).map((event) => ({
     id: event?.id,
     title: JSON.stringify({
@@ -92,11 +94,17 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     getAppointmentsHandler();
   }, []);
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: pageRef,
+    onSwipedLeft: async () => closeMenuHandler(CALENDAR_DAY_MENU_ID),
+    onSwipedRight: async () => openMenuHandler(CALENDAR_DAY_MENU_ID),
+  });
+
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />
-      <IonPage ref={calendarDayRef} className={CSSprefix} id="calendar-day-content">
-        <SwipeGesture parentRef={calendarDayRef} menuId={CALENDAR_DAY_MENU_ID} />
+      <IonPage className={CSSprefix} id="calendar-day-content" {...handlers} ref={refPassthrough}>
+        <SwipeHandler parentRef={pageRef} />
         <Header
           showMenu
           menuId={CALENDAR_DAY_MENU_ID}

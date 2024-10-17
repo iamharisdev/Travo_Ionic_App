@@ -16,8 +16,9 @@ import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
-import { useSwipeable } from "react-swipeable";
 import { setNextWeek, setPrevWeek } from "../../state/calendarSlice";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./CalendarWeek.scss";
 
@@ -67,16 +68,10 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     }
   }
 
-  const handlers = useSwipeable({
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: calendarWeekRef,
     onSwipedLeft: () => dispatch(setNextWeek()),
     onSwipedRight: () => dispatch(setPrevWeek()),
-    delta: 10,
-    preventScrollOnSwipe: false,
-    trackTouch: true,
-    trackMouse: false,
-    rotationAngle: 0,
-    swipeDuration: Infinity,
-    touchEventOptions: { passive: true },
   });
 
   useEffect(() => {
@@ -93,12 +88,13 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     <>
       <Menu menuId={CALENDAR_WEEK_MENU_ID} contentId="calendar-week-content" />
       <IonPage ref={calendarWeekRef} className={CSSprefix} id="calendar-week-content">
+        <SwipeHandler parentRef={calendarWeekRef} />
         <Header
           showMenu
           menuId={CALENDAR_WEEK_MENU_ID}
           leftLabel={dateText}
         />
-        <IonContent {...handlers}>
+        <IonContent {...handlers} ref={refPassthrough}>
           <Calendar
             defaultDate={selectedDate}
             date={selectedDate}
