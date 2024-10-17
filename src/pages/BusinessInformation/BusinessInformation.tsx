@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import {
   IonButton,
   IonContent,
@@ -22,14 +22,19 @@ import { businessInformationSchema } from "./validation/businessInformation.sche
 import { setLoading } from "../../state/loadingSlice";
 import usePresentToast from "../../hooks/usePresentToast";
 import { updateBusinessInformationAction } from "../../state/practiceSlice";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { useHistory } from "react-router";
 
 import "./BusinessInformation.scss";
 
 const CSSprefix = 'business-information';
 
 const BusinessInformation: React.FC = (): React.ReactElement => {
+  const businessInformationRef = useRef();
   const { practice } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
+  const history = useHistory();
   const [presentToast] = usePresentToast();
   const initialValues = useMemo(() => ({
     // Booking page personalized url
@@ -86,8 +91,14 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
     });
   };
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: businessInformationRef,
+    onSwipedRight: () => history.goBack(),
+  });
+
   return (
-    <IonPage className={CSSprefix}>
+    <IonPage className={CSSprefix} {...handlers} ref={refPassthrough}>
+      <SwipeHandler parentRef={businessInformationRef} />
       <Header showBack showMenu={false} />
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">

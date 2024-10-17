@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import {
   IonButton,
   IonContent,
@@ -13,12 +13,15 @@ import { BRANDING, BUSINESS_INFORMATION, PROFILE_INFORMATION } from "../../share
 import { useHistory } from "react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./MyProfile.scss";
 
 const CSSprefix = 'my-profile';
 
 const MyProfile: React.FC = (): React.ReactElement => {
+  const myProfileRef = useRef();
   const history = useHistory();
   const { provider } = useSelector((state: RootState) => state);
   const isAdmin = useMemo(() => {
@@ -29,8 +32,14 @@ const MyProfile: React.FC = (): React.ReactElement => {
     return false;
   }, [provider.providerPractices]);
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: myProfileRef,
+    onSwipedRight: () => history.goBack(),
+  });
+
   return (
-    <IonPage className={CSSprefix}>
+    <IonPage className={CSSprefix} {...handlers} ref={refPassthrough}>
+      <SwipeHandler parentRef={myProfileRef} />
       <Header showBack showMenu={false} />
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">

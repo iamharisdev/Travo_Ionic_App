@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   ActionSheetButton,
   IonActionSheet,
@@ -28,14 +28,19 @@ import { updatePracticeAction } from "../../state/providerSlice";
 import { practiceUpdateSchema } from "./validation/profileInformation.schema";
 import { uploadProfilePicture } from "../../api/services/provider";
 import useFiles, { FileResponse } from "../../hooks/useFiles";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { useHistory } from "react-router";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./ProfileInformation.scss";
 
 const CSSprefix = 'profile-information';
 
 const ProfileInformation: React.FC = (): React.ReactElement => {
+  const profileInformationRef = useRef();
   const { provider, practice: { phoneCodes } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
+  const history = useHistory();
   const [presentToast] = usePresentToast();
   const { takePhoto, pickPhoto } = useFiles();
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
@@ -152,8 +157,14 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
     return actions;
   }, [changePhotoHandler]);
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: profileInformationRef,
+    onSwipedRight: () => history.goBack(),
+  });
+
   return (
-    <IonPage className={CSSprefix}>
+    <IonPage className={CSSprefix} {...handlers} ref={refPassthrough}>
+      <SwipeHandler parentRef={profileInformationRef} />
       <Header showBack showMenu={false} />
       <IonContent className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">

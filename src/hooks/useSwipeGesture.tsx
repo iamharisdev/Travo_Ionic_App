@@ -3,8 +3,8 @@ import { SwipeableHandlers, useSwipeable } from 'react-swipeable';
 
 interface UseSwipeGestureProps {
   parentRef: any;
-  onSwipedLeft: () => void;
-  onSwipedRight: () => void;
+  onSwipedLeft?: () => void;
+  onSwipedRight?: () => void;
 }
 
 const UseSwipeGesture = ({ parentRef, onSwipedLeft, onSwipedRight }: UseSwipeGestureProps): { handlers: SwipeableHandlers, refPassthrough: (el: any) => void } => {

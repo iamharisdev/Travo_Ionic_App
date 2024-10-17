@@ -4,17 +4,18 @@ import {
   IonContent,
   IonIcon,
   IonItem,
-  IonLabel,
   IonPage,
   IonText,
 } from "@ionic/react";
-import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import Header from "../../components/Header/Header";
 import { caretForwardOutline } from "ionicons/icons";
 import { MY_PROFILE, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 import Menu from "../../components/Menu/Menu";
 import { PROFILE_MENU_ID } from "../../shared/constants/menu";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
 
 import "./Profile.scss";
 
@@ -24,11 +25,17 @@ const Profile: React.FC = (): React.ReactElement => {
   const profileRef = useRef();
   const history = useHistory();
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: profileRef,
+    onSwipedLeft: async () => closeMenuHandler(PROFILE_MENU_ID),
+    onSwipedRight: async () => openMenuHandler(PROFILE_MENU_ID),
+  });
+
   return (
     <>
       <Menu menuId={PROFILE_MENU_ID} contentId="profile-content" />
-      <IonPage ref={profileRef} className={CSSprefix} id="profile-content">
-        <SwipeGesture parentRef={profileRef} menuId={PROFILE_MENU_ID} />
+      <IonPage className={CSSprefix} id="profile-content" {...handlers} ref={refPassthrough}>
+        <SwipeHandler parentRef={profileRef} />
         <Header showMenu menuId={PROFILE_MENU_ID} />
         <IonContent fullscreen={true} className={CSSprefix}>
           <IonItem className="ion-margin-vertical" lines="none">

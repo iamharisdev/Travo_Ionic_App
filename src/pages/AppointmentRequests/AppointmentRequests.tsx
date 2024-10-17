@@ -12,7 +12,6 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
-import SwipeGesture from "../../components/SwipeGesture/SwipeGesture";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import dayjs from "dayjs";
@@ -23,12 +22,15 @@ import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
 import { APPOINTMENT_REQUESTS_MENU_ID } from "../../shared/constants/menu";
 import AppointmentRequestCard from "../../components/AppointmentRequestCard/AppointmentRequestCard";
-
-import "./AppointmentRequests.scss";
 import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import { useHistory } from "react-router";
 import { APPOINTMENT_CANCEL } from "../../shared/routes/routes";
 import usePresentToast from "../../hooks/usePresentToast";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+
+import "./AppointmentRequests.scss";
 
 const CSSprefix = 'appointment-requests';
 const today = dayjs().format('YYYY-MM-DD');
@@ -166,11 +168,21 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     history.push(APPOINTMENT_CANCEL, { appointmentId, type: AppointmentDetailTypeEnum.ACCEPT });
   }
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: appointmentRequestsRef,
+    onSwipedLeft: async () => closeMenuHandler(APPOINTMENT_REQUESTS_MENU_ID),
+    onSwipedRight: async () => openMenuHandler(APPOINTMENT_REQUESTS_MENU_ID),
+  });
+
   return (
     <>
       <Menu menuId={APPOINTMENT_REQUESTS_MENU_ID} contentId="appointment-requests-content" />
-      <IonPage ref={appointmentRequestsRef} className={CSSprefix} id="appointment-requests-content">
-        <SwipeGesture parentRef={appointmentRequestsRef} menuId={APPOINTMENT_REQUESTS_MENU_ID} />
+      <IonPage
+        {...handlers}
+        ref={refPassthrough}
+        className={CSSprefix} id="appointment-requests-content"
+      >
+        <SwipeHandler parentRef={appointmentRequestsRef} />
         <Header
           showMenu
           menuId={APPOINTMENT_REQUESTS_MENU_ID}
