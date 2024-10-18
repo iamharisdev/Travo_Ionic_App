@@ -16,7 +16,7 @@ import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
-import { setNextWeek, setPrevWeek } from "../../state/calendarSlice";
+import { setNextWeek, setPrevWeek, setDates } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
@@ -81,6 +81,9 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   }, [selectedDates, state.success]);
 
   useIonViewWillEnter(() => {
+    const start = dayjs().startOf('week').format('YYYY-MM-DD');
+    const end = dayjs().endOf('week').format('YYYY-MM-DD');
+    dispatch(setDates({ selectedDates: [start, end] }));
     getAppointmentsHandler();
   }, []);
 

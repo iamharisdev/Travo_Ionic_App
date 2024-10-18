@@ -8,7 +8,6 @@ interface UseSwipeGestureProps {
 }
 
 const UseSwipeGesture = ({ parentRef, onSwipedLeft, onSwipedRight }: UseSwipeGestureProps): { handlers: SwipeableHandlers, refPassthrough: (el: any) => void } => {
-  console.log('hook: ', parentRef);
   const handlers = useSwipeable({
     onSwipedLeft,
     onSwipedRight,

@@ -91,6 +91,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   }, [selectedDate]);
 
   useIonViewWillEnter(() => {
+    dispatch(setDate(dayjs().format('YYYY-MM-DD')));
     getAppointmentsHandler();
   }, []);
 

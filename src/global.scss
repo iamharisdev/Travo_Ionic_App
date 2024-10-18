@@ -131,10 +131,6 @@ ion-datetime::part(calendar-day today) {
   background-color: transparent;
 }
 
-.rbc-row-content {
-  background-color: var(--ion-trova-page-background) !important;
-}
-
 .rbc-current-time-indicator {
   background-color: var(--ion-trova-medium-gray) !important;
 }
@@ -156,6 +152,16 @@ ion-datetime::part(calendar-day today) {
 
 .rbc-today {
   background-color: var(--ion-trova-white) !important;
+}
+
+.rbc-month-view {
+  .rbc-month-row {
+    .rbc-row-bg {
+      .rbc-day-bg {
+        background-color: var(--ion-trova-white) !important;
+      }
+    }
+  }
 }
 
 body {

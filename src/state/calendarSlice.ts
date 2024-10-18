@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
 import dayjs from 'dayjs';
-import { nextWeek, prevWeek } from '../shared/utils/dates.util';
+import { nextMonth, nextWeek, prevMonth, prevWeek } from '../shared/utils/dates.util';
 
 interface CalendarState {
   selectedDate: string;
@@ -41,16 +41,31 @@ const calendarSlice = createSlice({
       state.selectedDate = newDate.toISOString();
       state.selectedDates = [start, end];
     },
-    setDate: (state, action: PayloadAction<string>) => {
-      const start = dayjs(action.payload).startOf('week').format('YYYY-MM-DD');
-      const end = dayjs(action.payload).endOf('week').format('YYYY-MM-DD');
+    setNextMonth: (state) => {
+      const newDate = nextMonth(state.selectedDate);
+      const start = dayjs(newDate).startOf('month').format('YYYY-MM-DD');
+      const end = dayjs(newDate).endOf('month').format('YYYY-MM-DD');
 
-      state.selectedDate = action.payload;
+      state.selectedDate = newDate.toISOString();
       state.selectedDates = [start, end];
     },
-    setSelectedDates: (state, action: PayloadAction<{ selectedDates: Array<string> }>) => {
+    setPrevMonth: (state) => {
+      const newDate = prevMonth(state.selectedDate);
+      const start = dayjs(newDate).startOf('month').format('YYYY-MM-DD');
+      const end = dayjs(newDate).endOf('month').format('YYYY-MM-DD');
+
+      state.selectedDate = newDate.toISOString();
+      state.selectedDates = [start, end];
+    },
+    setDate: (state, action: PayloadAction<string>) => {
+      state.selectedDate = action.payload;
+    },
+    setDates: (state, action: PayloadAction<{ selectedDates: Array<string> }>) => {
       const { selectedDates } = action.payload;
-      state.selectedDates = selectedDates;
+      const [start, end] = selectedDates;
+
+      state.selectedDate = start;
+      state.selectedDates = [start, end];
     }
   },
   extraReducers: (builder) => {
@@ -58,6 +73,13 @@ const calendarSlice = createSlice({
   }
 });
 
-export const { setNextWeek, setPrevWeek, setDate } = calendarSlice.actions
+export const {
+  setNextWeek,
+  setPrevWeek,
+  setDate,
+  setDates,
+  setNextMonth,
+  setPrevMonth,
+} = calendarSlice.actions
 
 export default calendarSlice.reducer;

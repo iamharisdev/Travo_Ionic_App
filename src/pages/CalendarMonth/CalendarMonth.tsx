@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonPage,
+  IonPopover,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
@@ -16,9 +17,10 @@ import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
-import { setNextWeek, setPrevWeek } from "../../state/calendarSlice";
+import { setNextMonth, setPrevMonth, setDates } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+// import DatePicker from "../../components/DatePicker/DatePicker";
 
 import "./CalendarMonth.scss";
 
@@ -27,9 +29,10 @@ const localizer = dayjsLocalizer(dayjs);
 const CSSprefix = 'calendar-month';
 
 const CalendarMonth: React.FC = (): React.ReactElement => {
-  // TODO: work on Calendar month view
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
+  // const datePickerRef = useRef<HTMLIonPopoverElement>(null);
+  // const [datePickerOpen, setDatePickerOpen] = useState(false);
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
     dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
     dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
@@ -45,6 +48,13 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   })), [events.events]);
   const dispatch = useDispatch<AppDispatch>();
   const dateText = useMemo(() => months[dayjs(selectedDate).month()], [selectedDate]);
+
+  // const openDatePickerHandler = useCallback((e: any) => {
+  //   if (datePickerRef.current) {
+  //     datePickerRef.current!.event = e;
+  //   }
+  //   setDatePickerOpen(true);
+  // }, [datePickerRef.current]);
 
   const getAppointmentsHandler = async () => {
     try {
@@ -71,8 +81,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: calendarMonthRef,
-    onSwipedLeft: () => dispatch(setNextWeek()),
-    onSwipedRight: () => dispatch(setPrevWeek()),
+    onSwipedLeft: () => dispatch(setNextMonth()),
+    onSwipedRight: () => dispatch(setPrevMonth()),
   });
 
   useEffect(() => {
@@ -82,6 +92,9 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   }, [selectedDates, state.success]);
 
   useIonViewWillEnter(() => {
+    const start = dayjs().startOf('month').format('YYYY-MM-DD');
+    const end = dayjs().endOf('month').format('YYYY-MM-DD');
+    dispatch(setDates({ selectedDates: [start, end] }));
     getAppointmentsHandler();
   }, []);
 
@@ -99,21 +112,38 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           <Calendar
             defaultDate={selectedDate}
             date={selectedDate}
-            defaultView={Views.WEEK}
+            defaultView={Views.MONTH}
             events={mappedEvents}
             localizer={localizer}
             toolbar={false}
             views={{
-              week: true
+              month: true
             }}
             timeslots={2}
             components={{
               eventWrapper: (props) => <EventCard {...props} />,
-              header: (props) => <HeaderCalendar {...props} />,
+              header: (props) => <HeaderCalendar {...props} type="month" />,
             }}
             onNavigate={() => { }}
           />
         </IonContent>
+        {/* // TODO: check if we neet date picker for this month view */}
+        {/* <IonPopover
+          ref={datePickerRef}
+          className={`${CSSprefix}-date-picker-popover`}
+          isOpen={datePickerOpen}
+          size="auto"
+          onDidDismiss={() => setDatePickerOpen(false)}
+        >
+          <IonContent fullscreen={true}>
+            <DatePicker multiple dates={selectedDates} onSelectedDates={(dates) => {
+              console.log('selectedDAtes: ', dates);
+              if (dates.length === 2) {
+                dispatch(setDates({ selectedDates: dates }))
+              }
+            }} onTriggerAction={getAppointmentsHandler} />
+          </IonContent>
+        </IonPopover> */}
       </IonPage>
     </>
   );
