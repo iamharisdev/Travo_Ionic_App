@@ -4,20 +4,22 @@ import { searchOutline } from 'ionicons/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../state/store';
 import { setLoading } from '../../../../state/loadingSlice';
-import { Patient, searchPatientAction } from '../../../../state/patientSlice';
+import { searchPatientAction } from '../../../../state/patientSlice';
+import { Services } from '../../../../shared/types/appointment.type';
 
-import './SelectClient.scss';
+import './SelectService.scss';
 
-const CSSPrefix = 'select-client';
+const CSSPrefix = 'select-service';
 
-interface SelectedClientProps {
-  setSelectedClient: (client: Patient) => void;
+interface SelectServiceProps {
+  setSelectedService: (service: Services) => void;
 }
 
-const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
+const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => {
   const [clientToSearch, setClientToSearch] = useState<string | null | undefined>('');
   const dispatch = useDispatch<AppDispatch>();
-  const { provider, patient } = useSelector((state: RootState) => state);
+  const { provider, scheduling } = useSelector((state: RootState) => state);
+  console.log('scheduling: ', scheduling);
 
   const getSearchClient = async () => {
     try {
@@ -39,6 +41,29 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
     }
   }
 
+  const getDurationHandler = (duration: number) => {
+    let parsedDuration = '';
+
+    if (duration) {
+      const minutes = duration;
+      const hours = Math.floor(minutes / 60);
+
+      if (minutes > 60) {
+        parsedDuration = `${hours} hours`;
+      }
+
+      if (minutes === 60) {
+        parsedDuration = `${hours} hour`;
+      }
+
+      if (minutes < 60) {
+        parsedDuration = `${minutes} min`;
+      }
+    }
+
+    return parsedDuration;
+  };
+
   useEffect(() => {
     if (clientToSearch && clientToSearch !== '' && clientToSearch.length > 2) {
       setTimeout(() => {
@@ -56,7 +81,7 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
       </IonItem>
       <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
         <IonText>
-          Select client
+          Select service
         </IonText>
       </IonItem>
       <IonItem lines="none" className="ion-margin-top">
@@ -64,7 +89,7 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
           className={`${CSSPrefix}-search-input`}
           class="custom"
           type="text"
-          placeholder="Search client"
+          placeholder="Search service"
           value={clientToSearch}
           onIonInput={(e) => setClientToSearch(e.detail.value)}
         >
@@ -78,15 +103,15 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
       </IonItem>
       <div className={`${CSSPrefix}-divider`} />
       <IonList>
-        {patient.patients.map((patient: Patient) => (
-          <IonItem key={patient.id} lines="none" onClick={() => setSelectedClient(patient)}>
+        {scheduling.services.patientServiceRequestDtos.map((service: Services) => (
+          <IonItem key={service.id} lines="none" onClick={() => setSelectedService(service)}>
             <IonAvatar slot="start">
               <img alt="avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
             </IonAvatar>
-            <IonLabel className={`${CSSPrefix}-item-name`}>
-              {`${patient.firstName} ${patient.lastName}`}
-              <p className={`${CSSPrefix}-item-email`}>
-                {patient.email}
+            <IonLabel className={`${CSSPrefix}-item-title`}>
+              {service.name}
+              <p className={`${CSSPrefix}-item-description`}>
+                {`${service.location}, ${getDurationHandler(service.duration)}`}
               </p>
             </IonLabel>
           </IonItem>
@@ -96,4 +121,4 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
   );
 }
 
-export default SelectClient;
+export default SelectService;
