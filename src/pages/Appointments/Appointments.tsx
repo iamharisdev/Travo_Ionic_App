@@ -2,7 +2,10 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   IonCol,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonGrid,
+  IonIcon,
   IonItem,
   IonList,
   IonPage,
@@ -30,6 +33,8 @@ import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+import { addOutline } from "ionicons/icons";
+import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 
 import "./Appointments.scss";
 
@@ -39,6 +44,7 @@ const sevenDaysFromToday = dayjs().add(7, 'days').format('YYYY-MM-DD');
 
 const Appointments: React.FC = (): React.ReactElement => {
   const pageRef = useRef<any>();
+  const createAppointmentRef = useRef<HTMLIonModalElement>(null);
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
@@ -145,6 +151,11 @@ const Appointments: React.FC = (): React.ReactElement => {
               </IonGrid>
             ))}
           </IonList>
+          <IonFab slot="fixed" vertical="bottom" horizontal="end">
+            <IonFabButton id="create-appointment">
+              <IonIcon icon={addOutline}></IonIcon>
+            </IonFabButton>
+          </IonFab>
         </IonContent>
         <IonPopover
           ref={datePickerRef}
@@ -157,6 +168,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             <DatePicker multiple={true} dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
           </IonContent>
         </IonPopover>
+        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment" />
       </IonPage>
     </>
   );
