@@ -5,6 +5,7 @@ import SelectClient from './Steps/SelectClient/SelectClient';
 import { Patient } from '../../state/patientSlice';
 import SelectService from './Steps/SelectService/SelectService';
 import { Services } from '../../shared/types/appointment.type';
+import SelectDateTime from './Steps/SelectDateTime/SelectDateTime';
 
 const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger }) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
@@ -22,6 +23,8 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
           setSelectedService(service);
           setStep(2);
         }} />;
+      case 2:
+        return <SelectDateTime />;
 
       default:
         <SelectClient setSelectedClient={setSelectedClient} />;

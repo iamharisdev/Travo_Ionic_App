@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { IonAvatar, IonIcon, IonInput, IonItem, IonLabel, IonList, IonText } from '@ionic/react';
 import { searchOutline } from 'ionicons/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../state/store';
-import { setLoading } from '../../../../state/loadingSlice';
-import { searchPatientAction } from '../../../../state/patientSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../state/store';
 import { Services } from '../../../../shared/types/appointment.type';
 
 import './SelectService.scss';
@@ -16,30 +14,8 @@ interface SelectServiceProps {
 }
 
 const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => {
-  const [clientToSearch, setClientToSearch] = useState<string | null | undefined>('');
-  const dispatch = useDispatch<AppDispatch>();
-  const { provider, scheduling } = useSelector((state: RootState) => state);
-  console.log('scheduling: ', scheduling);
-
-  const getSearchClient = async () => {
-    try {
-      dispatch(setLoading({ loading: true, message: 'Searching client' }));
-
-      const [providerPractice] = provider.providerPractices;
-      if (providerPractice && typeof clientToSearch === 'string') {
-        await dispatch(searchPatientAction({
-          practiceId: providerPractice.practiceId,
-          patient: clientToSearch
-        }));
-      }
-
-      dispatch(setLoading({ loading: false, message: '' }));
-    } catch (error) {
-      dispatch(setLoading({ loading: false, message: '' }));
-      setClientToSearch('');
-      console.error('error at search client: ', error);
-    }
-  }
+  const [serviceToSearch, setClientToSearch] = useState<string | null | undefined>('');
+  const { scheduling } = useSelector((state: RootState) => state);
 
   const getDurationHandler = (duration: number) => {
     let parsedDuration = '';
@@ -64,13 +40,13 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
     return parsedDuration;
   };
 
-  useEffect(() => {
-    if (clientToSearch && clientToSearch !== '' && clientToSearch.length > 2) {
-      setTimeout(() => {
-        getSearchClient();
-      }, 1000);
+  const services = useMemo(() => {
+    if (serviceToSearch) {
+      return scheduling.services.patientServiceRequestDtos.filter(({ name }) => name.toLocaleLowerCase().includes(serviceToSearch.toLocaleLowerCase()));
     }
-  }, [clientToSearch]);
+
+    return scheduling.services.patientServiceRequestDtos;
+  }, [serviceToSearch]);
 
   return (
     <div className={CSSPrefix}>
@@ -90,7 +66,7 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
           class="custom"
           type="text"
           placeholder="Search service"
-          value={clientToSearch}
+          value={serviceToSearch}
           onIonInput={(e) => setClientToSearch(e.detail.value)}
         >
           <IonIcon
@@ -103,7 +79,7 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
       </IonItem>
       <div className={`${CSSPrefix}-divider`} />
       <IonList>
-        {scheduling.services.patientServiceRequestDtos.map((service: Services) => (
+        {services.map((service: Services) => (
           <IonItem key={service.id} lines="none" onClick={() => setSelectedService(service)}>
             <IonAvatar slot="start">
               <img alt="avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
