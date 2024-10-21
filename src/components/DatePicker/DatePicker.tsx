@@ -8,8 +8,9 @@ import './DatePicker.scss';
 
 const CSSPrefix = 'date-picker';
 
-const DatePicker: React.FC<DatePickerProps> = ({ dates, onSelectedDates, onTriggerAction }) => {
+const DatePicker: React.FC<DatePickerProps> = ({ date, dates, multiple = false, onSelectedDates, onSelectedDate, onTriggerAction }) => {
   const [selectedDates, setSelectedDates] = useState<string[] | undefined>();
+  const [selectedDate, setSelectedDate] = useState<string | undefined>();
 
   const datesBetween = useMemo(() => {
     if (selectedDates?.length === 2) {
@@ -42,51 +43,86 @@ const DatePicker: React.FC<DatePickerProps> = ({ dates, onSelectedDates, onTrigg
 
   const selectDatesHandler = (dates: string[] | undefined) => {
     // Logic to only allow to dates as range
-    const newDates = (selectedDates && [...selectedDates] || []);
-    if (newDates.length <= 1 && dates && dates.length > 0) {
-      const upcomingDate = [...dates].pop();
-      if (upcomingDate) newDates.push(upcomingDate);
-      setSelectedDates(newDates);
-      onSelectedDates(newDates);
-      if (newDates.length === 2) {
-        onTriggerAction(newDates);
+    if (onSelectedDates) {
+      const newDates = (selectedDates && [...selectedDates] || []);
+      if (newDates.length <= 1 && dates && dates.length > 0) {
+        const upcomingDate = [...dates].pop();
+        if (upcomingDate) newDates.push(upcomingDate);
+        setSelectedDates(newDates);
+        onSelectedDates(newDates);
+        if (newDates.length === 2) {
+          onTriggerAction(newDates);
+        }
+      } else {
+        if (dates && dates.length === 1 && newDates?.length === 2) {
+          setSelectedDates([]);
+          onSelectedDates([]);
+        }
+        if (dates && dates.length === 3) {
+          const upcomingDate = [...dates].pop();
+          setSelectedDates([upcomingDate || '']);
+          onSelectedDates([upcomingDate || '']);
+        }
       }
-    } else {
-      if (dates && dates.length === 1 && newDates?.length === 2) {
+
+      if (!dates) {
         setSelectedDates([]);
         onSelectedDates([]);
       }
-      if (dates && dates.length === 3) {
-        const upcomingDate = [...dates].pop();
-        setSelectedDates([upcomingDate || '']);
-        onSelectedDates([upcomingDate || '']);
-      }
     }
+  };
 
-    if (!dates) {
-      setSelectedDates([]);
-      onSelectedDates([]);
+  const selectDateHandler = (date: string | undefined) => {
+    if (onSelectedDate) {
+      if (date) {
+        setSelectedDate(date);
+        onSelectedDate(date);
+        onTriggerAction(date);
+      }
+
+      if (!date) {
+        setSelectedDate(undefined);
+        onSelectedDate(undefined);
+      }
     }
   };
 
   useEffect(() => {
-    if (dates.length > 0 && !_.isEqual(dates, selectedDates)) {
+    if (dates && dates.length > 0 && !_.isEqual(dates, selectedDates) && multiple) {
       setSelectedDates([dates[0]]);
       setTimeout(() => setSelectedDates(dates), 50);
     }
-  }, [dates]);
+
+    if (date && !_.isEqual(date, selectedDate) && !multiple) {
+      setSelectedDate(date);
+    }
+  }, [dates, date]);
 
   return (
-    <IonDatetime
-      className={CSSPrefix}
-      presentation="date"
-      preferWheel={false}
-      multiple={true}
-      min={minDate}
-      value={selectedDates}
-      highlightedDates={highlightedDates}
-      onIonChange={(e) => selectDatesHandler(e.detail.value as string[] | undefined)}
-    />
+    <>
+      {multiple && (
+        <IonDatetime
+          className={CSSPrefix}
+          presentation="date"
+          preferWheel={false}
+          multiple={true}
+          min={minDate}
+          value={selectedDates}
+          highlightedDates={highlightedDates}
+          onIonChange={(e) => selectDatesHandler(e.detail.value as string[] | undefined)}
+        />
+      )}
+      {!multiple && (
+        <IonDatetime
+          className={CSSPrefix}
+          presentation="date"
+          preferWheel={false}
+          multiple={false}
+          value={selectedDate}
+          onIonChange={(e) => selectDateHandler(e.detail.value as string | undefined)}
+        />
+      )}
+    </>
   );
 }
 

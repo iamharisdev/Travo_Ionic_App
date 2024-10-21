@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import {
   IonCard,
   IonCardContent,
@@ -15,12 +15,17 @@ import Header from "../../components/Header/Header";
 import { cardOutline } from "ionicons/icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { useHistory } from "react-router";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./SubscriptionDetails.scss";
 
 const CSSprefix = 'subscription-deatils';
 
 const SubscriptionDetails: React.FC = (): React.ReactElement => {
+  const subscriptionDetailsRef = useRef();
+  const history = useHistory();
   const { billing } = useSelector((state: RootState) => state);
   const productName = useMemo(() => billing.productDetails?.productName, [billing.productDetails]);
   const productDetail = useMemo(() => billing.productsDetails.find(({ name }) => name === productName), [productName, billing.productsDetails]);
@@ -28,8 +33,14 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
   // const cardBrand = useMemo(() => billing.paymentMethod?.cardBrand, [billing?.paymentMethod?.cardBrand]);
   // const last4 = useMemo(() => billing.paymentMethod?.last4, [billing.paymentMethod?.last4]);
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: subscriptionDetailsRef,
+    onSwipedRight: () => history.goBack(),
+  });
+
   return (
-    <IonPage className={CSSprefix}>
+    <IonPage className={CSSprefix} {...handlers} ref={refPassthrough}>
+      <SwipeHandler parentRef={subscriptionDetailsRef} />
       <Header showBack showMenu={false} />
       <IonContent fullscreen={true}>
         <IonItem className="ion-margin-vertical" lines="none">

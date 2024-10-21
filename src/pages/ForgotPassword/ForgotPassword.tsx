@@ -12,7 +12,8 @@ import React, { useMemo, useRef, useState } from 'react';
 import { SING_IN, VERIFY_EMAIL } from '../../shared/routes/routes';
 import TrovaLogo from '/assets/TrovaLogo.png';
 import { useHistory } from 'react-router';
-import SwipeGesture from '../../components/SwipeGesture/SwipeGesture';
+import UseSwipeGesture from '../../hooks/useSwipeGesture';
+import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
 
 import './ForgotPassword.scss';
 
@@ -28,9 +29,14 @@ const ForgotPassword: React.FC = (): React.ReactElement => {
     [email]
   );
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: forgotPasswordRef,
+    onSwipedRight: async () => history.push(SING_IN),
+  });
+
   return (
-    <IonPage ref={forgotPasswordRef}>
-      <SwipeGesture parentRef={forgotPasswordRef} />
+    <IonPage {...handlers} ref={refPassthrough}>
+      <SwipeHandler parentRef={forgotPasswordRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>

@@ -9,7 +9,9 @@ import {
 import React, { useRef } from 'react';
 import TrovaLogo from '/assets/TrovaLogo.png';
 import { SING_IN } from '../../shared/routes/routes';
-import SwipeGesture from '../../components/SwipeGesture/SwipeGesture';
+import UseSwipeGesture from '../../hooks/useSwipeGesture';
+import { useHistory } from 'react-router';
+import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
 
 import './PasswordSuccess.scss';
 
@@ -17,10 +19,16 @@ const CSSprefix = 'password-success';
 
 const PasswordSuccess: React.FC = (): React.ReactElement => {
   const passwordSuccessRef = useRef();
+  const history = useHistory();
+
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: passwordSuccessRef,
+    onSwipedRight: async () => history.push(SING_IN),
+  });
 
   return (
-    <IonPage ref={passwordSuccessRef}>
-      <SwipeGesture parentRef={passwordSuccessRef} />
+    <IonPage {...handlers} ref={refPassthrough}>
+      <SwipeHandler parentRef={passwordSuccessRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>

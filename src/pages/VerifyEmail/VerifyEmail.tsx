@@ -12,7 +12,8 @@ import React, { useMemo, useRef, useState } from 'react';
 import TrovaLogo from '/assets/TrovaLogo.png';
 import { SING_IN, RESET_PASSWORD } from '../../shared/routes/routes';
 import { useHistory } from 'react-router';
-import SwipeGesture from '../../components/SwipeGesture/SwipeGesture';
+import UseSwipeGesture from '../../hooks/useSwipeGesture';
+import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
 
 import './VerifyEmail.scss';
 
@@ -28,9 +29,14 @@ const VerifyEmail: React.FC = (): React.ReactElement => {
     [code]
   );
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: verifyEmailRef,
+    onSwipedRight: async () => history.push(SING_IN),
+  });
+
   return (
-    <IonPage ref={verifyEmailRef}>
-      <SwipeGesture parentRef={verifyEmailRef} />
+    <IonPage {...handlers} ref={refPassthrough}>
+      <SwipeHandler parentRef={verifyEmailRef} />
       <IonContent fullscreen>
         <div className={`${CSSprefix} ion-padding`}>
           <IonItem className='ion-no-padding' lines='none'>

@@ -29,6 +29,7 @@ const Header: React.FC<HeaderProps> = ({
   customBackRoute,
   showDatePicker,
   datePickerText,
+  leftLabel,
   editCB,
   cancelCB,
   datePickerCB,
@@ -99,6 +100,19 @@ const Header: React.FC<HeaderProps> = ({
                 {datePickerText}
               </IonText>
               <IonIcon className={`${CSSPrefix}-date-icon`} icon={caretDownOutline} size="small" />
+            </IonButton>
+          </IonButtons>
+        )}
+        {leftLabel && (
+          <IonButtons slot="end">
+            <IonButton
+              className="header-button"
+              color="dark"
+              onClick={datePickerCB}
+            >
+              <IonText className={`${CSSPrefix}-date-text`}>
+                {leftLabel}
+              </IonText>
             </IonButton>
           </IonButtons>
         )}

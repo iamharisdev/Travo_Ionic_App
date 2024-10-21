@@ -22,6 +22,10 @@ export const schedulingApiInstance = axios.create({
   baseURL: process.env.REACT_APP_SCHEDULING_API_URL,
 });
 
+export const patientApiInstance = axios.create({
+  baseURL: process.env.REACT_APP_PATIENT_API_URL,
+});
+
 providerApiInstance.interceptors.request.use(
   async config => {
     const token = await getStorageValue(STORAGE_TOKEN);

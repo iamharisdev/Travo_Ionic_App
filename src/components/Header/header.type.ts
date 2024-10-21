@@ -10,6 +10,7 @@ export interface HeaderProps {
   customBackRoute?: string;
   showDatePicker?: boolean;
   datePickerText?: string;
+  leftLabel?: string;
   editCB?: () => void;
   cancelCB?: () => void;
   datePickerCB?: (e: any) => void;

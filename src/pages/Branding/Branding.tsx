@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionSheetButton,
   IonActionSheet,
@@ -19,14 +19,19 @@ import useFiles, { FileResponse } from "../../hooks/useFiles";
 import { setLoading } from "../../state/loadingSlice";
 import { uploadPracticeLogo, updateBrandingInformation } from "../../api/services/practice";
 import { updateBrandingInformationAction } from "../../state/practiceSlice";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { useHistory } from "react-router";
+import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./Branding.scss";
 
 const CSSprefix = 'branding';
 
 const Branding: React.FC = (): React.ReactElement => {
+  const brandingRef = useRef();
   const { practice } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
+  const history = useHistory();
   const [presentToast] = usePresentToast();
   const { takePhoto, pickPhoto } = useFiles();
   const [openUploadImageActionSheet, setOpenUploadImageActionSheet] =
@@ -128,8 +133,14 @@ const Branding: React.FC = (): React.ReactElement => {
     }
   }, [practice.businessInformation?.logoUrl, practiceLogo.url]);
 
+  const { handlers, refPassthrough } = UseSwipeGesture({
+    parentRef: brandingRef,
+    onSwipedRight: () => history.goBack(),
+  });
+
   return (
-    <IonPage className={CSSprefix}>
+    <IonPage className={CSSprefix} {...handlers} ref={refPassthrough}>
+      <SwipeHandler parentRef={brandingRef} />
       <Header showBack showMenu={false} />
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">

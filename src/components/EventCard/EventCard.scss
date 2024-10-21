@@ -1,0 +1,33 @@
+.event-card {
+  &-event-wrapper-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-service {
+    color: var(--ion-trova-gray-text);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  &-patient-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    position: relative;
+    bottom: 2px;
+  }
+
+  &-patient {
+    color: var(--ion-trova-gray-text);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-left: 5px;
+  }
+}
