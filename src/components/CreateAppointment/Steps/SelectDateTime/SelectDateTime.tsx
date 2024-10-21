@@ -1,14 +1,17 @@
 import React from 'react';
 import { IonItem, IonText } from '@ionic/react';
 import Scheduling from '../../../Scheduling/Scheduling';
+import { AppointmentDateTime } from '../../CreateAppointment';
 
 import './SelectDateTime.scss';
 
 const CSSPrefix = 'select-date-time';
 
-interface SelectDateTimeProps { }
+interface SelectDateTimeProps {
+  setSelectedDateTime: (selectedDateTime: AppointmentDateTime) => void;
+}
 
-const SelectDateTime: React.FC<SelectDateTimeProps> = ({ }) => {
+const SelectDateTime: React.FC<SelectDateTimeProps> = ({ setSelectedDateTime }) => {
 
   return (
     <div className={CSSPrefix}>
@@ -22,7 +25,7 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({ }) => {
           Select date and time
         </IonText>
       </IonItem>
-      <Scheduling />
+      <Scheduling setSelectedDateTime={setSelectedDateTime} />
     </div>
   );
 }
