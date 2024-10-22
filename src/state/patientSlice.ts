@@ -37,35 +37,7 @@ export interface ProviderState {
 }
 
 const initialState: ProviderState = {
-  patients: [
-    {
-      id: "dc75eb8d-b31a-4e02-b17a-cddd63e68841",
-      firstName: "Jane",
-      lastName: "Doe",
-      email: "test@test.com",
-      mobileNumber: "5463826289",
-      dob: "2001-11-04",
-      gender: "female",
-      archived: false,
-      language: null,
-      countryName: "Australia",
-      countryCode: "AU",
-      mobileNumberPrefix: "+43",
-      icd10Code: null,
-      icd10Description: null,
-      externalPatientId: null,
-      patientNumber: "00003123",
-      addressLineOne: null,
-      addressLineTwo: null,
-      city: null,
-      state: null,
-      zipCode: null,
-      createdDate: "2024-09-18T20:36:12.674149300Z",
-      countrySpecificFields: null,
-      contacts: [],
-      customFields: []
-    }
-  ],
+  patients: [],
   state: {
     success: false,
   }

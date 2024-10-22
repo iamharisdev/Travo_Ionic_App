@@ -40,7 +40,7 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
   }
 
   useEffect(() => {
-    if (clientToSearch && clientToSearch !== '' && clientToSearch.length > 2) {
+    if (clientToSearch && clientToSearch !== '') {
       setTimeout(() => {
         getSearchClient();
       }, 1000);
