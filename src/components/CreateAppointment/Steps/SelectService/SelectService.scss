@@ -5,6 +5,10 @@
     --background: var(--ion-trova-page-background);
   }
 
+  ion-list {
+    background: var(--ion-trova-page-background);
+  }
+
   &-title {
     color: var(--ion-trova-gray-text);
     font-size: 28px;

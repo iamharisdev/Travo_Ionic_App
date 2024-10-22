@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { IonAvatar, IonIcon, IonInput, IonItem, IonLabel, IonList, IonText } from '@ionic/react';
+import { IonIcon, IonInput, IonItem, IonList, IonText } from '@ionic/react';
 import { searchOutline } from 'ionicons/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state/store';
 import { Services } from '../../../../shared/types/appointment.type';
+import ServiceCard from '../../../ServiceCard/ServiceCard';
 
 import './SelectService.scss';
 
@@ -16,29 +17,6 @@ interface SelectServiceProps {
 const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => {
   const [serviceToSearch, setClientToSearch] = useState<string | null | undefined>('');
   const { scheduling } = useSelector((state: RootState) => state);
-
-  const getDurationHandler = (duration: number) => {
-    let parsedDuration = '';
-
-    if (duration) {
-      const minutes = duration;
-      const hours = Math.floor(minutes / 60);
-
-      if (minutes > 60) {
-        parsedDuration = `${hours} hours`;
-      }
-
-      if (minutes === 60) {
-        parsedDuration = `${hours} hour`;
-      }
-
-      if (minutes < 60) {
-        parsedDuration = `${minutes} min`;
-      }
-    }
-
-    return parsedDuration;
-  };
 
   const services = useMemo(() => {
     if (serviceToSearch) {
@@ -78,19 +56,9 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
         </IonInput>
       </IonItem>
       <div className={`${CSSPrefix}-divider`} />
-      <IonList>
+      <IonList className={`${CSSPrefix}-list`}>
         {services.map((service: Services) => (
-          <IonItem key={service.id} lines="none" onClick={() => setSelectedService(service)}>
-            <IonAvatar slot="start">
-              <img alt="avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-            </IonAvatar>
-            <IonLabel className={`${CSSPrefix}-item-title`}>
-              {service.name}
-              <p className={`${CSSPrefix}-item-description`}>
-                {`${service.location}, ${getDurationHandler(service.duration)}`}
-              </p>
-            </IonLabel>
-          </IonItem>
+          <ServiceCard key={service.id} service={service} onClick={() => setSelectedService(service)} />
         ))}
       </IonList>
     </div>
