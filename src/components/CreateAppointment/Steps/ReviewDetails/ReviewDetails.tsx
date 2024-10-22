@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
-import { IonButton, IonIcon, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption, IonText } from '@ionic/react';
+import { IonButton, IonIcon, IonItem, IonLabel, IonText } from '@ionic/react';
 import { Patient } from '../../../../state/patientSlice';
 import { Services } from '../../../../shared/types/appointment.type';
-import { AppointmentDateTime, NavigateTo } from '../../CreateAppointment';
+import { AppointmentDateTime } from '../../CreateAppointment';
 import dayjs from 'dayjs';
-import { caretDownOutline, caretUpOutline, informationCircle } from 'ionicons/icons';
+import { informationCircle } from 'ionicons/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../state/store';
 import { setLoading } from '../../../../state/loadingSlice';
@@ -19,17 +19,13 @@ interface ReviewDetailsProps {
   selectedClient?: Patient;
   selectedService?: Services;
   selectedDateTime?: AppointmentDateTime;
-  setSelectedService: (selectedService: Services) => void;
-  setNavigateTo: (navigate: NavigateTo) => void;
-  closeHandler: () => void;
+  closeHandler: (close?: boolean) => void;
 }
 
 const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   selectedClient,
   selectedService,
   selectedDateTime,
-  setSelectedService,
-  setNavigateTo,
   closeHandler
 }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -46,12 +42,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     }
     return '';
   }, [selectedDateTime]);
-
-  const setSelectedServiceHandler = (serviceId: string) => {
-    const service = patientServiceRequestDtos.find(({ id }) => id === serviceId);
-
-    if (service) setSelectedService(service);
-  }
 
   const createAppointmentsHandler = async () => {
     try {
@@ -72,7 +62,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         let start = '';
         let end = '';
 
-        await dispatch(createAppointmentAction({
+        const response = await dispatch(createAppointmentAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
           payload: {
@@ -86,36 +76,54 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           }
         }));
 
-        dispatch(setLoading({ loading: false, message: '' }));
-        closeHandler();
-        presentToast(
-          'Appointment added',
-          1000,
-          'middle',
-          'success'
-        );
+        if (response.payload) {
+          dispatch(setLoading({ loading: false, message: '' }));
+          closeHandler(true);
+          presentToast(
+            'Appointment added',
+            1000,
+            'middle',
+            'success'
+          );
 
-        if (selectedDates.length === 2) {
-          start = selectedDates[0];
-          end = selectedDates[1];
-        } else {
-          start = selectedDate;
-          end = selectedDate;
+          if (selectedDates.length === 2) {
+            start = selectedDates[0];
+            end = selectedDates[1];
+          } else {
+            start = selectedDate;
+            end = selectedDate;
+          }
+
+          await dispatch(getEventsAction({
+            practiceId: providerPractice.practiceId,
+            providerId: providerPractice.providerId,
+            start: dayjs(start).startOf('day').toISOString(),
+            end: dayjs(end).endOf('day').toISOString(),
+            pageNumber: 0,
+            pageSize: 999,
+          }));
         }
 
-        await dispatch(getEventsAction({
-          practiceId: providerPractice.practiceId,
-          providerId: providerPractice.providerId,
-          start: dayjs(start).startOf('day').toISOString(),
-          end: dayjs(end).endOf('day').toISOString(),
-          pageNumber: 0,
-          pageSize: 999,
-        }));
-
+        if (!response.payload) {
+          dispatch(setLoading({ loading: false, message: '' }));
+          closeHandler(true);
+          presentToast(
+            'Error at create appointment',
+            1000,
+            'middle',
+            'danger'
+          );
+        }
       }
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
       closeHandler();
+      presentToast(
+        'Error at create appointment',
+        1000,
+        'top',
+        'danger'
+      );
       console.error('error at create appointment: ', error);
     }
   }
@@ -137,67 +145,32 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
-        <IonLabel position="stacked" class="custom-input">Client</IonLabel>
-        <IonInput
-          disabled
-          name="client"
-          class="custom"
-          type="text"
-          placeholder="client"
-          value={`${selectedClient?.firstName} ${selectedClient?.lastName}`}
-        // onIonInput={(e) => setClient(e.detail.value)}
-        />
+        <IonLabel position="stacked">Client</IonLabel>
+        <IonLabel position="stacked">{`${selectedClient?.firstName} ${selectedClient?.lastName}`}</IonLabel>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
-        <IonLabel position="stacked" class="custom-input">Service</IonLabel>
-        <IonSelect
-          name="service"
-          toggleIcon={caretDownOutline}
-          expandedIcon={caretUpOutline}
-          selectedText={selectedService?.name}
-          value={selectedService?.id}
-          onIonChange={(e) => setSelectedServiceHandler(e.detail.value)}
-        >
-          {patientServiceRequestDtos.map(({ id, name }) => (
-            <IonSelectOption key={id} value={id}>{name}</IonSelectOption>
-          ))}
-        </IonSelect>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
-        onClick={() => setNavigateTo({ step: 2, comesFromStep: 3 })}
-      >
-        <IonLabel position="stacked" class="custom-input">Date and time</IonLabel>
-        <IonButton
-          className="ion-no-padding"
-          fill="clear"
-          color="dark"
-        >
-          {dateTime}
-          <IonIcon className={`${CSSPrefix}-caret-icon`} icon={caretDownOutline} />
-        </IonButton>
+        <IonLabel position="stacked">Service</IonLabel>
+        <IonLabel position="stacked">{selectedService?.name}</IonLabel>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
-        <IonLabel position="stacked" class="custom-input">
+        <IonLabel position="stacked">Date and time</IonLabel>
+        <IonLabel position="stacked">{dateTime}</IonLabel>
+      </IonItem>
+      <IonItem
+        lines="none"
+        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+      >
+        <IonLabel position="stacked">
           Payment type
           <IonIcon className={`${CSSPrefix}-info-icon`} icon={informationCircle} />
         </IonLabel>
-        <IonInput
-          disabled
-          name="paymentType"
-          class="custom"
-          type="text"
-          placeholder="date time"
-          value="At session completion"
-        // onIonInput={(e) => setClient(e.detail.value)}
-        />
+        <IonLabel position="stacked">At session completion</IonLabel>
       </IonItem>
       <div className={`${CSSPrefix}-button-container ion-padding-horizontal`}>
         <IonButton

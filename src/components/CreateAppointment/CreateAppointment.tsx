@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CreateAppointmentProps } from './createAppointment.type';
 import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonToolbar } from '@ionic/react';
 import SelectClient from './Steps/SelectClient/SelectClient';
@@ -13,26 +13,28 @@ export interface AppointmentDateTime {
   endTime: string;
 }
 
-export interface NavigateTo {
-  step: number,
-  comesFromStep: number,
-}
-
 const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger }) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
   const [selectedService, setSelectedService] = useState<Services>();
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
   const [step, setStep] = useState<number>(0);
-  const [navigateTo, setNavigateTo] = useState<NavigateTo>({ step: -1, comesFromStep: -1 });
 
-  const closeHandler = () => {
-    modalRef.current?.dismiss();
-    setStep(0);
-    setNavigateTo({
-      step: -1,
-      comesFromStep: -1
-    });
-  };
+  const cancelOrBackText = useMemo(() => {
+    if (step === 1 || step === 2 || step === 3) return 'Back';
+
+    return 'Cancel';
+  }, [step]);
+
+  const closeHandler = useCallback((close?: boolean) => {
+    if ((step === 1 || step === 2 || step === 3) && !close) {
+      setStep(step - 1);
+    }
+
+    if (step === 0 || close) {
+      modalRef.current?.dismiss();
+      setStep(0);
+    }
+  }, [step]);
 
   const steps = useMemo(() => {
     switch (step) {
@@ -49,28 +51,20 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
       case 2:
         return <SelectDateTime setSelectedDateTime={(selectedDateTime) => {
           setSelectedDateTime({ ...selectedDateTime });
-          setStep(navigateTo.comesFromStep !== -1 ? navigateTo.comesFromStep : 3);
+          setStep(3);
         }} />;
       case 3:
         return <ReviewDetails
           selectedClient={selectedClient}
           selectedService={selectedService}
           selectedDateTime={selectedDateTime}
-          setSelectedService={setSelectedService}
-          setNavigateTo={setNavigateTo}
           closeHandler={closeHandler}
         />;
 
       default:
         <SelectClient setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, navigateTo]);
-
-  useEffect(() => {
-    if (navigateTo.step !== -1 && navigateTo.comesFromStep - 1) {
-      setStep(navigateTo.step)
-    }
-  }, [navigateTo]);
+  }, [step, selectedClient, selectedService, selectedDateTime]);
 
   return (
     <IonModal
@@ -82,9 +76,9 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
           <IonButtons slot="start">
             <IonButton
               color="primary"
-              onClick={closeHandler}
+              onClick={() => closeHandler()}
             >
-              Cancel
+              {cancelOrBackText}
             </IonButton>
           </IonButtons>
         </IonToolbar>

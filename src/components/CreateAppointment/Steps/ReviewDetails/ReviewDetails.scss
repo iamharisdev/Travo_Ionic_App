@@ -14,6 +14,15 @@
     --background: var(--ion-trova-page-background);
   }
 
+  ion-label {
+    width: auto;
+    color: var(--ion-trova-gray-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
   &-title {
     color: var(--ion-trova-gray-text);
     font-size: 28px;
@@ -35,14 +44,6 @@
     width: 18px;
     position: relative;
     margin-left: 3px;
-  }
-
-  &-caret-icon {
-    height: 17px;
-    width: 18px;
-    left: 3px;
-    position: relative;
-    color: var(--ion-trova-caret);
   }
 
   &-button-container {

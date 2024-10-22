@@ -23,13 +23,7 @@ const Scheduling: React.FC<SchedulingProps> = ({ setSelectedDateTime }): React.R
             connector?: any,
           ): Promise<void> => {
             event.preventDefault();
-            console.log('event', event);
-            console.log('connector', connector);
             const { start_time, end_time } = event.detail;
-            console.log('datetime', {
-              start_time,
-              end_time
-            });
             setSelectedDateTime({
               startTime: (start_time as Date).toISOString(),
               endTime: (end_time as Date).toISOString(),
