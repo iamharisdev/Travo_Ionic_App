@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import {
   IonContent,
+  IonFab,
+  IonFabButton,
+  IonIcon,
   IonPage,
   useIonViewWillEnter,
 } from "@ionic/react";
@@ -19,6 +22,8 @@ import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
 import { setNextWeek, setPrevWeek, setDates } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
+import { addOutline } from "ionicons/icons";
 
 import "./CalendarWeek.scss";
 
@@ -27,6 +32,7 @@ const localizer = dayjsLocalizer(dayjs);
 const CSSprefix = 'calendar-week';
 
 const CalendarWeek: React.FC = (): React.ReactElement => {
+  const createAppointmentRef = useRef<HTMLIonModalElement>(null);
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
@@ -115,7 +121,13 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
             }}
             onNavigate={() => { }}
           />
+          <IonFab slot="fixed" vertical="bottom" horizontal="end">
+            <IonFabButton id="create-appointment-from-calendar-week">
+              <IonIcon icon={addOutline} />
+            </IonFabButton>
+          </IonFab>
         </IonContent>
+        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-week" />
       </IonPage>
     </>
   );

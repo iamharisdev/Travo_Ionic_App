@@ -65,12 +65,6 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
         <SelectClient setSelectedClient={setSelectedClient} />;
     }
   }, [step, selectedClient, selectedService, selectedDateTime, navigateTo]);
-  console.log('step: ', step);
-  console.log('appointmentData: ', {
-    selectedClient,
-    selectedService,
-    selectedDateTime
-  });
 
   useEffect(() => {
     if (navigateTo.step !== -1 && navigateTo.comesFromStep - 1) {

@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
+  IonFab,
+  IonFabButton,
+  IonIcon,
   IonPage,
   IonPopover,
   IonText,
@@ -22,6 +25,8 @@ import { setDate } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
+import { addOutline } from "ionicons/icons";
 
 import "./CalendarDay.scss";
 
@@ -31,6 +36,7 @@ const CSSprefix = 'calendar-day';
 
 const CalendarDay: React.FC = (): React.ReactElement => {
   const pageRef = useRef();
+  const createAppointmentRef = useRef<HTMLIonModalElement>(null);
   const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs(selectedDate).date()).map((event) => ({
     id: event?.id,
@@ -140,6 +146,11 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             }}
             onNavigate={() => { }}
           />
+          <IonFab slot="fixed" vertical="bottom" horizontal="end">
+            <IonFabButton id="create-appointment-from-calendar-day">
+              <IonIcon icon={addOutline} />
+            </IonFabButton>
+          </IonFab>
         </IonContent>
         <IonPopover
           ref={datePickerRef}
@@ -152,6 +163,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             <DatePicker date={selectedDate} onSelectedDate={(date) => dispatch(setDate(date as string))} onTriggerAction={getAppointmentsHandler} />
           </IonContent>
         </IonPopover>
+        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-day" />
       </IonPage>
     </>
   );

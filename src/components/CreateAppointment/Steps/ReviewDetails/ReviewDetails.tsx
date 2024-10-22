@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../state/store';
 import { setLoading } from '../../../../state/loadingSlice';
 import { createAppointmentAction, getEventsAction } from '../../../../state/schedulingSlice';
+import usePresentToast from '../../../../hooks/usePresentToast';
 
 import './ReviewDetails.scss';
 
@@ -32,6 +33,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   closeHandler
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const [presentToast] = usePresentToast();
   const {
     provider,
     scheduling: { services: { patientServiceRequestDtos } },
@@ -84,6 +86,15 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           }
         }));
 
+        dispatch(setLoading({ loading: false, message: '' }));
+        closeHandler();
+        presentToast(
+          'Appointment added',
+          1000,
+          'middle',
+          'success'
+        );
+
         if (selectedDates.length === 2) {
           start = selectedDates[0];
           end = selectedDates[1];
@@ -102,9 +113,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         }));
 
       }
-
-      dispatch(setLoading({ loading: false, message: '' }));
-      closeHandler();
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
       closeHandler();

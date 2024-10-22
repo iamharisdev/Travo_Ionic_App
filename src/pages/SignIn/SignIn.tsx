@@ -11,7 +11,7 @@ import {
 } from "@ionic/react";
 import React, { useEffect, useMemo, useState } from "react";
 import TrovaLogo from "/assets/TrovaLogo.png";
-import { FORGOT_PASSWORD, SING_IN, DASHBOARD } from "../../shared/routes/routes";
+import { FORGOT_PASSWORD, SING_IN, CALENDAR_MONTH } from "../../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../state/store";
@@ -124,7 +124,7 @@ const Login: React.FC = (): React.ReactElement => {
 
                   if (response.meta.requestStatus === 'fulfilled' && (response.payload as AuthState).success) {
                     dispatch(setLoading({ loading: false }));
-                    history.push(DASHBOARD);
+                    history.push(CALENDAR_MONTH);
                   } else {
                     dispatch(setLoading({ loading: false }));
                     presentToast((response.payload as AuthState).message, 1000, 'top', 'danger');
