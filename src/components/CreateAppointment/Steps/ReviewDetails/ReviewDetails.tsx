@@ -2,9 +2,13 @@ import React, { useMemo } from 'react';
 import { IonButton, IonIcon, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption, IonText } from '@ionic/react';
 import { Patient } from '../../../../state/patientSlice';
 import { Services } from '../../../../shared/types/appointment.type';
-import { AppointmentDateTime } from '../../CreateAppointment';
+import { AppointmentDateTime, NavigateTo } from '../../CreateAppointment';
 import dayjs from 'dayjs';
 import { caretDownOutline, caretUpOutline, informationCircle } from 'ionicons/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../state/store';
+import { setLoading } from '../../../../state/loadingSlice';
+import { createAppointmentAction, getEventsAction } from '../../../../state/schedulingSlice';
 
 import './ReviewDetails.scss';
 
@@ -14,15 +18,100 @@ interface ReviewDetailsProps {
   selectedClient?: Patient;
   selectedService?: Services;
   selectedDateTime?: AppointmentDateTime;
+  setSelectedService: (selectedService: Services) => void;
+  setNavigateTo: (navigate: NavigateTo) => void;
+  closeHandler: () => void;
 }
 
-const ReviewDetails: React.FC<ReviewDetailsProps> = ({ selectedClient, selectedService, selectedDateTime }) => {
+const ReviewDetails: React.FC<ReviewDetailsProps> = ({
+  selectedClient,
+  selectedService,
+  selectedDateTime,
+  setSelectedService,
+  setNavigateTo,
+  closeHandler
+}) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    provider,
+    scheduling: { services: { patientServiceRequestDtos } },
+    calendar: { selectedDate, selectedDates }
+  } = useSelector((state: RootState) => state);
+
   const dateTime = useMemo(() => {
     if (selectedDateTime) {
       return dayjs(selectedDateTime.startTime).format('MMMM D, HH:mm A')
     }
     return '';
   }, [selectedDateTime]);
+
+  const setSelectedServiceHandler = (serviceId: string) => {
+    const service = patientServiceRequestDtos.find(({ id }) => id === serviceId);
+
+    if (service) setSelectedService(service);
+  }
+
+  const createAppointmentsHandler = async () => {
+    try {
+      dispatch(setLoading({ loading: true, message: 'Creating appointment' }));
+
+      const [providerPractice] = provider.providerPractices;
+      if (
+        providerPractice &&
+        selectedService?.id &&
+        selectedClient?.id &&
+        selectedClient?.email &&
+        selectedClient?.firstName &&
+        selectedClient?.lastName &&
+        selectedClient?.patientNumber &&
+        selectedDateTime?.startTime &&
+        selectedDateTime?.endTime
+      ) {
+        let start = '';
+        let end = '';
+
+        await dispatch(createAppointmentAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          payload: {
+            patientServiceId: selectedService.id,
+            patientId: selectedClient.id,
+            patientEmail: selectedClient.email,
+            patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
+            patientNumber: selectedClient.patientNumber,
+            startTime: selectedDateTime.startTime,
+            endTime: selectedDateTime.endTime
+          }
+        }));
+
+        if (selectedDates.length === 2) {
+          start = selectedDates[0];
+          end = selectedDates[1];
+        } else {
+          start = selectedDate;
+          end = selectedDate;
+        }
+
+        await dispatch(getEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(start).startOf('day').toISOString(),
+          end: dayjs(end).endOf('day').toISOString(),
+          pageNumber: 0,
+          pageSize: 999,
+        }));
+
+      }
+
+      dispatch(setLoading({ loading: false, message: '' }));
+      closeHandler();
+    } catch (error) {
+      dispatch(setLoading({ loading: false, message: '' }));
+      closeHandler();
+      console.error('error at create appointment: ', error);
+    }
+  }
+
 
   return (
     <div className={CSSPrefix}>
@@ -61,27 +150,28 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({ selectedClient, selectedS
           toggleIcon={caretDownOutline}
           expandedIcon={caretUpOutline}
           selectedText={selectedService?.name}
-          value={selectedService?.name}
-        // onIonChange={(e) => formik.setFieldValue('patientServiceName', e.detail.value)}
+          value={selectedService?.id}
+          onIonChange={(e) => setSelectedServiceHandler(e.detail.value)}
         >
-          <IonSelectOption value={'service 1'}>{'service 1'}</IonSelectOption>
+          {patientServiceRequestDtos.map(({ id, name }) => (
+            <IonSelectOption key={id} value={id}>{name}</IonSelectOption>
+          ))}
         </IonSelect>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+        onClick={() => setNavigateTo({ step: 2, comesFromStep: 3 })}
       >
         <IonLabel position="stacked" class="custom-input">Date and time</IonLabel>
-        <IonSelect
-          name="service"
-          toggleIcon={caretDownOutline}
-          expandedIcon={caretUpOutline}
-          selectedText={dateTime}
-          value={dateTime}
-        // onIonChange={(e) => formik.setFieldValue('patientServiceName', e.detail.value)}
+        <IonButton
+          className="ion-no-padding"
+          fill="clear"
+          color="dark"
         >
-          <IonSelectOption value={'date 1'}>{'date 1'}</IonSelectOption>
-        </IonSelect>
+          {dateTime}
+          <IonIcon className={`${CSSPrefix}-caret-icon`} icon={caretDownOutline} />
+        </IonButton>
       </IonItem>
       <IonItem
         lines="none"
@@ -105,7 +195,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({ selectedClient, selectedS
         <IonButton
           color="primary"
           expand="block"
-          onClick={async () => { }}
+          onClick={async () => createAppointmentsHandler()}
         >
           Schedule appointment
         </IonButton>

@@ -11,6 +11,16 @@ export interface ServicesResponse {
   patientServiceRequestDtos: Services[];
 }
 
+export interface CreateAppointmentPayload {
+  patientServiceId: string;
+  patientId: string;
+  patientEmail: string;
+  patientName: string;
+  patientNumber: string;
+  startTime: string;
+  endTime: string;
+}
+
 export const getEvents = async (
   practiceId: string,
   providerId: string,
@@ -82,6 +92,17 @@ export const confirmAppointment = async (
 ) => {
   return await schedulingApiInstance.put<void>(
     `/practices/${practiceId}/providers/${providerId}/appointments/${appointmentId}/confirm`,
+    payload
+  );
+}
+
+export const createAppointment = async (
+  practiceId: string,
+  providerId: string,
+  payload: CreateAppointmentPayload,
+) => {
+  return await schedulingApiInstance.post<{ id: string }>(
+    `/practices/${practiceId}/providers/${providerId}/appointments`,
     payload
   );
 }
