@@ -8,13 +8,17 @@ import './EventCard.scss';
 
 const CSSprefix = 'event-card';
 
-const EventCard: React.FC<any> = ({ children, ...props }): React.ReactElement => {
-  const eventProps: { service: string, patient: string, color: CALENDAR_SLOTS } = useMemo(() => JSON.parse(props.event.title), [props.event.title]);
+const EventCard: React.FC<any> = ({ children, isMonth = false, onClick, ...props }): React.ReactElement => {
+  const eventProps: { id: string, service: string, patient: string, color: CALENDAR_SLOTS } = useMemo(() => JSON.parse(props.event.title), [props.event.title]);
   const eventColor = useMemo(() => getAppointmentColor(eventProps.color), [eventProps.color]);
 
   return (
-    <div {...children.props} style={{ ...children.props.style, backgroundColor: `${eventColor}`, border: 'none' }}>
-      <div className={`${CSSprefix}-event-wrapper-container`}>
+    <div
+      {...children.props}
+      style={{ ...children.props.style, backgroundColor: `${eventColor}`, border: 'none' }}
+      onClick={() => onClick(eventProps.id)}
+    >
+      <div className={`${CSSprefix}-event-wrapper-container`} style={{ maxHeight: isMonth ? '27px' : '61px' }}>
         <IonText className={`${CSSprefix}-service`}>{eventProps.service}</IonText>
         <div className={`${CSSprefix}-patient-container`}>
           <IonIcon icon={personCircleOutline} color="dark" />

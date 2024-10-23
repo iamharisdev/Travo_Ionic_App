@@ -1,6 +1,5 @@
-import { IonCard, IonIcon, IonItem, IonLabel, IonText } from '@ionic/react';
+import { IonCard, IonItem, IonLabel } from '@ionic/react';
 import React, { useMemo } from 'react';
-import { personCircleOutline } from 'ionicons/icons';
 import { AppointmentCardProps } from './serviceCard.type';
 import { CALENDAR_SLOTS } from '../../shared/types/appointment.type';
 import { getAppointmentColor } from '../../shared/utils/appointments.util';

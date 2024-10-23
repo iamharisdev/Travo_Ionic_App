@@ -24,6 +24,9 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
+import { APPOINTMENT_DETAILS } from "../../shared/routes/routes";
+import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
+import { useHistory } from "react-router";
 
 import "./CalendarWeek.scss";
 
@@ -33,6 +36,7 @@ const CSSprefix = 'calendar-week';
 
 const CalendarWeek: React.FC = (): React.ReactElement => {
   const createAppointmentRef = useRef<HTMLIonModalElement>(null);
+  const history = useHistory();
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
@@ -41,6 +45,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   ).map((event) => ({
     id: event?.id,
     title: JSON.stringify({
+      id: event?.id,
       service: event?.patientServiceName,
       patient: event?.patientName,
       color: event?.color,
@@ -116,7 +121,15 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
             }}
             timeslots={2}
             components={{
-              eventWrapper: (props) => <EventCard {...props} />,
+              eventWrapper: (props) => (
+                <EventCard
+                  {...props}
+                  onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
+                    eventId: id,
+                    type: AppointmentDetailTypeEnum.RESCHEDULE
+                  })}
+                />
+              ),
               header: (props) => <HeaderCalendar {...props} />,
             }}
             onNavigate={() => { }}

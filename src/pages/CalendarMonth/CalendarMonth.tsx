@@ -24,6 +24,9 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
+import { APPOINTMENT_DETAILS } from "../../shared/routes/routes";
+import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
+import { useHistory } from "react-router";
 
 import "./CalendarMonth.scss";
 
@@ -41,6 +44,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   ).map((event) => ({
     id: event?.id,
     title: JSON.stringify({
+      id: event?.id,
       service: event?.patientServiceName,
       patient: event?.patientName,
       color: event?.color,
@@ -49,6 +53,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     end: dayjs(event.endTime || '').toDate(),
   })), [events.events]);
   const dispatch = useDispatch<AppDispatch>();
+  const history = useHistory();
   const dateText = useMemo(() => months[dayjs(selectedDate).month()], [selectedDate]);
 
   const getAppointmentsHandler = async () => {
@@ -116,7 +121,16 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             }}
             timeslots={2}
             components={{
-              eventWrapper: (props) => <EventCard {...props} />,
+              eventWrapper: (props) => (
+                <EventCard
+                  {...props}
+                  isMonth={true}
+                  onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
+                    eventId: id,
+                    type: AppointmentDetailTypeEnum.RESCHEDULE
+                  })}
+                />
+              ),
               header: (props) => <HeaderCalendar {...props} type="month" />,
             }}
             onNavigate={() => { }}

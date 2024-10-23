@@ -4,7 +4,7 @@
   max-height: 80px;
 
   ion-item {
-    --background: var(--ion-trova-white);
+    --background: var(--ion-trova-white) !important;
     height: auto;
   }
 
