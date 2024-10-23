@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonCol,
   IonContent,
@@ -35,17 +35,16 @@ import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util"
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import { addOutline } from "ionicons/icons";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
+import { setDates } from "../../state/calendarSlice";
 
 import "./Appointments.scss";
 
 const CSSprefix = 'appointments';
-const today = dayjs().format('YYYY-MM-DD');
-const sevenDaysFromToday = dayjs().add(7, 'days').format('YYYY-MM-DD');
 
 const Appointments: React.FC = (): React.ReactElement => {
   const pageRef = useRef<any>();
   const createAppointmentRef = useRef<HTMLIonModalElement>(null);
-  const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events }, calendar: { selectedDates } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
@@ -54,7 +53,6 @@ const Appointments: React.FC = (): React.ReactElement => {
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ).filter(({ status }) => status === AppointmentStatusEnum.CONFIRMEND), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
-  const [selectedDates, setSelectedDates] = useState<string[]>([today, sevenDaysFromToday]);
   const dateText = useMemo(() => {
     if (selectedDates.length > 0) {
       const [date] = selectedDates;
@@ -82,10 +80,9 @@ const Appointments: React.FC = (): React.ReactElement => {
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
 
-  const getAppointmentsHandler = async (dates: string[] | string) => {
+  const getAppointmentsHandler = async () => {
     try {
       setDatePickerOpen(false);
-      setSelectedDates(dates as string[]);
       dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
 
       const [providerPractice] = provider.providerPractices;
@@ -93,8 +90,8 @@ const Appointments: React.FC = (): React.ReactElement => {
         await dispatch(getEventsAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          start: dayjs(dates[0]).startOf('day').toISOString(),
-          end: dayjs(dates[1]).endOf('day').toISOString(),
+          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
+          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
           pageNumber: 0,
           pageSize: 999,
         }));
@@ -103,10 +100,15 @@ const Appointments: React.FC = (): React.ReactElement => {
       dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
-      setSelectedDates([]);
       console.error('error at load appointments by date: ', error);
     }
   }
+
+  useEffect(() => {
+    if (selectedDates.length === 2) {
+      getAppointmentsHandler();
+    }
+  }, [selectedDates]);
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: pageRef,
@@ -165,7 +167,11 @@ const Appointments: React.FC = (): React.ReactElement => {
           onDidDismiss={() => setDatePickerOpen(false)}
         >
           <IonContent fullscreen={true}>
-            <DatePicker multiple={true} dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
+            <DatePicker multiple={true} dates={selectedDates} onSelectedDates={(dates) => {
+              if (dates.length === 2) {
+                dispatch(setDates({ selectedDates: dates }))
+              }
+            }} />
           </IonContent>
         </IonPopover>
         <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment" />

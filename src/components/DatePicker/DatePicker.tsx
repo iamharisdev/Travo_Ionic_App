@@ -50,7 +50,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ date, dates, multiple = false, 
         if (upcomingDate) newDates.push(upcomingDate);
         setSelectedDates(newDates);
         onSelectedDates(newDates);
-        if (newDates.length === 2) {
+        if (newDates.length === 2 && onTriggerAction) {
           onTriggerAction(newDates);
         }
       } else {
@@ -74,7 +74,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ date, dates, multiple = false, 
 
   const selectDateHandler = (date: string | undefined) => {
     if (onSelectedDate) {
-      if (date) {
+      if (date && onTriggerAction) {
         setSelectedDate(date);
         onSelectedDate(date);
         onTriggerAction(date);

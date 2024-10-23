@@ -1,9 +1,10 @@
 .event-card {
   &-event-wrapper-container {
     width: 100%;
-    height: auto;
+    max-height: 40px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
 
   &-service {

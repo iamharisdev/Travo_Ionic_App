@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
-import { cancelAppointment, confirmAppointment, editAppointment, EventsResponse, getEvents, getServices, ServicesResponse } from '../api/services/scheduling';
+import { cancelAppointment, confirmAppointment, createAppointment, CreateAppointmentPayload, editAppointment, EventsResponse, getEvents, getServices, ServicesResponse } from '../api/services/scheduling';
 import { AppointmentStatusEnum, CancelAppointmentPayload, ConfirmAppointmentPayload, UpdateAppointmentPayload } from '../shared/types/appointment.type';
 
 export interface SchedulingState {
@@ -152,6 +152,28 @@ export const confirmAppointmentAction = createAsyncThunk(
   }
 );
 
+export const createAppointmentAction = createAsyncThunk(
+  'scheduling/createAppointment',
+  async ({
+    practiceId,
+    providerId,
+    payload
+  }: {
+    practiceId: string;
+    providerId: string;
+    payload: CreateAppointmentPayload
+  }): Promise<{ id: string } | null> => {
+    try {
+      const response = await createAppointment(practiceId, providerId, payload);
+
+      return response.data;
+    } catch (error: any) {
+      console.error('[createAppointment]: ', error);
+      return null;
+    }
+  }
+);
+
 const schedulingSlice = createSlice({
   name: 'scheduling',
   initialState,
@@ -227,6 +249,13 @@ const schedulingSlice = createSlice({
         state.state = { ...state.state, success: true, error: null, message: '' };
       })
       .addCase(confirmAppointmentAction.rejected, (state) => {
+        state = initialState;
+      })
+      .addCase(createAppointmentAction.pending, () => console.log('pending create appointment'))
+      .addCase(createAppointmentAction.fulfilled, (state, action: PayloadAction<{ id: string } | null>) => {
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(createAppointmentAction.rejected, (state) => {
         state = initialState;
       });
   }

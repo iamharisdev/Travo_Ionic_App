@@ -1,10 +1,12 @@
 import React from 'react';
 import { NylasScheduling } from '@nylas/react';
+import { AppointmentDateTime } from '../CreateAppointment/CreateAppointment';
 
-const Scheduling: React.FC = (): React.ReactElement => {
-  // const eventOverridesHandler = (event: SchedulerEventOverride) => {
-  //   console.log('eventShcheduling: ', event);
-  // }
+interface SchedulingProps {
+  setSelectedDateTime: (selectedDateTime: AppointmentDateTime) => void;
+}
+
+const Scheduling: React.FC<SchedulingProps> = ({ setSelectedDateTime }): React.ReactElement => {
   return (
     <>
       <NylasScheduling
@@ -21,12 +23,10 @@ const Scheduling: React.FC = (): React.ReactElement => {
             connector?: any,
           ): Promise<void> => {
             event.preventDefault();
-            console.log('event', event);
-            console.log('connector', connector);
             const { start_time, end_time } = event.detail;
-            console.log('datetime', {
-              start_time,
-              end_time
+            setSelectedDateTime({
+              startTime: (start_time as Date).toISOString(),
+              endTime: (end_time as Date).toISOString(),
             });
           }
         }}
