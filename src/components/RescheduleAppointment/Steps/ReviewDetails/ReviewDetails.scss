@@ -1,0 +1,66 @@
+.review-details {
+  margin-top: 24px;
+  height: 100%;
+
+  ion-content {
+    --background: var(--ion-trova-page-background);
+  }
+
+  ion-item {
+    --background: var(--ion-trova-page-background);
+  }
+
+  ion-input {
+    --background: var(--ion-trova-page-background);
+  }
+
+  ion-label {
+    width: auto;
+    color: var(--ion-trova-gray-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  &-subtitle {
+    color: var(--ion-trova-medium-gray);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  &-info-icon {
+    height: 18px;
+    width: 18px;
+    position: relative;
+    margin-left: 3px;
+  }
+
+  &-button-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 20px;
+
+    ion-button {
+      width: 100%;
+    }
+  }
+
+  &-caret-down {
+    margin-top: 25px;
+    height: 22px;
+    width: 22px;
+  }
+}
