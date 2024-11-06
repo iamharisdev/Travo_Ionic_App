@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { CreateAppointmentProps } from './createAppointment.type';
 import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonToolbar } from '@ionic/react';
 import SelectClient from './Steps/SelectClient/SelectClient';
@@ -7,6 +7,10 @@ import SelectService from './Steps/SelectService/SelectService';
 import { Services } from '../../shared/types/appointment.type';
 import SelectDateTime from './Steps/SelectDateTime/SelectDateTime';
 import ReviewDetails from './Steps/ReviewDetails/ReviewDetails';
+
+import './CreateAppointment.scss';
+
+const CSSPrefix = 'create-appointment';
 
 export interface AppointmentDateTime {
   startTime: string;
@@ -70,6 +74,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
     <IonModal
       ref={modalRef}
       trigger={trigger}
+      className={CSSPrefix}
     >
       <IonHeader>
         <IonToolbar>

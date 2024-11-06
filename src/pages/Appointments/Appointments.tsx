@@ -116,6 +116,35 @@ const Appointments: React.FC = (): React.ReactElement => {
     onSwipedRight: async () => openMenuHandler(APPOINTMENTS_MENU_ID),
   });
 
+  const content = useMemo(() => {
+    if (groupedAppointments.length === 0) {
+      return (
+        <div className={`${CSSprefix}-no-appointments-container`}>
+          <IonItem lines="none">
+            <IonText className={`${CSSprefix}-no-appointments ion-text-center`}>
+              You have no scheduled appointments yet. To start adding them, please tap on the “+” floating button on the bottom of the screen.
+            </IonText>
+          </IonItem>
+        </div>
+      );
+    }
+
+    return groupedAppointments.map((event) => (
+      <IonGrid key={event.date} fixed={true} className="ion-no-padding ion-no-margin">
+        <IonRow className="ion-margin-start ion-no-margin">
+          <IonCol size="auto" className="ion-margin-top">
+            <Badge appointmentDate={event.date} />
+          </IonCol>
+          <IonCol>
+            {event.appointments.map((appointment) => (
+              <AppointmentCard key={appointment?.id} appointment={appointment} />
+            ))}
+          </IonCol>
+        </IonRow>
+      </IonGrid>
+    ));
+  }, [groupedAppointments]);
+
   return (
     <>
       <Menu menuId={APPOINTMENTS_MENU_ID} contentId="appointments-content" />
@@ -138,20 +167,7 @@ const Appointments: React.FC = (): React.ReactElement => {
                 {fromToDateText}
               </IonText>
             </IonItem>
-            {groupedAppointments.map((event) => (
-              <IonGrid key={event.date} fixed={true} className="ion-no-padding ion-no-margin">
-                <IonRow className="ion-margin-start ion-no-margin">
-                  <IonCol size="auto" className="ion-margin-top">
-                    <Badge appointmentDate={event.date} />
-                  </IonCol>
-                  <IonCol>
-                    {event.appointments.map((appointment) => (
-                      <AppointmentCard key={appointment?.id} appointment={appointment} />
-                    ))}
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            ))}
+            {content}
           </IonList>
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
             <IonFabButton id="create-appointment">

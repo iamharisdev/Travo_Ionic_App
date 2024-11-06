@@ -1,8 +1,15 @@
 .select-client {
   margin-top: 24px;
+  height: 100%;
 
   ion-item {
-    --background: var(--ion-trova-page-background);
+    --background: var(--ion-trova-white);
+  }
+
+  ion-list {
+    background: var(--ion-trova-white);
+    height: 100%;
+    overflow: scroll;
   }
 
   &-title {
@@ -59,6 +66,23 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
+    line-height: normal;
+  }
+
+  &-no-clients-container {
+    display: flex;
+    margin: 0;
+    position: absolute;
+    top: 35%;
+    transform: translateY(-35%);
+  }
+
+  &-no-clients {
+    color: var(--ion-trova-medium-gray);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
     line-height: normal;
   }
 }

@@ -64,9 +64,18 @@ const patientSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(resetAll, () => initialState)
-      .addCase(searchPatientAction.pending, () => console.log('pending get business information'))
+      .addCase(searchPatientAction.pending, () => console.log('pending search patient'))
       .addCase(searchPatientAction.fulfilled, (state, action: PayloadAction<Array<Patient>>) => {
-        state.patients = action.payload;
+        const newPatients = [...state.patients];
+        if (action.payload.length > 0) {
+          action.payload.forEach((patient) => {
+            if (!state.patients.some(({ id }) => id === patient.id)) {
+              newPatients.push(patient);
+            }
+          })
+        }
+
+        state.patients = newPatients;
         state.state = { ...state.state, success: true, error: null, message: '' };
       })
       .addCase(searchPatientAction.rejected, (state) => {

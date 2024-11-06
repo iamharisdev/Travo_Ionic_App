@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IonAvatar, IonIcon, IonInput, IonItem, IonLabel, IonList, IonText } from '@ionic/react';
 import { searchOutline } from 'ionicons/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,13 +39,61 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
     }
   }
 
-  useEffect(() => {
-    if (clientToSearch && clientToSearch !== '') {
-      setTimeout(() => {
-        getSearchClient();
-      }, 1000);
+  const content = useMemo(() => {
+    if (patient.patients.length === 0) {
+      return (
+        <div className={`${CSSPrefix}-no-clients-container`}>
+          <IonItem lines="none">
+            <IonText className={`${CSSPrefix}-no-clients ion-text-center`}>
+              You have no registered clients yet. To start adding them, please tap on the “add client” floating button on the bottom of the screen.
+            </IonText>
+          </IonItem>
+        </div>
+      );
     }
-  }, [clientToSearch]);
+
+    if (clientToSearch && clientToSearch !== '') {
+      return patient.patients.filter(
+        (patient: Patient) => `${patient.firstName} ${patient.lastName}`.toLowerCase().includes(clientToSearch.toLowerCase())
+      ).map((patient) => (
+        <IonItem key={patient.id} lines="none" onClick={() => setSelectedClient(patient)}>
+          <IonAvatar slot="start">
+            <img alt="avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          </IonAvatar>
+          <IonLabel className={`${CSSPrefix}-item-name`}>
+            {`${patient.firstName} ${patient.lastName}`}
+            <p className={`${CSSPrefix}-item-email`}>
+              {patient.email}
+            </p>
+          </IonLabel>
+        </IonItem>
+      ));
+    }
+
+    return patient.patients.map((patient: Patient) => (
+      <IonItem key={patient.id} lines="none" onClick={() => setSelectedClient(patient)}>
+        <IonAvatar slot="start">
+          <img alt="avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+        </IonAvatar>
+        <IonLabel className={`${CSSPrefix}-item-name`}>
+          {`${patient.firstName} ${patient.lastName}`}
+          <p className={`${CSSPrefix}-item-email`}>
+            {patient.email}
+          </p>
+        </IonLabel>
+      </IonItem>
+    ));
+  }, [patient.patients, clientToSearch]);
+
+  const pressEnterKeyHandler = async (e: React.KeyboardEvent<HTMLIonInputElement>) => {
+    if (clientToSearch && clientToSearch !== '' && e.key === 'Enter') {
+      getSearchClient();
+    }
+  };
+
+  useEffect(() => {
+    getSearchClient();
+  }, []);
 
   return (
     <div className={CSSPrefix}>
@@ -66,7 +114,9 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
           type="text"
           placeholder="Search client"
           value={clientToSearch}
+          enterkeyhint="search"
           onIonInput={(e) => setClientToSearch(e.detail.value)}
+          onKeyDown={pressEnterKeyHandler}
         >
           <IonIcon
             className={`${CSSPrefix}-search-icon`}
@@ -78,19 +128,7 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
       </IonItem>
       <div className={`${CSSPrefix}-divider`} />
       <IonList>
-        {patient.patients.map((patient: Patient) => (
-          <IonItem key={patient.id} lines="none" onClick={() => setSelectedClient(patient)}>
-            <IonAvatar slot="start">
-              <img alt="avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-            </IonAvatar>
-            <IonLabel className={`${CSSPrefix}-item-name`}>
-              {`${patient.firstName} ${patient.lastName}`}
-              <p className={`${CSSPrefix}-item-email`}>
-                {patient.email}
-              </p>
-            </IonLabel>
-          </IonItem>
-        ))}
+        {content}
       </IonList>
     </div>
   );
