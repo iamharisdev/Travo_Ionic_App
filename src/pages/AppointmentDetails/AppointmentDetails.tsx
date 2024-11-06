@@ -205,8 +205,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
   }, [location?.state?.type, location?.state?.eventId, rescheduleOpen]);
 
-  console.log('event: ', event);
-
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showEdit showMenu={false} editCB={editAppointmentHandler} />

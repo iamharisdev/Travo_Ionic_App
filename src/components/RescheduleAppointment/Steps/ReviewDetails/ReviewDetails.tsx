@@ -11,6 +11,8 @@ const CSSPrefix = 'review-details';
 interface ReviewDetailsProps {
   patientName: string;
   patientServiceName: string;
+  price: number;
+  location: string;
   selectedDateTime?: AppointmentDateTime;
   setStep: (step: number) => void;
   rescheduleHandler: () => void;
@@ -19,6 +21,8 @@ interface ReviewDetailsProps {
 const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   patientName,
   patientServiceName,
+  price,
+  location,
   selectedDateTime,
   setStep,
   rescheduleHandler,
@@ -56,6 +60,20 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       >
         <IonLabel position="stacked">Service</IonLabel>
         <IonLabel position="stacked">{patientServiceName}</IonLabel>
+      </IonItem>
+      <IonItem
+        lines="none"
+        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+      >
+        <IonLabel position="stacked">Adjusted price</IonLabel>
+        <IonLabel position="stacked">{`$${price.toFixed(2)}`}</IonLabel>
+      </IonItem>
+      <IonItem
+        lines="none"
+        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+      >
+        <IonLabel position="stacked">Location</IonLabel>
+        <IonLabel position="stacked">{location}</IonLabel>
       </IonItem>
       <IonItem
         lines="none"

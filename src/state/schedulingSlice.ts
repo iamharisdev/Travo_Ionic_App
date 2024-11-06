@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
-import { cancelAppointment, confirmAppointment, createAppointment, CreateAppointmentPayload, editAppointment, EventsResponse, getEvents, getServices, ServicesResponse } from '../api/services/scheduling';
+import { cancelAppointment, confirmAppointment, createAppointment, CreateAppointmentPayload, editAppointment, EventsResponse, getEvents, getServices, rescheduleAppointment, RescheduleAppointmentPayload, ServicesResponse } from '../api/services/scheduling';
 import { AppointmentStatusEnum, CancelAppointmentPayload, ConfirmAppointmentPayload, UpdateAppointmentPayload } from '../shared/types/appointment.type';
 
 export interface SchedulingState {
@@ -174,6 +174,29 @@ export const createAppointmentAction = createAsyncThunk(
   }
 );
 
+export const rescheduleAppointmentAction = createAsyncThunk(
+  'scheduling/rescheduleAppointment',
+  async ({
+    practiceId,
+    providerId,
+    appointmentId,
+    payload
+  }: {
+    practiceId: string;
+    providerId: string;
+    appointmentId: string;
+    payload: RescheduleAppointmentPayload
+  }): Promise<boolean> => {
+    try {
+      await rescheduleAppointment(practiceId, providerId, appointmentId, payload);
+      return true;
+    } catch (error: any) {
+      console.error('[rescheduleAppointment]: ', error);
+      return false;
+    }
+  }
+);
+
 const schedulingSlice = createSlice({
   name: 'scheduling',
   initialState,
@@ -256,6 +279,13 @@ const schedulingSlice = createSlice({
         state.state = { ...state.state, success: true, error: null, message: '' };
       })
       .addCase(createAppointmentAction.rejected, (state) => {
+        state = initialState;
+      })
+      .addCase(rescheduleAppointmentAction.pending, () => console.log('pending reschedule appointment'))
+      .addCase(rescheduleAppointmentAction.fulfilled, (state) => {
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(rescheduleAppointmentAction.rejected, (state) => {
         state = initialState;
       });
   }

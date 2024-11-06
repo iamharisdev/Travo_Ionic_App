@@ -180,7 +180,7 @@ export interface IAppointment extends Identifiable {
   onlineMeetProviderUrl?: string;
   onlineMeetingUrl?: string;
   onlineMeetingAdditionalInformation?: string;
-  price?: number;
+  price?: number | null;
   discount?: string | null;
   providerName?: string;
   clientType?: string;

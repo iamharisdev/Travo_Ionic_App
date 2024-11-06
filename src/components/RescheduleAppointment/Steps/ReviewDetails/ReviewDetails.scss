@@ -21,6 +21,7 @@
     font-style: normal;
     font-weight: 500;
     line-height: 18px;
+    height: auto;
   }
 
   &-title {
@@ -49,12 +50,11 @@
   &-button-container {
     width: 100%;
     display: flex;
-    justify-content: center;
-    position: absolute;
-    bottom: 20px;
+    position: relative;
 
     ion-button {
       width: 100%;
+      margin-top: 30px;
     }
   }
 
@@ -63,4 +63,8 @@
     height: 22px;
     width: 22px;
   }
+}
+
+.md ion-item {
+  --padding-bottom: 10px;
 }
