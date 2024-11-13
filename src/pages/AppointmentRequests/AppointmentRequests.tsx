@@ -5,10 +5,7 @@ import {
   IonList,
   IonPage,
   IonPopover,
-  IonRefresher,
-  IonRefresherContent,
   IonText,
-  RefresherEventDetail,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
@@ -40,7 +37,6 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
-  const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const appointmentRequestsRef = useRef();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -168,6 +164,39 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     history.push(APPOINTMENT_CANCEL, { appointmentId, type: AppointmentDetailTypeEnum.ACCEPT });
   }
 
+  const content = useMemo(() => {
+    if (groupedAppointments.length === 0) {
+      return (
+        <div className={`${CSSprefix}-no-appointments-container`}>
+          <IonItem lines="none">
+            <IonText className={`${CSSprefix}-no-appointments ion-text-center`}>
+              You have no appointment request yet.
+            </IonText>
+          </IonItem>
+        </div>
+      );
+    }
+
+    return groupedAppointments.map((event) => (
+      <div key={event.date}>
+        <IonItem lines="none">
+          <IonText className={`${CSSprefix}-from-to-date`}>
+            {getDateHandler(event.date)}
+          </IonText>
+        </IonItem>
+        {event.appointments.map((appointment) => (
+          <IonItem key={appointment?.id} lines="none">
+            <AppointmentRequestCard
+              appointment={appointment}
+              acceptCB={acceptHandler}
+              declineCB={declineHandler}
+            />
+          </IonItem>
+        ))}
+      </div>
+    ));
+  }, [groupedAppointments])
+
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: appointmentRequestsRef,
     onSwipedLeft: async () => closeMenuHandler(APPOINTMENT_REQUESTS_MENU_ID),
@@ -191,28 +220,8 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
           datePickerCB={openDatePickerHandler}
         />
         <IonContent fullscreen={true}>
-          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-            <IonRefresherContent />
-          </IonRefresher>
           <IonList>
-            {groupedAppointments.map((event) => (
-              <div key={event.date}>
-                <IonItem lines="none">
-                  <IonText className={`${CSSprefix}-from-to-date`}>
-                    {getDateHandler(event.date)}
-                  </IonText>
-                </IonItem>
-                {event.appointments.map((appointment) => (
-                  <IonItem key={appointment?.id} lines="none">
-                    <AppointmentRequestCard
-                      appointment={appointment}
-                      acceptCB={acceptHandler}
-                      declineCB={declineHandler}
-                    />
-                  </IonItem>
-                ))}
-              </div>
-            ))}
+            {content}
           </IonList>
         </IonContent>
         <IonPopover

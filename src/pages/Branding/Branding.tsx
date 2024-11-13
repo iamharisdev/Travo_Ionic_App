@@ -95,8 +95,6 @@ const Branding: React.FC = (): React.ReactElement => {
     }
   };
 
-  const removePhotoHandler = () => setPracticeLogo({ file: null, url: '' });
-
   const uploadActions = useMemo(() => {
     const actions: (string | ActionSheetButton<any>)[] = [
       {
@@ -166,18 +164,6 @@ const Branding: React.FC = (): React.ReactElement => {
               >
                 Upload logo
               </IonButton>
-              {practiceLogo.url !== '' && (
-                <>
-                  <div className={`${CSSprefix}-divider`} />
-                  <IonButton
-                    fill="clear"
-                    color="danger"
-                    onClick={removePhotoHandler}
-                  >
-                    Remove logo
-                  </IonButton>
-                </>
-              )}
             </IonItem>
           </IonRow>
           <IonRow className="ion-justify-content-center">

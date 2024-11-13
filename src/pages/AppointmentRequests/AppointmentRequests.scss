@@ -5,6 +5,7 @@
 
   ion-list {
     background: var(--ion-trova-white);
+    height: 100%;
   }
 
   &-from-to-date {
@@ -32,5 +33,24 @@
       display: flex;
       align-items: center;
     }
+  }
+
+  &-no-appointments-container {
+    display: flex;
+    margin: 0;
+    position: absolute;
+    top: 35%;
+    transform: translateY(-35%);
+    justify-content: center;
+    width: 100%;
+  }
+
+  &-no-appointments {
+    color: var(--ion-trova-medium-gray);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
   }
 }

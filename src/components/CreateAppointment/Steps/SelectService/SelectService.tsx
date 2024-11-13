@@ -26,6 +26,24 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
     return scheduling.services.patientServiceRequestDtos;
   }, [serviceToSearch]);
 
+  const content = useMemo(() => {
+    if (services.length === 0) {
+      return (
+        <div className={`${CSSPrefix}-no-services-container`}>
+          <IonItem lines="none">
+            <IonText className={`${CSSPrefix}-no-services ion-text-center`}>
+              You have no services yet.
+            </IonText>
+          </IonItem>
+        </div>
+      )
+    }
+
+    return services.map((service: Services) => (
+      <ServiceCard key={service.id} service={service} onClick={() => setSelectedService(service)} />
+    ));
+  }, [services]);
+
   return (
     <div className={CSSPrefix}>
       <IonItem lines="none">
@@ -57,9 +75,7 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
       </IonItem>
       <div className={`${CSSPrefix}-divider`} />
       <IonList className={`${CSSPrefix}-list`}>
-        {services.map((service: Services) => (
-          <ServiceCard key={service.id} service={service} onClick={() => setSelectedService(service)} />
-        ))}
+        {content}
       </IonList>
     </div>
   );
