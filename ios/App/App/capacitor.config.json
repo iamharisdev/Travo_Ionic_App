@@ -1,9 +1,10 @@
 {
-	"appId": "trova-provider-mobile",
-	"appName": "trova-provider-mobile",
+	"appId": "trovahealth.provider",
+	"appName": "Trova",
 	"webDir": "dist",
 	"server": {
 		"allowNavigation": [
+			"undefined",
 			"undefined",
 			"undefined",
 			"undefined",
