@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">Trova</string>
-    <string name="title_activity_main">trova</string>
+    <string name="title_activity_main">Trova</string>
     <string name="package_name">trovahealth.provider</string>
     <string name="custom_url_scheme">trovahealth.provider</string>
 </resources>
