@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'trova-provider-mobile',
-  appName: 'trova-provider-mobile',
+  appId: 'trovahealth.provider',
+  appName: 'Trova',
   webDir: 'dist',
   server: {
     allowNavigation: [
