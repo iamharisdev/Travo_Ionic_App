@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package trovahealth.provider;
 
 import com.getcapacitor.BridgeActivity;
 
