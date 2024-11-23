@@ -1,0 +1,8 @@
+app_identifier("provider.health.trova") # The bundle identifier of your app
+apple_id("c.buenrostro.dev@gmail.com") # Your Apple Developer Portal username
+
+itc_team_id("127412002") # App Store Connect Team ID
+team_id("F3Z2CR64LR") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
