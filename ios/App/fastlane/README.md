@@ -31,7 +31,7 @@ More information about _fastlane_ can be found on [fastlane.tools](https://fastl
 
 The documentation of _fastlane_ can be found on [docs.fastlane.tools](https://docs.fastlane.tools).
 
-# Env file to sign in for iOS
+# Env file to sign in
 ## Step 1 -  Create app specific password
 
 Go to https://appleid.apple.com/account/manage login in and go to App-Specific Passwords, after generate a new App Specific Password copy it (if you don't have an app specific password, if you already have it please move to step 2).
