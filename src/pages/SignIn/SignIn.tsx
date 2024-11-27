@@ -59,7 +59,6 @@ const Login: React.FC = (): React.ReactElement => {
             password: values.password,
           })
         );
-
         if (response.meta.requestStatus === 'fulfilled' && (response.payload as AuthState).success) {
           dispatch(setLoading({ loading: false }));
           history.push(CALENDAR_MONTH);
