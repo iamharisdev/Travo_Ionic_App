@@ -25,7 +25,24 @@ ion-input.custom {
   --padding-bottom: 8px;
   --padding-top: 0;
   --border-radius: 5px;
-  height: 50px;
+  max-height: auto;
+}
+
+ion-input.custom.ios .input-bottom,
+ion-input.custom.md .input-bottom {
+  border: none;
+}
+
+ion-input.custom.ios .input-bottom,
+ion-input.custom.md .input-bottom {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+ion-input.custom.ios .input-bottom .error-text,
+ion-input.custom.md .input-bottom .error-text {
+  padding-bottom: 10px;
 }
 
 ion-item.custom-input {
