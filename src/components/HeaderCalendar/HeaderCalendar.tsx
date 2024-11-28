@@ -11,13 +11,17 @@ const CSSPrefix = 'header-calendar';
 const HeaderCalendar: React.FC<HeaderProps & { type?: 'week' | 'month' }> = ({ date, type = 'week' }): React.ReactElement => {
   return (
     <div className={`${CSSPrefix}`}>
-      <IonText className={`${CSSPrefix}-day`}>
-        {weekday[dayjs(date).day()].substring(0, 1).toUpperCase()}
-      </IonText>
-      {type === 'week' && (
-        <IonText className={`${CSSPrefix}-date`} style={{ color: dayjs(date).date() === dayjs().date() ? 'var(--ion-color-primary)' : '' }}>
-          {dayjs(date).date()}
+      <div>
+        <IonText className={`${CSSPrefix}-day`}>
+          {weekday[dayjs(date).day()].substring(0, 1).toUpperCase()}
         </IonText>
+      </div>
+      {type === 'week' && (
+        <div>
+          <IonText className={`${CSSPrefix}-date`} style={{ color: dayjs(date).date() === dayjs().date() ? 'var(--ion-color-primary)' : '' }}>
+            {dayjs(date).date()}
+          </IonText>
+        </div>
       )}
     </div>
   );
