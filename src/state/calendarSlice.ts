@@ -26,35 +26,31 @@ const calendarSlice = createSlice({
   initialState,
   reducers: {
     setNextWeek: (state) => {
-      const newDate = nextWeek(state.selectedDate);
+      const newDate = nextWeek(state.selectedDates[0]);
       const start = dayjs(newDate).startOf('week').format('YYYY-MM-DD');
       const end = dayjs(newDate).endOf('week').format('YYYY-MM-DD');
 
-      state.selectedDate = newDate.toISOString();
       state.selectedDates = [start, end];
     },
     setPrevWeek: (state) => {
-      const newDate = prevWeek(state.selectedDate);
+      const newDate = prevWeek(state.selectedDates[0]);
       const start = dayjs(newDate).startOf('week').format('YYYY-MM-DD');
       const end = dayjs(newDate).endOf('week').format('YYYY-MM-DD');
 
-      state.selectedDate = newDate.toISOString();
       state.selectedDates = [start, end];
     },
     setNextMonth: (state) => {
-      const newDate = nextMonth(state.selectedDate);
+      const newDate = nextMonth(state.selectedDates[0]);
       const start = dayjs(newDate).startOf('month').format('YYYY-MM-DD');
       const end = dayjs(newDate).endOf('month').format('YYYY-MM-DD');
 
-      state.selectedDate = newDate.toISOString();
       state.selectedDates = [start, end];
     },
     setPrevMonth: (state) => {
-      const newDate = prevMonth(state.selectedDate);
+      const newDate = prevMonth(state.selectedDates[0]);
       const start = dayjs(newDate).startOf('month').format('YYYY-MM-DD');
       const end = dayjs(newDate).endOf('month').format('YYYY-MM-DD');
 
-      state.selectedDate = newDate.toISOString();
       state.selectedDates = [start, end];
     },
     setDate: (state, action: PayloadAction<string>) => {
@@ -64,7 +60,6 @@ const calendarSlice = createSlice({
       const { selectedDates } = action.payload;
       const [start, end] = selectedDates;
 
-      state.selectedDate = start;
       state.selectedDates = [start, end];
     }
   },

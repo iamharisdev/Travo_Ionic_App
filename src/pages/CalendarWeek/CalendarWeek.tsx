@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonFab,
   IonFabButton,
   IonIcon,
   IonPage,
+  IonPopover,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
@@ -19,14 +20,15 @@ import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
-import { setNextWeek, setPrevWeek, setDates } from "../../state/calendarSlice";
+import { setNextWeek, setPrevWeek, setDates, setDate } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { APPOINTMENT_DETAILS } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
 import { useHistory } from "react-router";
+import DatePicker from "../../components/DatePicker/DatePicker";
 
 import "./CalendarWeek.scss";
 
@@ -54,7 +56,16 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     end: dayjs(event.endTime || '').toDate(),
   })), [events.events]);
   const dispatch = useDispatch<AppDispatch>();
-  const dateText = useMemo(() => months[dayjs(selectedDate).month()], [selectedDate]);
+  const datePickerRef = useRef<HTMLIonPopoverElement>(null);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+
+  const openDatePickerHandler = useCallback((e: any) => {
+    if (datePickerRef.current) {
+      datePickerRef.current!.event = e;
+    }
+    setDatePickerOpen(true);
+  }, [datePickerRef.current]);
 
   const getAppointmentsHandler = async () => {
     try {
@@ -95,7 +106,6 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     const start = dayjs().startOf('week').format('YYYY-MM-DD');
     const end = dayjs().endOf('week').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
-    getAppointmentsHandler();
   }, []);
 
   return (
@@ -106,15 +116,18 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
         <Header
           showMenu
           menuId={CALENDAR_WEEK_MENU_ID}
-          leftLabel={dateText}
+          showDatePicker={true}
+          datePickerText={dateText}
+          datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>
           <Calendar
-            defaultDate={selectedDate}
-            date={selectedDate}
+            defaultDate={selectedDates[0]}
+            date={selectedDates[0]}
             defaultView={Views.WEEK}
             events={mappedEvents}
             localizer={localizer}
+            showAllEvents={true}
             toolbar={false}
             views={{
               week: true
@@ -140,6 +153,25 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
             </IonFabButton>
           </IonFab>
         </IonContent>
+        <IonPopover
+          ref={datePickerRef}
+          className={`${CSSprefix}-date-picker-popover`}
+          isOpen={datePickerOpen}
+          size="auto"
+          onDidDismiss={() => setDatePickerOpen(false)}
+        >
+          <IonContent fullscreen={true}>
+            <DatePicker
+              date={selectedDate}
+              onSelectedDate={(date) => {
+                setDatePickerOpen(false);
+                dispatch(setDate(date as string));
+                history.push(CALENDAR_DAY);
+              }}
+              onTriggerAction={getAppointmentsHandler}
+            />
+          </IonContent>
+        </IonPopover>
         <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-week" />
       </IonPage>
     </>
