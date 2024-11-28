@@ -140,7 +140,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>
                   <IonText className={`${CSSprefix}-date`}>
-                    {dayjs(selectedDate).format('dddd')}
+                    {dayjs(selectedDate).format('ddd')}
                   </IonText>
                   <IonText className={`${CSSprefix}-day`}>
                     {dayjs(selectedDate).date()}
