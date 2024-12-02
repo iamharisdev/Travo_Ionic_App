@@ -119,6 +119,18 @@ ion-datetime::part(calendar-day) {
   color: var(--ion-trova-gray-text);
 }
 
+ion-datetime::part(month-year-button) {
+  background: red;
+  border-radius: 10px;
+  display: none;
+}
+
+ion-datetime {
+  ion-button {
+    --background-color: red;
+  }
+}
+
 ion-datetime::part(calendar-day active) {
   color: var(--ion-trova-white) !important;
   background: var(--ion-color-primary);

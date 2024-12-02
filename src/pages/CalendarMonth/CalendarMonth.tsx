@@ -162,7 +162,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           size="auto"
           onDidDismiss={() => setDatePickerOpen(false)}
         >
-          <IonContent fullscreen={true}>
+          <IonContent>
             <DatePicker
               date={selectedDate}
               onSelectedDate={(date) => {
