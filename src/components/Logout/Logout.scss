@@ -1,0 +1,47 @@
+ion-modal#logout-modal {
+  --height: 185px;
+  --width: 281px;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+ion-modal#logout-modal::part(backdrop) {
+  background: rgba(209, 213, 219);
+  opacity: 1;
+}
+
+.logout {
+  ion-content {
+    --padding-top: 20px;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin: auto;
+  }
+
+  &-description {
+    color: var(--ion-trova-input-placeholder);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: auto;
+  }
+
+  &-buttons {
+    ion-button {
+      margin: auto;
+      width: 108px;
+      height: 48px;
+    }
+  }
+}

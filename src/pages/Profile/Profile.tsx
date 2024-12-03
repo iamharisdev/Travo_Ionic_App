@@ -8,7 +8,7 @@ import {
   IonText,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
-import { caretForwardOutline } from "ionicons/icons";
+import { caretForwardOutline, exitOutline } from "ionicons/icons";
 import { MY_PROFILE, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 import Menu from "../../components/Menu/Menu";
@@ -16,6 +16,7 @@ import { PROFILE_MENU_ID } from "../../shared/constants/menu";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
+import Logout from "../../components/Logout/Logout";
 
 import "./Profile.scss";
 
@@ -62,7 +63,22 @@ const Profile: React.FC = (): React.ReactElement => {
               <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
             </IonButton>
           </IonItem>
+          <IonItem
+            id="open-logout-modal"
+            lines="none"
+          >
+            <IonText color="danger">Log out</IonText>
+            <IonButton fill="clear" size="small" className="ion-no-margin">
+              <IonIcon slot="icon-only" color="danger" icon={exitOutline} size="medium" />
+            </IonButton>
+          </IonItem>
         </IonContent>
+        <Logout
+          id="logout-modal"
+          trigger="open-logout-modal"
+          cancel={() => null}
+          logout={() => null}
+        />
       </IonPage>
     </>
   );
