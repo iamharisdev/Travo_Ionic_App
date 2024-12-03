@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { caretForwardOutline, exitOutline } from "ionicons/icons";
-import { MY_PROFILE, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
+import { MY_PROFILE, SING_IN, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 import Menu from "../../components/Menu/Menu";
 import { PROFILE_MENU_ID } from "../../shared/constants/menu";
@@ -17,6 +17,10 @@ import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
 import Logout from "../../components/Logout/Logout";
+import { useDispatch } from "react-redux";
+import { resetAll } from "../../state/common.actions";
+import { removeStorageValue } from "../../storage/storage.util";
+import { STORAGE_TOKEN } from "../../constant/storage.constant";
 
 import "./Profile.scss";
 
@@ -25,6 +29,7 @@ const CSSprefix = 'profile';
 const Profile: React.FC = (): React.ReactElement => {
   const profileRef = useRef();
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: profileRef,
@@ -77,7 +82,11 @@ const Profile: React.FC = (): React.ReactElement => {
           id="logout-modal"
           trigger="open-logout-modal"
           cancel={() => null}
-          logout={() => null}
+          logout={async () => {
+            await removeStorageValue(STORAGE_TOKEN);
+            dispatch(resetAll());
+            history.push(SING_IN);
+          }}
         />
       </IonPage>
     </>

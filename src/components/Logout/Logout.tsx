@@ -43,7 +43,10 @@ const Logout: React.FC<LogoutProps> = ({ id, trigger, cancel, logout }) => {
           <IonButton
             color="danger"
             fill="solid"
-            onClick={logout}
+            onClick={() => {
+              dismiss();
+              logout();
+            }}
           >
             Log out
           </IonButton>
