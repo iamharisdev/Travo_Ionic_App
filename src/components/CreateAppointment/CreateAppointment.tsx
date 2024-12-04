@@ -40,6 +40,14 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
     }
   }, [step]);
 
+
+  // Android native back button
+  document.addEventListener('ionBackButton', (ev: any) => {
+    ev.detail.register(140, () => {
+      closeHandler();
+    });
+  });
+
   const steps = useMemo(() => {
     switch (step) {
       case 0:
