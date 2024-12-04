@@ -1,0 +1,17 @@
+.date-picker-header {
+  display: flex;
+  justify-content: space-between;
+
+  h2 {
+    color: var(--ion-trova-input-label);
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  ion-button {
+    color: var(--ion-trova-input-label);
+  }
+}
