@@ -8,6 +8,7 @@ import {
   IonLabel,
   IonPage,
   IonText,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 import TrovaLogo from "/assets/TrovaLogo.png";
@@ -83,6 +84,8 @@ const Login: React.FC = (): React.ReactElement => {
       }
     },
   });
+
+  useIonViewWillEnter(() => formik.resetForm(), []);
 
   return (
     <IonPage>

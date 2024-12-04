@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonButton, IonContent, IonItem, IonModal, IonText } from "@ionic/react";
+import { IonButton, IonContent, IonItem, IonList, IonModal, IonText } from "@ionic/react";
 import { useRef } from "react";
 
 import './Logout.scss';
@@ -23,34 +23,36 @@ const Logout: React.FC<LogoutProps> = ({ id, trigger, cancel, logout }) => {
   return (
     <IonModal className={CSSprefix} id={id} ref={modal} trigger={trigger}>
       <IonContent>
-        <IonItem lines="none">
-          <IonText className={`${CSSprefix}-title`}>Log out</IonText>
-        </IonItem>
-        <IonItem lines="none">
-          <IonText className={`${CSSprefix}-description`}>Are you sure you want to log out?</IonText>
-        </IonItem>
-        <IonItem className={`${CSSprefix}-buttons`} lines="none">
-          <IonButton
-            color="primary"
-            fill="outline"
-            onClick={() => {
-              dismiss();
-              cancel();
-            }}
-          >
-            Cancel
-          </IonButton>
-          <IonButton
-            color="danger"
-            fill="solid"
-            onClick={() => {
-              dismiss();
-              logout();
-            }}
-          >
-            Log out
-          </IonButton>
-        </IonItem>
+        <IonList>
+          <IonItem lines="none">
+            <IonText className={`${CSSprefix}-title`}>Log out</IonText>
+          </IonItem>
+          <IonItem lines="none">
+            <IonText className={`${CSSprefix}-description`}>Are you sure you want to log out?</IonText>
+          </IonItem>
+          <IonItem className={`${CSSprefix}-buttons`} lines="none">
+            <IonButton
+              color="primary"
+              fill="outline"
+              onClick={() => {
+                dismiss();
+                cancel();
+              }}
+            >
+              Cancel
+            </IonButton>
+            <IonButton
+              color="danger"
+              fill="solid"
+              onClick={() => {
+                dismiss();
+                logout();
+              }}
+            >
+              Log out
+            </IonButton>
+          </IonItem>
+        </IonList>
       </IonContent>
     </IonModal>
   );
