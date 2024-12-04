@@ -102,8 +102,10 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   }, [selectedDate]);
 
   useIonViewWillEnter(() => {
-    dispatch(setDate(dayjs().format('YYYY-MM-DD')));
-    getAppointmentsHandler();
+    if (!selectedDate) {
+      dispatch(setDate(dayjs().format('YYYY-MM-DD')));
+      getAppointmentsHandler();
+    }
   }, []);
 
   const { handlers, refPassthrough } = UseSwipeGesture({
@@ -140,7 +142,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>
                   <IonText className={`${CSSprefix}-date`}>
-                    {dayjs(selectedDate).format('dddd')}
+                    {dayjs(selectedDate).format('ddd')}
                   </IonText>
                   <IonText className={`${CSSprefix}-day`}>
                     {dayjs(selectedDate).date()}

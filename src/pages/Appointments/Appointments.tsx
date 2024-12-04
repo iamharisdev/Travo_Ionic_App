@@ -35,7 +35,7 @@ import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util"
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import { addOutline } from "ionicons/icons";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
-import { setDates } from "../../state/calendarSlice";
+import { setDate } from "../../state/calendarSlice";
 
 import "./Appointments.scss";
 
@@ -44,7 +44,7 @@ const CSSprefix = 'appointments';
 const Appointments: React.FC = (): React.ReactElement => {
   const pageRef = useRef<any>();
   const createAppointmentRef = useRef<HTMLIonModalElement>(null);
-  const { provider, scheduling: { events }, calendar: { selectedDates } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
@@ -54,24 +54,22 @@ const Appointments: React.FC = (): React.ReactElement => {
   ).filter(({ status }) => status === AppointmentStatusEnum.CONFIRMEND), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
   const dateText = useMemo(() => {
-    if (selectedDates.length > 0) {
-      const [date] = selectedDates;
-      return months[dayjs(date).month()];
+    if (selectedDate) {
+      return months[dayjs(selectedDate).month()];
     }
 
     return '';
-  }, [selectedDates]);
+  }, [selectedDate]);
 
   const fromToDateText = useMemo(() => {
-    if (selectedDates.length === 2) {
-      const [start, end] = selectedDates;
+    if (selectedDate) {
       return `
-        ${months[dayjs(start).month()]} ${dayjs(start).date()} - ${months[dayjs(end).month()]} ${dayjs(end).date()}
+        ${months[dayjs(selectedDate).month()]} ${dayjs(selectedDate).date()}
       `;
     }
 
     return '';
-  }, [selectedDates]);
+  }, [selectedDate]);
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -90,8 +88,8 @@ const Appointments: React.FC = (): React.ReactElement => {
         await dispatch(getEventsAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+          start: dayjs(selectedDate).startOf('day').toISOString(),
+          end: dayjs(selectedDate).endOf('day').toISOString(),
           pageNumber: 0,
           pageSize: 999,
         }));
@@ -105,10 +103,10 @@ const Appointments: React.FC = (): React.ReactElement => {
   }
 
   useEffect(() => {
-    if (selectedDates.length === 2) {
+    if (selectedDate) {
       getAppointmentsHandler();
     }
-  }, [selectedDates]);
+  }, [selectedDate]);
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: pageRef,
@@ -183,11 +181,15 @@ const Appointments: React.FC = (): React.ReactElement => {
           onDidDismiss={() => setDatePickerOpen(false)}
         >
           <IonContent fullscreen={true}>
-            <DatePicker multiple={true} dates={selectedDates} onSelectedDates={(dates) => {
-              if (dates.length === 2) {
-                dispatch(setDates({ selectedDates: dates }))
-              }
-            }} />
+            <DatePicker
+              date={selectedDate}
+              onSelectedDate={(date) => {
+                if (date) {
+                  dispatch(setDate(date))
+                }
+              }}
+              onTriggerAction={getAppointmentsHandler}
+            />
           </IonContent>
         </IonPopover>
         <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment" />
