@@ -11,7 +11,7 @@ import {
 } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 import TrovaLogo from "/assets/TrovaLogo.png";
-import { FORGOT_PASSWORD, SING_IN, CALENDAR_MONTH } from "../../shared/routes/routes";
+import { SING_IN, CALENDAR_MONTH } from "../../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../state/store";
@@ -144,9 +144,10 @@ const Login: React.FC = (): React.ReactElement => {
                 </IonInput>
               </IonItem>
               <IonButton
-                href={FORGOT_PASSWORD}
+                href={process.env.REACT_APP_FORGOT_PASSWORD_URL}
                 className={`${CSSprefix}-forgot-password`}
                 fill="clear"
+                target="blank_state"
               >
                 Forgot Password?
               </IonButton>
