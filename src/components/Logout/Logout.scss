@@ -6,13 +6,25 @@ ion-modal#logout-modal {
 }
 
 ion-modal#logout-modal::part(backdrop) {
-  background: rgba(209, 213, 219);
   opacity: 1;
 }
 
 .logout {
-  ion-content {
-    --padding-top: 20px;
+  ion-list {
+    background: var(--ion-trova-white);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .ios ion-list {
+    padding-bottom: 20px;
+  }
+
+  .md ion-list {
+    padding-bottom: 10px;
   }
 
   &-title {
