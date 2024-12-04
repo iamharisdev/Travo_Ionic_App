@@ -25,7 +25,9 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({ setSelectedDateTime }) 
           Select date and time
         </IonText>
       </IonItem>
-      <Scheduling setSelectedDateTime={setSelectedDateTime} />
+      <div>
+        <Scheduling setSelectedDateTime={setSelectedDateTime} />
+      </div>
     </div>
   );
 }
