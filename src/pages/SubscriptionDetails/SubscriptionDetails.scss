@@ -26,6 +26,14 @@
     border-radius: 16px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.16);
 
+    &-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+      text-align: center;
+      align-items: center;
+    }
+
     &-price {
       color: var(--ion-trova-gray-text);
       font-size: 18px;
@@ -50,9 +58,13 @@
       background: linear-gradient(91deg, #1DBCBD 0%, #F2913D 100%);
     }
 
+    ion-card-header {
+      padding: 12px 0 0 16px;
+    }
+
     ion-card-title {
       --color: var(--ion-trova-gray-text);
-      font-family: Poppins;
+      font-family: 'Poppins';
       font-size: 20px;
       font-style: normal;
       font-weight: 700;
@@ -63,8 +75,14 @@
   &-next-payment {
     margin: 20px 0;
     --background: var(--ion-trova-white);
+    height: 310px;
     border-radius: 16px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.16);
+
+    ion-card-header {
+      margin-bottom: 1.5vh;
+      padding-bottom: 0;
+    }
 
     ion-card-title {
       --color: var(--ion-trova-gray-text);
@@ -78,7 +96,7 @@
       width: 52px;
       height: 52px;
       color: var(--ion-trova-medium-gray);
-      margin-bottom: 20px;
+      margin-bottom: 1.5vh;
     }
 
     &-card-details-container {
@@ -97,13 +115,12 @@
     }
 
     &-description {
-      margin-top: 20px;
       color: var(--ion-trova-input-placeholder);
+      font-family: 'Poppins';
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
-      white-space: pre-line;
     }
   }
 }
