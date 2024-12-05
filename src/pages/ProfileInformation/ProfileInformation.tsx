@@ -327,6 +327,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
               name="bio"
               autoGrow
               aria-label="bio"
+              className={`${CSSprefix}-bio`}
               value={formik.values.bio}
               onIonInput={(e) => formik.setFieldValue('bio', e.detail.value)}
             />
