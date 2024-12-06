@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
 import dayjs from 'dayjs';
-import { nextMonth, nextWeek, prevMonth, prevWeek } from '../shared/utils/dates.util';
+import { nextDay, nextMonth, nextWeek, prevDay, prevMonth, prevWeek } from '../shared/utils/dates.util';
 
 interface CalendarState {
   selectedDate: string;
@@ -25,6 +25,18 @@ const calendarSlice = createSlice({
   name: 'calendar',
   initialState,
   reducers: {
+    setNextDay: (state) => {
+      const newDate = nextDay(state.selectedDate);
+      const selectedDate = dayjs(newDate).format('YYYY-MM-DD');
+
+      state.selectedDate = selectedDate;
+    },
+    setPrevDay: (state) => {
+      const newDate = prevDay(state.selectedDate);
+      const selectedDate = dayjs(newDate).format('YYYY-MM-DD');
+
+      state.selectedDate = selectedDate;
+    },
     setNextWeek: (state) => {
       const newDate = nextWeek(state.selectedDates[0]);
       const start = dayjs(newDate).startOf('week').format('YYYY-MM-DD');
@@ -69,6 +81,8 @@ const calendarSlice = createSlice({
 });
 
 export const {
+  setNextDay,
+  setPrevDay,
   setNextWeek,
   setPrevWeek,
   setDate,
