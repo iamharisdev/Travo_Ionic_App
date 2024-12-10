@@ -21,9 +21,8 @@ import DatePicker from "../../components/DatePicker/DatePicker";
 import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
-import { setDate } from "../../state/calendarSlice";
+import { setDate, setNextDay, setPrevDay } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
-import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
@@ -110,8 +109,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: pageRef,
-    onSwipedLeft: async () => closeMenuHandler(CALENDAR_DAY_MENU_ID),
-    onSwipedRight: async () => openMenuHandler(CALENDAR_DAY_MENU_ID),
+    onSwipedLeft: () => dispatch(setNextDay()),
+    onSwipedRight: () => dispatch(setPrevDay()),
   });
 
   return (
