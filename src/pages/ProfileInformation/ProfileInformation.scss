@@ -57,6 +57,10 @@
     line-height: normal;
   }
 
+  &-bio {
+    overflow: scroll;
+  }
+
   &-divider {
     width: 1px;
     height: 24px;

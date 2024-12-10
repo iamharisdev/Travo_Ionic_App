@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonButton, IonContent, IonItem, IonList, IonModal, IonText } from "@ionic/react";
+import { IonButton, IonContent, IonItem, IonLabel, IonList, IonModal, IonText } from "@ionic/react";
 import { useRef } from "react";
 
 import './Logout.scss';
@@ -25,10 +25,10 @@ const Logout: React.FC<LogoutProps> = ({ id, trigger, cancel, logout }) => {
       <IonContent>
         <IonList>
           <IonItem lines="none">
-            <IonText className={`${CSSprefix}-title`}>Log out</IonText>
-          </IonItem>
-          <IonItem lines="none">
-            <IonText className={`${CSSprefix}-description`}>Are you sure you want to log out?</IonText>
+            <IonText className={`${CSSprefix}-title`}>
+              Log out
+              <p className={`${CSSprefix}-description`}>Are you sure you want to log out?</p>
+            </IonText>
           </IonItem>
           <IonItem className={`${CSSprefix}-buttons`} lines="none">
             <IonButton

@@ -6,6 +6,7 @@
   ion-list {
     background: var(--ion-trova-white);
     height: 100%;
+    overflow: scroll;
   }
 
   &-from-to-date {

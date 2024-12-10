@@ -16,7 +16,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
   const history = useHistory();
   const barColor = useMemo(() => getAppointmentColor(appointment?.color as CALENDAR_SLOTS), [appointment?.color]);
 
-  const { startTime, endTime, day, month, date, duration }:
+  const { startTime, endTime, day, month, date, duration, showButtons }:
     {
       startTime: string,
       endTime: string,
@@ -24,6 +24,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
       date: string,
       month: string,
       duration: string,
+      showButtons: boolean,
     } = useMemo(() => {
       let startTime = '';
       let endTime = '';
@@ -31,9 +32,12 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
       let date = '';
       let month = '';
       let duration = '';
+      let showButtons = false;
 
       if (appointment?.startTime) {
         const start = dayjs(appointment.startTime);
+        if (dayjs().isAfter(start)) showButtons = true;
+
         startTime = start.format('hh:mm A');
         day = weekday[dayjs(getDateWithoutTime(start.toISOString())).day()].substring(0, 3);
         month = months[start.month()].substring(0, 3);
@@ -60,7 +64,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
         }
       }
 
-      return { startTime, endTime, day, date, month, duration };
+      return { startTime, endTime, day, date, month, duration, showButtons };
     }, [appointment?.startTime, appointment?.endTime]);
 
   return (
@@ -98,29 +102,31 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
           </IonItem>
         </IonCol>
       </IonRow>
-      <IonRow>
-        <IonCol>
-          <IonButton
-            className='ion-padding'
-            color="primary"
-            expand="block"
-            onClick={() => acceptCB(appointment?.id || '')}
-          >
-            Accept
-          </IonButton>
-        </IonCol>
-        <IonCol>
-          <IonButton
-            className='ion-padding'
-            fill="outline"
-            color="danger"
-            expand="block"
-            onClick={() => declineCB(appointment?.id || '')}
-          >
-            Decline
-          </IonButton>
-        </IonCol>
-      </IonRow>
+      {showButtons && (
+        <IonRow>
+          <IonCol>
+            <IonButton
+              className='ion-padding'
+              color="primary"
+              expand="block"
+              onClick={() => acceptCB(appointment?.id || '')}
+            >
+              Accept
+            </IonButton>
+          </IonCol>
+          <IonCol>
+            <IonButton
+              className='ion-padding'
+              fill="outline"
+              color="danger"
+              expand="block"
+              onClick={() => declineCB(appointment?.id || '')}
+            >
+              Decline
+            </IonButton>
+          </IonCol>
+        </IonRow>
+      )}
     </IonGrid>
   );
 };

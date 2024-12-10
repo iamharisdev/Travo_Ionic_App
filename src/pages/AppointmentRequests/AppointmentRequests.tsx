@@ -39,7 +39,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   const appointmentRequestsRef = useRef();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const sortedEvents = useMemo(() => [...events?.events || []].sort(
+  const sortedEvents: any = useMemo(() => [...events.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ).filter(({ status }) => status === AppointmentStatusEnum.PENDING), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
