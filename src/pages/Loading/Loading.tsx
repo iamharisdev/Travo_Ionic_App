@@ -20,7 +20,6 @@ const CSSprefix = 'loading';
 
 const Loading: React.FC = (): React.ReactElement => {
   const history = useHistory();
-  const [buffer, setBuffer] = useState(0.06);
   const [progress, setProgress] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
@@ -28,14 +27,13 @@ const Loading: React.FC = (): React.ReactElement => {
   const { auth, provider, practice, billing } = useSelector((state: RootState) => state);
 
   useIonViewWillEnter(() => {
-    setBuffer(0.06);
     setProgress(0);
   }, []);
 
   useEffect(() => {
     const initialLoad = async () => {
       try {
-        setBuffer((prevBuffer) => prevBuffer + 0.08);
+
         setProgress((prevProgress) => prevProgress + 0.08);
         const profileResponse = await dispatch<any>(getMeAction());
         await dispatch(getCountriesAction());
@@ -44,39 +42,31 @@ const Loading: React.FC = (): React.ReactElement => {
         if (profileResponse.payload?.providerPractices?.length > 0 && profileResponse.payload?.principal?.countryCode) {
           const [providerPractice] = profileResponse.payload.providerPractices;
           if (providerPractice) {
-            setBuffer((prevBuffer) => prevBuffer + 0.08);
             setProgress((prevProgress) => prevProgress + 0.08);
             await dispatch(getBusinessInformationAction(providerPractice.practiceId));
             await dispatch(getPaymentMethodAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId
             }));
-            setBuffer((prevBuffer) => prevBuffer + 0.08);
             setProgress((prevProgress) => prevProgress + 0.08);
             await dispatch(getProductDetailsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId
             }));
-            setBuffer((prevBuffer) => prevBuffer + 0.08);
             setProgress((prevProgress) => prevProgress + 0.08);
             await dispatch(getProductsDetailsAction({
               practiceId: providerPractice.practiceId,
               countryCode: profileResponse.payload?.principal?.countryCode
             }));
-            setBuffer((prevBuffer) => prevBuffer + 0.08);
             setProgress((prevProgress) => prevProgress + 0.08);
             await dispatch(getEventsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               start: dayjs().startOf('year').toISOString(),
-              end: dayjs().endOf('year').toISOString(),
+              end: dayjs().add(1, 'year').endOf('year').toISOString(),
               pageNumber: 0,
               pageSize: 999,
             }));
-            // const start = dayjs().startOf('month').format('YYYY-MM-DD');
-            // const end = dayjs().endOf('month').format('YYYY-MM-DD');
-            // dispatch(setDates({ selectedDates: [start, end] }));
-            setBuffer((prevBuffer) => prevBuffer + 0.08);
             setProgress((prevProgress) => prevProgress + 0.08);
             await dispatch(getServicesAction({
               practiceId: providerPractice.practiceId,
@@ -84,8 +74,7 @@ const Loading: React.FC = (): React.ReactElement => {
               pageNumber: 0,
               pageSize: 999,
             }));
-            setBuffer((prevBuffer) => prevBuffer + 0.58);
-            setProgress((prevProgress) => prevProgress + 0.58);
+            setProgress((prevProgress) => prevProgress + 0.60);
 
             setTimeout(() => {
               history.push(CALENDAR_MONTH, { prevPath: LOADING });
@@ -129,9 +118,11 @@ const Loading: React.FC = (): React.ReactElement => {
   return (
     <IonPage className={CSSprefix}>
       <IonContent fullscreen={true}>
-        <div className={`${CSSprefix}-container`}>
-          <IonText>Loading data</IonText>
-          <IonProgressBar buffer={buffer} value={progress} />
+        <div className={`${CSSprefix}-main`}>
+          <div className={`${CSSprefix}-container`}>
+            <IonText>Loading appointments</IonText>
+            <IonProgressBar value={progress} />
+          </div>
         </div>
       </IonContent>
     </IonPage>
