@@ -29,6 +29,7 @@ import { addOutline } from "ionicons/icons";
 import { APPOINTMENT_DETAILS } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
 import { useHistory } from "react-router";
+import { getDefaultDates } from "../../shared/utils/dates.util";
 
 import "./CalendarDay.scss";
 
@@ -40,18 +41,22 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const pageRef = useRef();
   const history = useHistory();
   const createAppointmentRef = useRef<HTMLIonModalElement>(null);
-  const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
-  const mappedEvents = useMemo(() => events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs(selectedDate).date()).map((event) => ({
-    id: event?.id,
-    title: JSON.stringify({
+  const { provider, scheduling: { events, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
+  const mappedEvents = useMemo(() => {
+    if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day')
+
+    return events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs(selectedDate).date()).map((event) => ({
       id: event?.id,
-      service: event?.patientServiceName,
-      patient: event?.patientName,
-      color: event?.color,
-    }),
-    start: dayjs(event?.startTime || '').toDate(),
-    end: dayjs(event.endTime || '').toDate(),
-  })), [events.events, selectedDate]);
+      title: JSON.stringify({
+        id: event?.id,
+        service: event?.patientServiceName,
+        patient: event?.patientName,
+        color: event?.color,
+      }),
+      start: dayjs(event?.startTime || '').toDate(),
+      end: dayjs(event.endTime || '').toDate(),
+    }))
+  }, [events.events, selectedDate, state.loading]);
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -73,7 +78,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const getAppointmentsHandler = async () => {
     try {
       setDatePickerOpen(false);
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
 
       const [providerPractice] = provider.providerPractices;
       if (providerPractice) {
@@ -86,10 +90,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           pageSize: 999,
         }));
       }
-
-      dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
-      dispatch(setLoading({ loading: false, message: '' }));
       console.error('error at load appointments by date: ', error);
     }
   }
@@ -112,6 +113,16 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     onSwipedLeft: () => dispatch(setNextDay()),
     onSwipedRight: () => dispatch(setPrevDay()),
   });
+
+  useEffect(() => {
+    if (state.loading) {
+      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+    }
+
+    if (!state.loading) {
+      dispatch(setLoading({ loading: false, message: '' }));
+    }
+  }, [state.loading]);
 
   return (
     <>
@@ -151,6 +162,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
               eventWrapper: (props) => (
                 <EventCard
                   {...props}
+                  loading={state.loading}
                   onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
                     eventId: id,
                     type: AppointmentDetailTypeEnum.RESCHEDULE
