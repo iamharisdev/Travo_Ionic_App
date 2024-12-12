@@ -211,13 +211,24 @@ const schedulingSlice = createSlice({
       })
       .addCase(getEventsAction.fulfilled, (state, action: PayloadAction<EventsResponse>) => {
         if (state.events.total !== action.payload.total) {
-          const newEvents = [...state.events.events];
+          let newEvents = [...state.events.events];
           action.payload.events.forEach((e) => {
             const exist = newEvents.some((nEvent) => nEvent?.id === e?.id);
             if (!exist) {
               newEvents.push(e);
             }
-          })
+
+            if (exist) {
+              newEvents = newEvents.map((nEvent) => {
+                if (nEvent?.id === e?.id) {
+                  return { id: nEvent?.id, ...e };
+                }
+
+                return nEvent;
+              })
+            }
+          });
+
           state.events = {
             total: action.payload.total,
             events: newEvents,

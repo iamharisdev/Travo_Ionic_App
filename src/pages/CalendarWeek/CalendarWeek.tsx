@@ -25,9 +25,9 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, CALENDAR_DAY, CALENDAR_WEEK } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import { getDefaultDates } from "../../shared/utils/dates.util";
 
@@ -64,6 +64,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+  const location = useLocation();
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -94,23 +95,20 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     parentRef: calendarWeekRef,
     onSwipedLeft: () => dispatch(setNextWeek()),
     onSwipedRight: () => dispatch(setPrevWeek()),
+    onSwipedDown: () => getAppointmentsHandler(),
   });
 
   useEffect(() => {
-    if (selectedDates.length === 2) {
-      getAppointmentsHandler();
-    }
-  }, [selectedDates, state.success]);
+    if (location.pathname === CALENDAR_WEEK) {
+      if (state.loading) {
+        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      }
 
-  useEffect(() => {
-    if (state.loading) {
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      if (!state.loading) {
+        dispatch(setLoading({ loading: false, message: '' }));
+      }
     }
-
-    if (!state.loading) {
-      dispatch(setLoading({ loading: false, message: '' }));
-    }
-  }, [state.loading]);
+  }, [state.loading, location.pathname]);
 
   useIonViewWillEnter(() => {
     const start = dayjs().startOf('week').format('YYYY-MM-DD');
@@ -179,7 +177,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
                 dispatch(setDate(date as string));
                 history.push(CALENDAR_DAY);
               }}
-              onTriggerAction={getAppointmentsHandler}
+              onTriggerAction={() => setDatePickerOpen(false)}
             />
           </IonContent>
         </IonPopover>

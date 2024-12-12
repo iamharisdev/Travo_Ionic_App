@@ -6,7 +6,6 @@ import {
   IonIcon,
   IonPage,
   IonPopover,
-  IonSkeletonText,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
@@ -26,9 +25,9 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, CALENDAR_DAY, CALENDAR_MONTH, LOADING } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import { getDefaultDates } from "../../shared/utils/dates.util";
 
@@ -65,6 +64,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+  const location = useLocation<{ prevPath?: string }>();
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -95,30 +95,27 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     parentRef: calendarMonthRef,
     onSwipedLeft: () => dispatch(setNextMonth()),
     onSwipedRight: () => dispatch(setPrevMonth()),
+    onSwipedDown: () => getAppointmentsHandler(),
   });
 
   useEffect(() => {
-    if (selectedDates.length === 2) {
-      getAppointmentsHandler();
-    }
-  }, [selectedDates, state.success]);
+    if (location.pathname === CALENDAR_MONTH) {
+      if (state.loading) {
+        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      }
 
-  useEffect(() => {
-    if (state.loading) {
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      if (!state.loading) {
+        dispatch(setLoading({ loading: false, message: '' }));
+      }
     }
-
-    if (!state.loading) {
-      dispatch(setLoading({ loading: false, message: '' }));
-    }
-  }, [state.loading]);
+  }, [state.loading, location.pathname]);
 
   useIonViewWillEnter(() => {
     const start = dayjs().startOf('month').format('YYYY-MM-DD');
     const end = dayjs().endOf('month').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
-    getAppointmentsHandler();
   }, []);
+
 
   return (
     <>
@@ -182,7 +179,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
                 dispatch(setDate(date as string));
                 history.push(CALENDAR_DAY);
               }}
-              onTriggerAction={getAppointmentsHandler}
+              onTriggerAction={() => setDatePickerOpen(false)}
             />
           </IonContent>
         </IonPopover>

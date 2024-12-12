@@ -26,9 +26,9 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { APPOINTMENT_DETAILS } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { getDefaultDates } from "../../shared/utils/dates.util";
 
 import "./CalendarDay.scss";
@@ -67,6 +67,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
 
     return '';
   }, [selectedDate]);
+  const location = useLocation();
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -95,16 +96,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }
 
-  useEffect(() => {
-    if (selectedDate) {
-      getAppointmentsHandler();
-    }
-  }, [selectedDate]);
-
   useIonViewWillEnter(() => {
     if (!selectedDate) {
       dispatch(setDate(dayjs().format('YYYY-MM-DD')));
-      getAppointmentsHandler();
     }
   }, []);
 
@@ -112,17 +106,20 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     parentRef: pageRef,
     onSwipedLeft: () => dispatch(setNextDay()),
     onSwipedRight: () => dispatch(setPrevDay()),
+    onSwipedDown: () => getAppointmentsHandler(),
   });
 
   useEffect(() => {
-    if (state.loading) {
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
-    }
+    if (location.pathname === CALENDAR_DAY) {
+      if (state.loading) {
+        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      }
 
-    if (!state.loading) {
-      dispatch(setLoading({ loading: false, message: '' }));
+      if (!state.loading) {
+        dispatch(setLoading({ loading: false, message: '' }));
+      }
     }
-  }, [state.loading]);
+  }, [state.loading, location.pathname]);
 
   return (
     <>
@@ -186,7 +183,11 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           onDidDismiss={() => setDatePickerOpen(false)}
         >
           <IonContent fullscreen={true}>
-            <DatePicker date={selectedDate} onSelectedDate={(date) => dispatch(setDate(date as string))} onTriggerAction={getAppointmentsHandler} />
+            <DatePicker
+              date={selectedDate}
+              onSelectedDate={(date) => dispatch(setDate(date as string))}
+              onTriggerAction={() => setDatePickerOpen(false)}
+            />
           </IonContent>
         </IonPopover>
         <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-day" />
