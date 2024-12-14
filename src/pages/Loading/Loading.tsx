@@ -24,7 +24,15 @@ const Loading: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const location = useLocation();
-  const { auth, provider, practice, billing } = useSelector((state: RootState) => state);
+  const {
+    auth,
+    provider,
+    practice,
+    billing,
+    scheduling,
+    calendar,
+    patient,
+  } = useSelector((state: RootState) => state);
 
   useIonViewWillEnter(() => {
     setProgress(0);
@@ -103,7 +111,10 @@ const Loading: React.FC = (): React.ReactElement => {
       auth.state.success && (
         !provider.state.success &&
         !practice.state.success &&
-        !billing.state.success
+        !billing.state.success &&
+        !scheduling.state.success &&
+        !calendar.state.success &&
+        !patient.state.success
       )
       && location.pathname.includes(LOADING)
     ) {
