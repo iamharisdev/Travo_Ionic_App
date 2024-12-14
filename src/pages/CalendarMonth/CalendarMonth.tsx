@@ -128,7 +128,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             defaultView={Views.MONTH}
             events={mappedEvents}
             localizer={localizer}
-            showAllEvents={true}
+            showAllEvents={false}
             toolbar={false}
             views={{
               month: true
@@ -148,6 +148,9 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
               header: (props) => <HeaderCalendar {...props} type="month" />,
             }}
             onNavigate={() => { }}
+            messages={{
+              showMore: () => '• • •',
+            }}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
             <IonFabButton id="create-appointment-from-calendar-month">
