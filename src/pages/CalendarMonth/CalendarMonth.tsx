@@ -11,7 +11,7 @@ import {
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import { CALENDAR_MONTH_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
+import { Calendar, dayjsLocalizer, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -39,7 +39,6 @@ const CSSprefix = 'calendar-month';
 const CalendarMonth: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
-  const createAppointmentRef = useRef<HTMLIonModalElement>(null);
   const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
     dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
     dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
@@ -59,6 +58,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+  const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -95,6 +96,14 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     onSwipedLeft: () => dispatch(setNextMonth()),
     onSwipedRight: () => dispatch(setPrevMonth()),
   });
+
+  const handleSelectSlot = useCallback(
+    (slot: SlotInfo) => {
+      setIsCreateAppointmentOpen(true);
+      setSelectedSlot(slot);
+    },
+    [mappedEvents, isCreateAppointmentOpen]
+  );
 
   useEffect(() => {
     if (selectedDates.length === 2) {
@@ -148,9 +157,11 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
               header: (props) => <HeaderCalendar {...props} type="month" />,
             }}
             onNavigate={() => { }}
+            selectable={true}
+            onSelectSlot={handleSelectSlot}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton id="create-appointment-from-calendar-month">
+            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
               <IonIcon icon={addOutline} />
             </IonFabButton>
           </IonFab>
@@ -174,7 +185,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             />
           </IonContent>
         </IonPopover>
-        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-month" />
+        <CreateAppointment isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={setIsCreateAppointmentOpen} />
       </IonPage>
     </>
   );

@@ -12,7 +12,7 @@ import {
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import { CALENDAR_DAY_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
+import { Calendar, dayjsLocalizer, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -62,6 +62,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
 
     return '';
   }, [selectedDate]);
+  const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -93,6 +95,14 @@ const CalendarDay: React.FC = (): React.ReactElement => {
       console.error('error at load appointments by date: ', error);
     }
   }
+
+  const handleSelectSlot = useCallback(
+    (slot: SlotInfo) => {
+      setIsCreateAppointmentOpen(true);
+      setSelectedSlot(slot);
+    },
+    [mappedEvents, isCreateAppointmentOpen]
+  );
 
   useEffect(() => {
     if (selectedDate) {
@@ -159,9 +169,11 @@ const CalendarDay: React.FC = (): React.ReactElement => {
               ),
             }}
             onNavigate={() => { }}
+            selectable={true}
+            onSelectSlot={handleSelectSlot}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton id="create-appointment-from-calendar-day">
+            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
               <IonIcon icon={addOutline} />
             </IonFabButton>
           </IonFab>
@@ -177,7 +189,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             <DatePicker date={selectedDate} onSelectedDate={(date) => dispatch(setDate(date as string))} onTriggerAction={getAppointmentsHandler} />
           </IonContent>
         </IonPopover>
-        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-day" />
+        <CreateAppointment isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={setIsCreateAppointmentOpen} />
       </IonPage>
     </>
   );

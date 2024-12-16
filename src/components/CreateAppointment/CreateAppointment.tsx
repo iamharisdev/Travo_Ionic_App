@@ -17,7 +17,7 @@ export interface AppointmentDateTime {
   endTime: string;
 }
 
-const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger }) => {
+const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedSlot, setIsOpen }) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
   const [selectedService, setSelectedService] = useState<Services>();
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
@@ -35,7 +35,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
     }
 
     if (step === 0 || close) {
-      modalRef.current?.dismiss();
+      setIsOpen(false);
       setStep(0);
     }
   }, [step]);
@@ -61,10 +61,17 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
           setStep(2);
         }} />;
       case 2:
-        return <SelectDateTime setSelectedDateTime={(selectedDateTime) => {
-          setSelectedDateTime({ ...selectedDateTime });
-          setStep(3);
-        }} />;
+        return (
+          <SelectDateTime
+            selectedDate={selectedSlot?.start}
+            start_time={selectedSlot?.start}
+            end_time={selectedSlot?.end}
+            setSelectedDateTime={(selectedDateTime) => {
+              setSelectedDateTime({ ...selectedDateTime });
+              setStep(3);
+            }}
+          />
+        );
       case 3:
         return <ReviewDetails
           selectedClient={selectedClient}
@@ -80,8 +87,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger
 
   return (
     <IonModal
-      ref={modalRef}
-      trigger={trigger}
+      isOpen={isOpen}
       className={CSSPrefix}
     >
       <IonHeader>
