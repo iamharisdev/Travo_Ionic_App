@@ -167,6 +167,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             }}
             onNavigate={() => { }}
             selectable={true}
+            longPressThreshold={0}
             onSelectSlot={handleSelectSlot}
             messages={{
               showMore: () => '• • •',
