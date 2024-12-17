@@ -12,7 +12,7 @@ import {
 } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 import TrovaLogo from "/assets/TrovaLogo.png";
-import { SING_IN, CALENDAR_MONTH } from "../../shared/routes/routes";
+import { SING_IN, LOADING } from "../../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../state/store";
@@ -62,7 +62,7 @@ const Login: React.FC = (): React.ReactElement => {
         );
         if (response.meta.requestStatus === 'fulfilled' && (response.payload as AuthState).success) {
           dispatch(setLoading({ loading: false }));
-          history.push(CALENDAR_MONTH);
+          history.push(LOADING);
         } else {
           dispatch(setLoading({ loading: false }));
           presentToast('Username/Password combination is not correct', 3000, 'middle', 'danger');

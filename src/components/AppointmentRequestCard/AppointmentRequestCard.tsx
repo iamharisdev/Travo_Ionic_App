@@ -36,7 +36,11 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
 
       if (appointment?.startTime) {
         const start = dayjs(appointment.startTime);
-        if (dayjs().isAfter(start)) showButtons = true;
+        const isBefore = dayjs().isBefore(start);
+
+        if (isBefore) {
+          showButtons = true;
+        }
 
         startTime = start.format('hh:mm A');
         day = weekday[dayjs(getDateWithoutTime(start.toISOString())).day()].substring(0, 3);

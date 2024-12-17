@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact, useIonLoading } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { FORGOT_PASSWORD, DASHBOARD, SING_IN, RESET_PASSWORD, VERIFY_EMAIL, PASSWORD_CHANGED_SUCCESSFULLY } from './shared/routes/routes';
+import { FORGOT_PASSWORD, DASHBOARD, SING_IN, RESET_PASSWORD, VERIFY_EMAIL, PASSWORD_CHANGED_SUCCESSFULLY, LOADING } from './shared/routes/routes';
 import SignIn from './pages/SignIn/SignIn';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Tabs from './components/Tabs/Tabs';
@@ -36,6 +36,7 @@ import './global.scss';
 
 /* Big calendar */
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import Loading from './pages/Loading/Loading';
 
 setupIonicReact();
 
@@ -79,6 +80,9 @@ const App: React.FC = () => {
         <IonRouterOutlet defaultValue={SING_IN}>
           <Route path={SING_IN}>
             <SignIn />
+          </Route>
+          <Route path={LOADING}>
+            <Loading />
           </Route>
           <Route path={FORGOT_PASSWORD}>
             <ForgotPassword />

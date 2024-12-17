@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { NylasScheduling } from '@nylas/react';
 import { AppointmentDateTime } from '../CreateAppointment/CreateAppointment';
 
 interface SchedulingProps {
   setSelectedDateTime: (selectedDateTime: AppointmentDateTime) => void;
+  selectedDate?: Date | null;
+  start_time?: Date;
+  end_time?: Date;
 }
 
-const Scheduling: React.FC<SchedulingProps> = ({ setSelectedDateTime }): React.ReactElement => {
+const Scheduling: React.FC<SchedulingProps> = ({
+  selectedDate,
+  start_time,
+  end_time,
+  setSelectedDateTime
+}): React.ReactElement => {
+  const selectedTimeslot = useMemo(() => {
+    if (start_time && end_time) return {
+      start_time,
+      end_time,
+      emails: []
+    };
+
+    return null;
+  }, [start_time, end_time])
+
   return (
     <>
       <NylasScheduling
@@ -16,6 +34,8 @@ const Scheduling: React.FC<SchedulingProps> = ({ setSelectedDateTime }): React.R
         defaultSchedulerState={{
           showBookingForm: false,
           confirmedEventInfo: undefined,
+          selectedDate,
+          selectedTimeslot
         }}
         eventOverrides={{
           timeslotConfirmed: async (

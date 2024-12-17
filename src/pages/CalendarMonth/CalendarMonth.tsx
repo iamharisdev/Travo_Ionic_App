@@ -11,7 +11,7 @@ import {
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import { CALENDAR_MONTH_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
+import { Calendar, dayjsLocalizer, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -25,10 +25,11 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, CALENDAR_DAY, CALENDAR_MONTH, LOADING } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import DatePicker from "../../components/DatePicker/DatePicker";
+import { getDefaultDates } from "../../shared/utils/dates.util";
 
 import "./CalendarMonth.scss";
 
@@ -39,26 +40,32 @@ const CSSprefix = 'calendar-month';
 const CalendarMonth: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
-  const createAppointmentRef = useRef<HTMLIonModalElement>(null);
-  const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
-    dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-    dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
-  ).map((event) => ({
-    id: event?.id,
-    title: JSON.stringify({
+  const mappedEvents = useMemo(() => {
+    if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'month');
+
+    return events.events.filter(({ startTime }) =>
+      dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
+    ).map((event) => ({
       id: event?.id,
-      service: event?.patientServiceName,
-      patient: event?.patientName,
-      color: event?.color,
-    }),
-    start: dayjs(event?.startTime || '').toDate(),
-    end: dayjs(event.endTime || '').toDate(),
-  })), [events.events]);
+      title: JSON.stringify({
+        id: event?.id,
+        service: event?.patientServiceName,
+        patient: event?.patientName,
+        color: event?.color,
+      }),
+      start: dayjs(event?.startTime || '').toDate(),
+      end: dayjs(event.endTime || '').toDate(),
+    }))
+  }, [events.events, state.loading, selectedDates]);
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+  const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
+  const location = useLocation<{ prevPath?: string }>();
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -69,8 +76,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
   const getAppointmentsHandler = async () => {
     try {
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
-
       const [providerPractice] = provider.providerPractices;
       if (providerPractice) {
         await dispatch(getEventsAction({
@@ -82,10 +87,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           pageSize: 999,
         }));
       }
-
-      dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
-      dispatch(setLoading({ loading: false, message: '' }));
       console.error('error at load appointments by date: ', error);
     }
   }
@@ -94,20 +96,35 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     parentRef: calendarMonthRef,
     onSwipedLeft: () => dispatch(setNextMonth()),
     onSwipedRight: () => dispatch(setPrevMonth()),
+    onSwipedDown: () => getAppointmentsHandler(),
   });
 
+  const handleSelectSlot = useCallback(
+    (slot: SlotInfo) => {
+      setIsCreateAppointmentOpen(true);
+      setSelectedSlot(slot);
+    },
+    [mappedEvents, isCreateAppointmentOpen]
+  );
+
   useEffect(() => {
-    if (selectedDates.length === 2) {
-      getAppointmentsHandler();
+    if (location.pathname === CALENDAR_MONTH) {
+      if (state.loading) {
+        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      }
+
+      if (!state.loading) {
+        dispatch(setLoading({ loading: false, message: '' }));
+      }
     }
-  }, [selectedDates, state.success]);
+  }, [state.loading, location.pathname]);
 
   useIonViewWillEnter(() => {
     const start = dayjs().startOf('month').format('YYYY-MM-DD');
     const end = dayjs().endOf('month').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
-    getAppointmentsHandler();
   }, []);
+
 
   return (
     <>
@@ -128,7 +145,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             defaultView={Views.MONTH}
             events={mappedEvents}
             localizer={localizer}
-            showAllEvents={true}
+            showAllEvents={false}
             toolbar={false}
             views={{
               month: true
@@ -139,6 +156,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
                 <EventCard
                   {...props}
                   isMonth={true}
+                  loading={state.loading}
                   onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
                     eventId: id,
                     type: AppointmentDetailTypeEnum.RESCHEDULE
@@ -148,9 +166,14 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
               header: (props) => <HeaderCalendar {...props} type="month" />,
             }}
             onNavigate={() => { }}
+            selectable={true}
+            onSelectSlot={handleSelectSlot}
+            messages={{
+              showMore: () => '• • •',
+            }}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton id="create-appointment-from-calendar-month">
+            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
               <IonIcon icon={addOutline} />
             </IonFabButton>
           </IonFab>
@@ -170,11 +193,11 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
                 dispatch(setDate(date as string));
                 history.push(CALENDAR_DAY);
               }}
-              onTriggerAction={getAppointmentsHandler}
+              onTriggerAction={() => setDatePickerOpen(false)}
             />
           </IonContent>
         </IonPopover>
-        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-month" />
+        <CreateAppointment isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={setIsCreateAppointmentOpen} />
       </IonPage>
     </>
   );
