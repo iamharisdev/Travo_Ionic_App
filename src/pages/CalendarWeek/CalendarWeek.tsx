@@ -25,10 +25,11 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, CALENDAR_DAY, CALENDAR_WEEK } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import DatePicker from "../../components/DatePicker/DatePicker";
+import { getDefaultDates } from "../../shared/utils/dates.util";
 
 import "./CalendarWeek.scss";
 
@@ -41,24 +42,29 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
-  const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
-    dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-    dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
-  ).map((event) => ({
-    id: event?.id,
-    title: JSON.stringify({
+  const mappedEvents = useMemo(() => {
+    if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'week')
+
+    return events.events.filter(({ startTime }) =>
+      dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
+    ).map((event) => ({
       id: event?.id,
-      service: event?.patientServiceName,
-      patient: event?.patientName,
-      color: event?.color,
-    }),
-    start: dayjs(event?.startTime || '').toDate(),
-    end: dayjs(event.endTime || '').toDate(),
-  })), [events.events]);
+      title: JSON.stringify({
+        id: event?.id,
+        service: event?.patientServiceName,
+        patient: event?.patientName,
+        color: event?.color,
+      }),
+      start: dayjs(event?.startTime || '').toDate(),
+      end: dayjs(event.endTime || '').toDate(),
+    }))
+  }, [events.events, state.loading, selectedDates]);
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+  const location = useLocation();
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -69,8 +75,6 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
 
   const getAppointmentsHandler = async () => {
     try {
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
-
       const [providerPractice] = provider.providerPractices;
       if (providerPractice) {
         await dispatch(getEventsAction({
@@ -82,11 +86,8 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
           pageSize: 999,
         }));
       }
-
-      dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
-      console.error('error at load appointments by date: ', error);
     }
   }
 
@@ -94,13 +95,20 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     parentRef: calendarWeekRef,
     onSwipedLeft: () => dispatch(setNextWeek()),
     onSwipedRight: () => dispatch(setPrevWeek()),
+    onSwipedDown: () => getAppointmentsHandler(),
   });
 
   useEffect(() => {
-    if (selectedDates.length === 2) {
-      getAppointmentsHandler();
+    if (location.pathname === CALENDAR_WEEK) {
+      if (state.loading) {
+        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      }
+
+      if (!state.loading) {
+        dispatch(setLoading({ loading: false, message: '' }));
+      }
     }
-  }, [selectedDates, state.success]);
+  }, [state.loading, location.pathname]);
 
   useIonViewWillEnter(() => {
     const start = dayjs().startOf('week').format('YYYY-MM-DD');
@@ -137,6 +145,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
               eventWrapper: (props) => (
                 <EventCard
                   {...props}
+                  loading={state.loading}
                   onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
                     eventId: id,
                     type: AppointmentDetailTypeEnum.RESCHEDULE
@@ -168,7 +177,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
                 dispatch(setDate(date as string));
                 history.push(CALENDAR_DAY);
               }}
-              onTriggerAction={getAppointmentsHandler}
+              onTriggerAction={() => setDatePickerOpen(false)}
             />
           </IonContent>
         </IonPopover>

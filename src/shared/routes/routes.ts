@@ -4,6 +4,7 @@ export const FORGOT_PASSWORD = '/forgot-password';
 export const VERIFY_EMAIL = '/verify-email';
 export const RESET_PASSWORD = '/reset-password';
 export const PASSWORD_CHANGED_SUCCESSFULLY = '/password-changed-successfully';
+export const LOADING = '/loading';
 
 // With Auth
 export const DASHBOARD = '/dashboard';
