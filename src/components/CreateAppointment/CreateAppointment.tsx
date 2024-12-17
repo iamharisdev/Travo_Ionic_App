@@ -38,7 +38,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
       setIsOpen(false);
       setStep(0);
     }
-  }, [step]);
+  }, [step, isOpen]);
 
 
   // Android native back button
@@ -83,7 +83,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
       default:
         <SelectClient setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime]);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen]);
 
   return (
     <IonModal

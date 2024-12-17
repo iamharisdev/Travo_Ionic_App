@@ -16,7 +16,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { useFormik } from "formik";
-import { useLocation } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { caretDownOutline, caretUpOutline, informationCircle } from "ionicons/icons";
 import { AppointmentDetailsEditState } from "./AppointmentDetailsEdit.type";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +33,7 @@ const CSSprefix = 'appointment-details-edit';
 const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { services } } = useSelector((state: RootState) => state);
   const location = useLocation<AppointmentDetailsEditState>();
+  const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const initialValues = useMemo(() => ({
@@ -44,7 +45,6 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
     endTime: location?.state?.endTime || '',
     patientServiceId: location?.state?.patientServiceId || '',
   }), [location?.state]);
-
   const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
     let practiceId = '';
     let providerId = '';
@@ -80,6 +80,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
 
         if (response.meta.requestStatus === 'fulfilled') {
           dispatch(setLoading({ loading: false, message: undefined }));
+          history.goBack();
         }
 
         if (response.meta.requestStatus === 'rejected') {

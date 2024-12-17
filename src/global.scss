@@ -193,6 +193,15 @@ ion-datetime::part(calendar-day today) {
         .rbc-date-cell {
           text-align: center;
         }
+
+        .rbc-row-segment {
+          button {
+            color: var(--ion-trova-gray-text);
+            font-size: 16px;
+            padding: 0;
+            margin: 0;
+          }
+        }
       }
     }
   }
