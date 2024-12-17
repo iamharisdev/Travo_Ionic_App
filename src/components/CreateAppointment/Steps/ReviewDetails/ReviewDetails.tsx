@@ -62,6 +62,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         let start = '';
         let end = '';
 
+        dispatch(setLoading({ loading: false, message: '' }));
+
         const response = await dispatch(createAppointmentAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
@@ -77,7 +79,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         }));
 
         if (response.payload) {
-          dispatch(setLoading({ loading: false, message: '' }));
           closeHandler(true);
           presentToast(
             'Appointment added',
@@ -105,7 +106,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         }
 
         if (!response.payload) {
-          dispatch(setLoading({ loading: false, message: '' }));
           closeHandler(true);
           presentToast(
             'Error at create appointment',

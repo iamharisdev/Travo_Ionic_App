@@ -11,7 +11,7 @@ import {
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import { CALENDAR_WEEK_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
+import { Calendar, dayjsLocalizer, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -64,6 +64,8 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+  const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
   const location = useLocation();
 
   const openDatePickerHandler = useCallback((e: any) => {
@@ -97,6 +99,14 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     onSwipedRight: () => dispatch(setPrevWeek()),
     onSwipedDown: () => getAppointmentsHandler(),
   });
+
+  const handleSelectSlot = useCallback(
+    (slot: SlotInfo) => {
+      setIsCreateAppointmentOpen(true);
+      setSelectedSlot(slot);
+    },
+    [mappedEvents, isCreateAppointmentOpen]
+  );
 
   useEffect(() => {
     if (location.pathname === CALENDAR_WEEK) {
@@ -155,9 +165,11 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
               header: (props) => <HeaderCalendar {...props} />,
             }}
             onNavigate={() => { }}
+            selectable={true}
+            onSelectSlot={handleSelectSlot}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton id="create-appointment-from-calendar-week">
+            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
               <IonIcon icon={addOutline} />
             </IonFabButton>
           </IonFab>
@@ -181,7 +193,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
             />
           </IonContent>
         </IonPopover>
-        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-week" />
+        <CreateAppointment isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={setIsCreateAppointmentOpen} />
       </IonPage>
     </>
   );

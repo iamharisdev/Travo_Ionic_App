@@ -132,6 +132,14 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     return { practiceId, providerId };
   }, [provider.providerPractices]);
 
+  const showEdit = useMemo(() => {
+    const isBefore = dayjs().isBefore(event?.startTime);
+
+    if (isBefore) return true;
+
+    return false;
+  }, [event]);
+
   const copyOnlineMeetUrl = async () => {
     await Clipboard.write({
       string: event?.onlineMeetUrl
@@ -207,7 +215,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
   return (
     <IonPage className={CSSprefix}>
-      <Header showBack showEdit showMenu={false} editCB={editAppointmentHandler} />
+      <Header showBack showEdit={showEdit} showMenu={false} editCB={editAppointmentHandler} />
       <IonContent fullscreen={true}>
         <IonGrid className="ion-margin-top ion-padding-top">
           <IonRow>

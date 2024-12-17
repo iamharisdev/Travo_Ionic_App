@@ -13,7 +13,10 @@ const UseSwipeGesture = ({ parentRef, onSwipedLeft, onSwipedRight, onSwipedDown 
     onSwipedLeft,
     onSwipedRight,
     onSwipedDown,
-    delta: 10,
+    delta: {
+      up: 10,
+      down: 300,
+    },
     preventScrollOnSwipe: false,
     trackTouch: true,
     trackMouse: false,
