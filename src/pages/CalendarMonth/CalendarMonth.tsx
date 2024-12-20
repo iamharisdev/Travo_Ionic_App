@@ -56,7 +56,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       }),
       start: dayjs(event?.startTime || '').toDate(),
       end: dayjs(event.endTime || '').toDate(),
-    }))
+    })).reverse();
   }, [events.events, state.loading, selectedDates]);
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
@@ -66,6 +66,34 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
   const location = useLocation<{ prevPath?: string }>();
+  const eventsInSameDate = useMemo(() => {
+    let eventsInSameDate: Array<{ date: string, ids: Array<string> }> = [];
+    mappedEvents.forEach(({ id, start }) => {
+      const startDate = dayjs(start).format('YYYY-MM-DD');
+      const exist = eventsInSameDate.find(({ date }) => date === startDate);
+
+      if (exist) {
+        eventsInSameDate = eventsInSameDate.map((e) => {
+          if (e.date === startDate) {
+            const newIds = [...e.ids];
+            newIds.push(id!);
+            return {
+              ...e,
+              ids: newIds
+            }
+          }
+
+          return { ...e };
+        });
+      }
+
+      if (!exist) {
+        eventsInSameDate.push({ date: startDate, ids: [id!] });
+      }
+    });
+
+    return eventsInSameDate;
+  }, [mappedEvents]);
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -145,33 +173,39 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             defaultView={Views.MONTH}
             events={mappedEvents}
             localizer={localizer}
-            showAllEvents={false}
+            showAllEvents={true}
             toolbar={false}
             views={{
               month: true
             }}
             timeslots={2}
             components={{
-              eventWrapper: (props) => (
-                <EventCard
-                  {...props}
-                  isMonth={true}
-                  loading={state.loading}
-                  onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
-                    eventId: id,
-                    type: AppointmentDetailTypeEnum.RESCHEDULE
-                  })}
-                />
-              ),
+              eventWrapper: (props) => {
+                const startDate = dayjs(props.event.start).format('YYYY-MM-DD');
+                const currentDate = eventsInSameDate.find(({ date }) => date === startDate);
+                let index = currentDate?.ids.findIndex((id: string) => id === props.event.id);
+                let eventsLeft = (currentDate?.ids?.length! - index!) || 0;
+
+                return (
+                  <EventCard
+                    {...props}
+                    isMonth={true}
+                    loading={state.loading}
+                    index={index}
+                    eventsLeft={eventsLeft}
+                    onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
+                      eventId: id,
+                      type: AppointmentDetailTypeEnum.RESCHEDULE
+                    })}
+                  />
+                );
+              },
               header: (props) => <HeaderCalendar {...props} type="month" />,
             }}
             onNavigate={() => { }}
             selectable={true}
-            longPressThreshold={0}
+            longPressThreshold={300}
             onSelectSlot={handleSelectSlot}
-            messages={{
-              showMore: () => '• • •',
-            }}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
             <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>

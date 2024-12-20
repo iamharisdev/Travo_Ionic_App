@@ -179,7 +179,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             }}
             onNavigate={() => { }}
             selectable={true}
-            longPressThreshold={0}
+            longPressThreshold={300}
             onSelectSlot={handleSelectSlot}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">

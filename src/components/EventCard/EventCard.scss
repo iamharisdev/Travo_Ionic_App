@@ -4,31 +4,26 @@
     max-height: 40px;
     display: flex;
     flex-direction: column;
+    white-space: nowrap;
     overflow: hidden;
   }
 
   &-service {
     color: var(--ion-trova-gray-text);
-    font-size: 14px;
+    font-size: 12px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;
   }
+}
 
-  &-patient-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    position: relative;
-    bottom: 2px;
-  }
-
-  &-patient {
-    color: var(--ion-trova-gray-text);
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    margin-left: 5px;
-  }
+.more {
+  color: var(--ion-trova-medium-gray);
+  font-family: 'Poppins';
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0 0 0 2px;
+  padding: 0;
 }
