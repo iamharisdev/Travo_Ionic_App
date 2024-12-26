@@ -190,6 +190,9 @@ ion-datetime::part(calendar-day today) {
 
     .rbc-row-content {
       .rbc-row {
+        display: flex;
+        flex-grow: 1;
+
         .rbc-date-cell {
           text-align: center;
         }
@@ -284,6 +287,12 @@ ion-datetime::part(calendar-day today) {
       }
     }
   }
+}
+
+.rbc-row-content-scroll-container {
+  display: flex;
+  flex: 1 2 100px;
+  flex-direction: column;
 }
 
 body {
