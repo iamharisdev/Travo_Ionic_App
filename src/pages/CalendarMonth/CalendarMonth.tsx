@@ -56,7 +56,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       }),
       start: dayjs(event?.startTime || '').toDate(),
       end: dayjs(event.endTime || '').toDate(),
-    })).reverse();
+    })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
   }, [events.events, state.loading, selectedDates]);
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
@@ -183,8 +183,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
               eventWrapper: (props) => {
                 const startDate = dayjs(props.event.start).format('YYYY-MM-DD');
                 const currentDate = eventsInSameDate.find(({ date }) => date === startDate);
-                let index = currentDate?.ids.findIndex((id: string) => id === props.event.id);
-                let eventsLeft = (currentDate?.ids?.length! - index!) || 0;
+                const index = currentDate?.ids.findIndex((id: string) => id === props.event.id);
+                const eventsLeft = (currentDate?.ids?.length! - index!) || 0;
 
                 return (
                   <EventCard

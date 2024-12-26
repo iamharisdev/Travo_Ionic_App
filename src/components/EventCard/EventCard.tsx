@@ -23,7 +23,7 @@ const EventCard: React.FC<any> = ({ children, isMonth = false, loading = false, 
     return (
       <div
         {...children.props}
-        style={{ ...children.props.style, backgroundColor: `${eventColor}`, border: 'none', height: isMonth && '16px', padding: isMonth && '0 5px' }}
+        style={{ ...children.props.style, backgroundColor: `${eventColor}`, border: 'none', height: isMonth && '2vh', padding: isMonth && '0 5px' }}
         onClick={() => onClick(eventProps.id)}
       >
 
