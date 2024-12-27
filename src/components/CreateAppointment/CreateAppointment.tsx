@@ -7,6 +7,7 @@ import SelectService from './Steps/SelectService/SelectService';
 import { Services } from '../../shared/types/appointment.type';
 import SelectDateTime from './Steps/SelectDateTime/SelectDateTime';
 import ReviewDetails from './Steps/ReviewDetails/ReviewDetails';
+import dayjs from 'dayjs';
 
 import './CreateAppointment.scss';
 
@@ -22,23 +23,29 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
   const [selectedService, setSelectedService] = useState<Services>();
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
   const [step, setStep] = useState<number>(0);
+  const [prevStep, setPrevStep] = useState<number>(-1);
 
   const cancelOrBackText = useMemo(() => {
-    if (step === 1 || step === 2 || step === 3) return 'Back';
+    if (step === 1 || step === 2 || step === 3 || prevStep > -1) return 'Back';
 
     return 'Cancel';
-  }, [step]);
+  }, [step, prevStep]);
 
   const closeHandler = useCallback((close?: boolean) => {
-    if ((step === 1 || step === 2 || step === 3) && !close) {
+    if ((step === 1 || step === 2 || step === 3) && !close && prevStep === -1) {
       setStep(step - 1);
     }
 
-    if (step === 0 || close) {
+    if ((step === 0 || close) && prevStep === -1) {
       setIsOpen(false);
       setStep(0);
     }
-  }, [step, isOpen]);
+
+    if (prevStep > -1) {
+      setStep(prevStep);
+      setPrevStep(-1);
+    }
+  }, [step, prevStep, isOpen]);
 
 
   // Android native back button
@@ -58,7 +65,16 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
       case 1:
         return <SelectService setSelectedService={(service) => {
           setSelectedService(service);
-          setStep(2);
+
+          if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
+            setSelectedDateTime({
+              startTime: dayjs(selectedSlot?.start).toISOString(),
+              endTime: dayjs(selectedSlot?.end).toISOString()
+            });
+            setStep(3);
+          } else {
+            setStep(2);
+          }
         }} />;
       case 2:
         return (
@@ -78,12 +94,16 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
           selectedService={selectedService}
           selectedDateTime={selectedDateTime}
           closeHandler={closeHandler}
+          goToStep={(step) => setStep((prevState) => {
+            setPrevStep(prevState);
+            return step;
+          })}
         />;
 
       default:
         <SelectClient setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, isOpen]);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot]);
 
   return (
     <IonModal

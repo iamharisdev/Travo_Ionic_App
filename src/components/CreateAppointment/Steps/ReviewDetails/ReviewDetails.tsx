@@ -4,7 +4,7 @@ import { Patient } from '../../../../state/patientSlice';
 import { Services } from '../../../../shared/types/appointment.type';
 import { AppointmentDateTime } from '../../CreateAppointment';
 import dayjs from 'dayjs';
-import { informationCircle } from 'ionicons/icons';
+import { caretDownOutline, informationCircle } from 'ionicons/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../state/store';
 import { setLoading } from '../../../../state/loadingSlice';
@@ -20,19 +20,20 @@ interface ReviewDetailsProps {
   selectedService?: Services;
   selectedDateTime?: AppointmentDateTime;
   closeHandler: (close?: boolean) => void;
+  goToStep?: (step: number) => void;
 }
 
 const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   selectedClient,
   selectedService,
   selectedDateTime,
-  closeHandler
+  closeHandler,
+  goToStep,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const {
     provider,
-    scheduling: { services: { patientServiceRequestDtos } },
     calendar: { selectedDate, selectedDates }
   } = useSelector((state: RootState) => state);
 
@@ -144,22 +145,30 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+        onClick={() => goToStep && goToStep(0)}
       >
-        <IonLabel position="stacked">Client</IonLabel>
+        <IonLabel position="stacked">
+          Client
+        </IonLabel>
+        <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
         <IonLabel position="stacked">{`${selectedClient?.firstName} ${selectedClient?.lastName}`}</IonLabel>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+        onClick={() => goToStep && goToStep(1)}
       >
         <IonLabel position="stacked">Service</IonLabel>
+        <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
         <IonLabel position="stacked">{selectedService?.name}</IonLabel>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+        onClick={() => goToStep && goToStep(2)}
       >
         <IonLabel position="stacked">Date and time</IonLabel>
+        <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
         <IonLabel position="stacked">{dateTime}</IonLabel>
       </IonItem>
       <IonItem
