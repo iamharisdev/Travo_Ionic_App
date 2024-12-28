@@ -60,20 +60,29 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
       case 0:
         return <SelectClient setSelectedClient={(client) => {
           setSelectedClient(client);
-          setStep(1);
+          if (prevStep === -1) {
+            setStep(1);
+          } else {
+            setStep(prevStep);
+            setPrevStep(-1);
+          }
         }} />;
       case 1:
         return <SelectService setSelectedService={(service) => {
           setSelectedService(service);
-
-          if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
-            setSelectedDateTime({
-              startTime: dayjs(selectedSlot?.start).toISOString(),
-              endTime: dayjs(selectedSlot?.end).toISOString()
-            });
-            setStep(3);
+          if (prevStep === -1) {
+            if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
+              setSelectedDateTime({
+                startTime: dayjs(selectedSlot?.start).toISOString(),
+                endTime: dayjs(selectedSlot?.end).toISOString()
+              });
+              setStep(3);
+            } else {
+              setStep(2);
+            }
           } else {
-            setStep(2);
+            setStep(prevStep);
+            setPrevStep(-1);
           }
         }} />;
       case 2:
@@ -84,7 +93,12 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
             end_time={selectedSlot?.end}
             setSelectedDateTime={(selectedDateTime) => {
               setSelectedDateTime({ ...selectedDateTime });
-              setStep(3);
+              if (prevStep === -1) {
+                setStep(3);
+              } else {
+                setStep(prevStep);
+                setPrevStep(-1);
+              }
             }}
           />
         );
@@ -103,7 +117,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
       default:
         <SelectClient setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot]);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep]);
 
   return (
     <IonModal
