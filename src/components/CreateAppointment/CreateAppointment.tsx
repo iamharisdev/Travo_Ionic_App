@@ -25,6 +25,13 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
   const [step, setStep] = useState<number>(0);
   const [prevStep, setPrevStep] = useState<number>(-1);
 
+  const configNylasId = useMemo(() => {
+    if (selectedService?.externalSchedulerId)
+      return selectedService.externalSchedulerId;
+
+    return '';
+  }, [selectedService]);
+
   const cancelOrBackText = useMemo(() => {
     if (step === 1 || step === 2 || step === 3 || prevStep > -1) return 'Back';
 
@@ -72,9 +79,10 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
           setSelectedService(service);
           if (prevStep === -1) {
             if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
+              const endTime = dayjs(selectedSlot?.start).add(service.duration, 'minutes').toISOString();
               setSelectedDateTime({
                 startTime: dayjs(selectedSlot?.start).toISOString(),
-                endTime: dayjs(selectedSlot?.end).toISOString()
+                endTime
               });
               setStep(3);
             } else {
@@ -88,6 +96,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
       case 2:
         return (
           <SelectDateTime
+            configurationId={configNylasId}
             selectedDate={selectedSlot?.start}
             start_time={selectedSlot?.start}
             end_time={selectedSlot?.end}
@@ -117,7 +126,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
       default:
         <SelectClient setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep]);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId]);
 
   return (
     <IonModal

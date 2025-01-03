@@ -18,6 +18,7 @@ export interface AppointmentDateTime {
 }
 
 const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, appointment, setIsOpen }) => {
+  const { services: { patientServiceRequestDtos } } = useSelector((state: RootState) => state.scheduling)
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
   const [step, setStep] = useState<number>(0);
   const dispatch = useDispatch<AppDispatch>();
@@ -27,6 +28,14 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
     provider,
     calendar: { selectedDate, selectedDates }
   } = useSelector((state: RootState) => state)
+
+  const configNylasId = useMemo(() => {
+    if (patientServiceRequestDtos && appointment?.patientServiceId) {
+      return patientServiceRequestDtos.find(({ id }) => id === appointment.patientServiceId)?.externalSchedulerId!!;
+    }
+
+    return '';
+  }, [patientServiceRequestDtos, appointment?.patientServiceId]);
 
   const cancelOrBackText = useMemo(() => {
     if (step === 1 || step === 2 || step === 3) return 'Back';
@@ -150,10 +159,15 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
           rescheduleHandler={rescheduleAppointmentHandler}
         />;
       case 1:
-        return <SelectDateTime setSelectedDateTime={(selectedDateTime) => {
-          setSelectedDateTime({ ...selectedDateTime });
-          setStep(0);
-        }} />;
+        return (
+          <SelectDateTime
+            configurationId={configNylasId}
+            setSelectedDateTime={(selectedDateTime) => {
+              setSelectedDateTime({ ...selectedDateTime });
+              setStep(0);
+            }}
+          />
+        );
 
       default:
         <ReviewDetails
@@ -166,7 +180,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
           rescheduleHandler={rescheduleAppointmentHandler}
         />;
     }
-  }, [step, appointment, selectedDateTime]);
+  }, [step, appointment, selectedDateTime, configNylasId]);
 
   useEffect(() => {
     if (

@@ -65,7 +65,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 
         dispatch(setLoading({ loading: false, message: '' }));
 
-        const response = await dispatch(createAppointmentAction({
+        const payload = {
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
           payload: {
@@ -77,7 +77,9 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             startTime: selectedDateTime.startTime,
             endTime: selectedDateTime.endTime
           }
-        }));
+        };
+
+        const response = await dispatch(createAppointmentAction(payload));
 
         if (response.payload) {
           closeHandler(true);
