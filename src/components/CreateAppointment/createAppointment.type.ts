@@ -1,4 +1,7 @@
+import { SlotInfo } from "react-big-calendar";
+
 export interface CreateAppointmentProps {
-  modalRef: React.RefObject<HTMLIonModalElement>;
-  trigger: string;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  selectedSlot?: SlotInfo;
 }

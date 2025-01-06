@@ -7,7 +7,7 @@ import { AppointmentStatusEnum, CancelAppointmentPayload, ConfirmAppointmentPayl
 export interface SchedulingState {
   events: EventsResponse;
   services: ServicesResponse;
-  state: StatusState;
+  state: StatusState & { loading: boolean };
 }
 
 const initialState: SchedulingState = {
@@ -21,6 +21,7 @@ const initialState: SchedulingState = {
   },
   state: {
     success: false,
+    loading: false,
   }
 }
 
@@ -204,23 +205,55 @@ const schedulingSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(resetAll, () => initialState)
-      .addCase(getEventsAction.pending, () => console.log('pending get events'))
+      .addCase(getEventsAction.pending, (state, action: PayloadAction<void>) => {
+        console.log('pending get events');
+        state.state.loading = true;
+      })
       .addCase(getEventsAction.fulfilled, (state, action: PayloadAction<EventsResponse>) => {
-        state.events = action.payload;
-        state.state = { ...state.state, success: true, error: null, message: '' };
+        if (state.events.total !== action.payload.total) {
+          let newEvents = [...state.events.events];
+          action.payload.events.forEach((e) => {
+            const exist = newEvents.some((nEvent) => nEvent?.id === e?.id);
+            if (!exist) {
+              newEvents.push(e);
+            }
+
+            if (exist) {
+              newEvents = newEvents.map((nEvent) => {
+                if (nEvent?.id === e?.id) {
+                  return { id: nEvent?.id, ...e };
+                }
+
+                return nEvent;
+              })
+            }
+          });
+
+          state.events = {
+            total: action.payload.total,
+            events: newEvents,
+          };
+        }
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(getEventsAction.rejected, (state) => {
         state = initialState;
       })
-      .addCase(getServicesAction.pending, () => console.log('pending get services'))
+      .addCase(getServicesAction.pending, (state) => {
+        console.log('pending get services');
+        state.state.loading = true;
+      })
       .addCase(getServicesAction.fulfilled, (state, action: PayloadAction<ServicesResponse>) => {
         state.services = action.payload;
-        state.state = { ...state.state, success: true, error: null, message: '' };
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(getServicesAction.rejected, (state) => {
         state = initialState;
       })
-      .addCase(editAppointmentAction.pending, () => console.log('pending edit appointment'))
+      .addCase(editAppointmentAction.pending, (state) => {
+        console.log('pending edit appointment');
+        state.state.loading = true;
+      })
       .addCase(editAppointmentAction.fulfilled, (state, action: PayloadAction<UpdateAppointmentPayload & { appointmentId: string } | null>) => {
         let updatedEvents = [...state.events?.events];
         updatedEvents = updatedEvents.map((event) => {
@@ -233,12 +266,15 @@ const schedulingSlice = createSlice({
 
         state.events.events = updatedEvents;
         state.events.total = updatedEvents.length;
-        state.state = { ...state.state, success: true, error: null, message: '' };
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(editAppointmentAction.rejected, (state) => {
         state = initialState;
       })
-      .addCase(cancelAppointmentAction.pending, () => console.log('pending cancel appointment'))
+      .addCase(cancelAppointmentAction.pending, (state) => {
+        console.log('pending cancel appointment');
+        state.state.loading = true;
+      })
       .addCase(cancelAppointmentAction.fulfilled, (state, action: PayloadAction<{ appointmentId: string } | null>) => {
         let updatedEvents = [...state.events?.events];
         updatedEvents = updatedEvents.map((event) => {
@@ -251,12 +287,15 @@ const schedulingSlice = createSlice({
 
         state.events.events = updatedEvents;
         state.events.total = updatedEvents.length;
-        state.state = { ...state.state, success: true, error: null, message: '' };
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(cancelAppointmentAction.rejected, (state) => {
         state = initialState;
       })
-      .addCase(confirmAppointmentAction.pending, () => console.log('pending confirm appointment'))
+      .addCase(confirmAppointmentAction.pending, (state) => {
+        console.log('pending confirm appointment');
+        state.state.loading = true;
+      })
       .addCase(confirmAppointmentAction.fulfilled, (state, action: PayloadAction<{ appointmentId: string } | null>) => {
         let updatedEvents = [...state.events?.events];
         updatedEvents = updatedEvents.map((event) => {
@@ -269,21 +308,27 @@ const schedulingSlice = createSlice({
 
         state.events.events = updatedEvents;
         state.events.total = updatedEvents.length;
-        state.state = { ...state.state, success: true, error: null, message: '' };
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(confirmAppointmentAction.rejected, (state) => {
         state = initialState;
       })
-      .addCase(createAppointmentAction.pending, () => console.log('pending create appointment'))
+      .addCase(createAppointmentAction.pending, (state) => {
+        console.log('pending create appointment');
+        state.state.loading = true;
+      })
       .addCase(createAppointmentAction.fulfilled, (state, action: PayloadAction<{ id: string } | null>) => {
-        state.state = { ...state.state, success: true, error: null, message: '' };
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(createAppointmentAction.rejected, (state) => {
         state = initialState;
       })
-      .addCase(rescheduleAppointmentAction.pending, () => console.log('pending reschedule appointment'))
+      .addCase(rescheduleAppointmentAction.pending, (state) => {
+        console.log('pending reschedule appointment');
+        state.state.loading = true;
+      })
       .addCase(rescheduleAppointmentAction.fulfilled, (state) => {
-        state.state = { ...state.state, success: true, error: null, message: '' };
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(rescheduleAppointmentAction.rejected, (state) => {
         state = initialState;

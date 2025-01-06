@@ -1,16 +1,17 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonFab,
   IonFabButton,
   IonIcon,
   IonPage,
+  IonPopover,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import { CALENDAR_WEEK_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
+import { Calendar, dayjsLocalizer, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -19,14 +20,16 @@ import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
 import { getEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
-import { setNextWeek, setPrevWeek, setDates } from "../../state/calendarSlice";
+import { setNextWeek, setPrevWeek, setDates, setDate } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { APPOINTMENT_DETAILS } from "../../shared/routes/routes";
+import { APPOINTMENT_DETAILS, CALENDAR_DAY, CALENDAR_WEEK } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
+import DatePicker from "../../components/DatePicker/DatePicker";
+import { getDefaultDates } from "../../shared/utils/dates.util";
 
 import "./CalendarWeek.scss";
 
@@ -39,27 +42,41 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
-  const mappedEvents = useMemo(() => events.events.filter(({ startTime }) =>
-    dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-    dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
-  ).map((event) => ({
-    id: event?.id,
-    title: JSON.stringify({
+  const mappedEvents = useMemo(() => {
+    if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'week')
+
+    return events.events.filter(({ startTime }) =>
+      dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
+    ).map((event) => ({
       id: event?.id,
-      service: event?.patientServiceName,
-      patient: event?.patientName,
-      color: event?.color,
-    }),
-    start: dayjs(event?.startTime || '').toDate(),
-    end: dayjs(event.endTime || '').toDate(),
-  })), [events.events]);
+      title: JSON.stringify({
+        id: event?.id,
+        service: event?.patientServiceName,
+        patient: event?.patientName,
+        color: event?.color,
+      }),
+      start: dayjs(event?.startTime || '').toDate(),
+      end: dayjs(event.endTime || '').toDate(),
+    }))
+  }, [events.events, state.loading, selectedDates]);
   const dispatch = useDispatch<AppDispatch>();
-  const dateText = useMemo(() => months[dayjs(selectedDate).month()], [selectedDate]);
+  const datePickerRef = useRef<HTMLIonPopoverElement>(null);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+  const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
+  const location = useLocation();
+
+  const openDatePickerHandler = useCallback((e: any) => {
+    if (datePickerRef.current) {
+      datePickerRef.current!.event = e;
+    }
+    setDatePickerOpen(true);
+  }, [datePickerRef.current]);
 
   const getAppointmentsHandler = async () => {
     try {
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
-
       const [providerPractice] = provider.providerPractices;
       if (providerPractice) {
         await dispatch(getEventsAction({
@@ -71,11 +88,8 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
           pageSize: 999,
         }));
       }
-
-      dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
-      console.error('error at load appointments by date: ', error);
     }
   }
 
@@ -83,19 +97,34 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     parentRef: calendarWeekRef,
     onSwipedLeft: () => dispatch(setNextWeek()),
     onSwipedRight: () => dispatch(setPrevWeek()),
+    onSwipedDown: () => getAppointmentsHandler(),
   });
 
+  const handleSelectSlot = useCallback(
+    (slot: SlotInfo) => {
+      setIsCreateAppointmentOpen(true);
+      setSelectedSlot(slot);
+    },
+    [mappedEvents, isCreateAppointmentOpen]
+  );
+
   useEffect(() => {
-    if (selectedDates.length === 2) {
-      getAppointmentsHandler();
+    if (location.pathname === CALENDAR_WEEK) {
+      if (state.loading) {
+        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      }
+
+      if (!state.loading) {
+        dispatch(setLoading({ loading: false, message: '' }));
+      }
     }
-  }, [selectedDates, state.success]);
+  }, [state.loading, location.pathname]);
 
   useIonViewWillEnter(() => {
     const start = dayjs().startOf('week').format('YYYY-MM-DD');
     const end = dayjs().endOf('week').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
-    getAppointmentsHandler();
+    setSelectedSlot(undefined);
   }, []);
 
   return (
@@ -106,15 +135,18 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
         <Header
           showMenu
           menuId={CALENDAR_WEEK_MENU_ID}
-          leftLabel={dateText}
+          showDatePicker={true}
+          datePickerText={dateText}
+          datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>
           <Calendar
-            defaultDate={selectedDate}
-            date={selectedDate}
+            defaultDate={selectedDates[0]}
+            date={selectedDates[0]}
             defaultView={Views.WEEK}
             events={mappedEvents}
             localizer={localizer}
+            showAllEvents={true}
             toolbar={false}
             views={{
               week: true
@@ -124,6 +156,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
               eventWrapper: (props) => (
                 <EventCard
                   {...props}
+                  loading={state.loading}
                   onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
                     eventId: id,
                     type: AppointmentDetailTypeEnum.RESCHEDULE
@@ -133,14 +166,36 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
               header: (props) => <HeaderCalendar {...props} />,
             }}
             onNavigate={() => { }}
+            selectable={true}
+            longPressThreshold={300}
+            onSelectSlot={handleSelectSlot}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton id="create-appointment-from-calendar-week">
+            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
               <IonIcon icon={addOutline} />
             </IonFabButton>
           </IonFab>
         </IonContent>
-        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment-from-calendar-week" />
+        <IonPopover
+          ref={datePickerRef}
+          className={`${CSSprefix}-date-picker-popover`}
+          isOpen={datePickerOpen}
+          size="auto"
+          onDidDismiss={() => setDatePickerOpen(false)}
+        >
+          <IonContent fullscreen={true}>
+            <DatePicker
+              date={selectedDate}
+              onSelectedDate={(date) => {
+                setDatePickerOpen(false);
+                dispatch(setDate(date as string));
+                history.push(CALENDAR_DAY);
+              }}
+              onTriggerAction={() => setDatePickerOpen(false)}
+            />
+          </IonContent>
+        </IonPopover>
+        <CreateAppointment isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={setIsCreateAppointmentOpen} />
       </IonPage>
     </>
   );

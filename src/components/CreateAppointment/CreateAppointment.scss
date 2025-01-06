@@ -1,5 +1,9 @@
 .create-appointment {
   ion-content {
     --background: var(--ion-trova-white);
+
+    ion-item {
+      --background: var(--ion-trova-white);
+    }
   }
 }

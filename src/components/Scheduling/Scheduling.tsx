@@ -1,25 +1,47 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { NylasScheduling, NylasDatePicker, NylasTimeslotPicker } from '@nylas/react';
 import { AppointmentDateTime } from '../CreateAppointment/CreateAppointment';
 
 import './Scheduling.scss';
 
 interface SchedulingProps {
+  configurationId: string;
   setSelectedDateTime: (selectedDateTime: AppointmentDateTime) => void;
+  selectedDate?: Date | null;
+  start_time?: Date;
+  end_time?: Date;
 }
 
-const Scheduling: React.FC<SchedulingProps> = ({ setSelectedDateTime }): React.ReactElement => {
+const Scheduling: React.FC<SchedulingProps> = ({
+  configurationId,
+  selectedDate,
+  start_time,
+  end_time,
+  setSelectedDateTime
+}): React.ReactElement => {
+  const selectedTimeslot = useMemo(() => {
+    if (start_time && end_time) return {
+      start_time,
+      end_time,
+      emails: []
+    };
+
+    return null;
+  }, [start_time, end_time])
+
   return (
     <>
       <NylasScheduling
         className="scheduling"
-        configurationId={process.env.REACT_APP_NYLAS_CONFGI_ID}
+        configurationId={configurationId}
         schedulerApiUrl={process.env.REACT_APP_NYLAS_API_URL}
         enableUserFeedback={false}
         defaultSchedulerState={{
           showBookingForm: false,
           confirmedEventInfo: undefined,
           nylasBranding: false,
+          selectedDate,
+          selectedTimeslot
         }}
         mode="composable"
         eventOverrides={{

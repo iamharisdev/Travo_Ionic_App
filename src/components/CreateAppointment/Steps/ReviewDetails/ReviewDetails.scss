@@ -6,10 +6,6 @@
     --background: var(--ion-trova-white);
   }
 
-  ion-item {
-    --background: var(--ion-trova-white);
-  }
-
   ion-input {
     --background: var(--ion-trova-white);
   }
@@ -44,6 +40,15 @@
     width: 18px;
     position: relative;
     margin-left: 3px;
+  }
+
+  &-at-the-very-right {
+    height: 18px;
+    width: 18px;
+    position: absolute;
+    left: 78vw;
+    top: 26px;
+    color: var(--ion-trova-black)
   }
 
   &-button-container {

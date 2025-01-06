@@ -7,6 +7,7 @@ import SelectService from './Steps/SelectService/SelectService';
 import { Services } from '../../shared/types/appointment.type';
 import SelectDateTime from './Steps/SelectDateTime/SelectDateTime';
 import ReviewDetails from './Steps/ReviewDetails/ReviewDetails';
+import dayjs from 'dayjs';
 
 import './CreateAppointment.scss';
 
@@ -17,63 +18,119 @@ export interface AppointmentDateTime {
   endTime: string;
 }
 
-const CreateAppointment: React.FC<CreateAppointmentProps> = ({ modalRef, trigger }) => {
+const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedSlot, setIsOpen }) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
   const [selectedService, setSelectedService] = useState<Services>();
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
   const [step, setStep] = useState<number>(0);
+  const [prevStep, setPrevStep] = useState<number>(-1);
+
+  const configNylasId = useMemo(() => {
+    if (selectedService?.externalSchedulerId)
+      return selectedService.externalSchedulerId;
+
+    return '';
+  }, [selectedService]);
 
   const cancelOrBackText = useMemo(() => {
-    if (step === 1 || step === 2 || step === 3) return 'Back';
+    if (step === 1 || step === 2 || step === 3 || prevStep > -1) return 'Back';
 
     return 'Cancel';
-  }, [step]);
+  }, [step, prevStep]);
 
   const closeHandler = useCallback((close?: boolean) => {
-    if ((step === 1 || step === 2 || step === 3) && !close) {
+    if ((step === 1 || step === 2 || step === 3) && !close && prevStep === -1) {
       setStep(step - 1);
     }
 
-    if (step === 0 || close) {
-      modalRef.current?.dismiss();
+    if ((step === 0 || close) && prevStep === -1) {
+      setIsOpen(false);
       setStep(0);
     }
-  }, [step]);
+
+    if (prevStep > -1) {
+      setStep(prevStep);
+      setPrevStep(-1);
+    }
+  }, [step, prevStep, isOpen]);
+
+
+  // Android native back button
+  document.addEventListener('ionBackButton', (ev: any) => {
+    ev.detail.register(140, () => {
+      closeHandler();
+    });
+  });
 
   const steps = useMemo(() => {
     switch (step) {
       case 0:
         return <SelectClient setSelectedClient={(client) => {
           setSelectedClient(client);
-          setStep(1);
+          if (prevStep === -1) {
+            setStep(1);
+          } else {
+            setStep(prevStep);
+            setPrevStep(-1);
+          }
         }} />;
       case 1:
         return <SelectService setSelectedService={(service) => {
           setSelectedService(service);
-          setStep(2);
+          if (prevStep === -1) {
+            if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
+              const endTime = dayjs(selectedSlot?.start).add(service.duration, 'minutes').toISOString();
+              setSelectedDateTime({
+                startTime: dayjs(selectedSlot?.start).toISOString(),
+                endTime
+              });
+              setStep(3);
+            } else {
+              setStep(2);
+            }
+          } else {
+            setStep(prevStep);
+            setPrevStep(-1);
+          }
         }} />;
       case 2:
-        return <SelectDateTime setSelectedDateTime={(selectedDateTime) => {
-          setSelectedDateTime({ ...selectedDateTime });
-          setStep(3);
-        }} />;
+        return (
+          <SelectDateTime
+            configurationId={configNylasId}
+            selectedDate={selectedSlot?.start}
+            start_time={selectedSlot?.start}
+            end_time={selectedSlot?.end}
+            setSelectedDateTime={(selectedDateTime) => {
+              setSelectedDateTime({ ...selectedDateTime });
+              if (prevStep === -1) {
+                setStep(3);
+              } else {
+                setStep(prevStep);
+                setPrevStep(-1);
+              }
+            }}
+          />
+        );
       case 3:
         return <ReviewDetails
           selectedClient={selectedClient}
           selectedService={selectedService}
           selectedDateTime={selectedDateTime}
           closeHandler={closeHandler}
+          goToStep={(step) => setStep((prevState) => {
+            setPrevStep(prevState);
+            return step;
+          })}
         />;
 
       default:
         <SelectClient setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime]);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId]);
 
   return (
     <IonModal
-      ref={modalRef}
-      trigger={trigger}
+      isOpen={isOpen}
       className={CSSPrefix}
     >
       <IonHeader>

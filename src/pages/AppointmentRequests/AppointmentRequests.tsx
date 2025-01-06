@@ -31,7 +31,6 @@ import "./AppointmentRequests.scss";
 
 const CSSprefix = 'appointment-requests';
 const today = dayjs().format('YYYY-MM-DD');
-const sevenDaysFromToday = dayjs().add(7, 'days').format('YYYY-MM-DD');
 
 const AppointmentRequests: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
@@ -40,20 +39,19 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   const appointmentRequestsRef = useRef();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const sortedEvents = useMemo(() => [...events?.events || []].sort(
+  const sortedEvents: any = useMemo(() => [...events.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ).filter(({ status }) => status === AppointmentStatusEnum.PENDING), [events?.events]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
   const [presentToast] = usePresentToast();
-  const [selectedDates, setSelectedDates] = useState<string[]>([today, sevenDaysFromToday]);
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(today);
   const dateText = useMemo(() => {
-    if (selectedDates.length > 0) {
-      const [date] = selectedDates;
-      return months[dayjs(date).month()];
+    if (selectedDate) {
+      return months[dayjs(selectedDate).month()];
     }
 
     return '';
-  }, [selectedDates]);
+  }, [selectedDate]);
   const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
     let practiceId = '';
     let providerId = '';
@@ -90,10 +88,10 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
 
-  const getAppointmentsHandler = async (dates: string[] | string) => {
+  const getAppointmentsHandler = async (date: string) => {
     try {
       setDatePickerOpen(false);
-      setSelectedDates(dates as string[]);
+      setSelectedDate(date);
       dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
 
       const [providerPractice] = provider.providerPractices;
@@ -101,8 +99,8 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
         await dispatch(getEventsAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          start: dayjs(dates[0]).startOf('day').toISOString(),
-          end: dayjs(dates[1]).endOf('day').toISOString(),
+          start: dayjs(date).startOf('day').toISOString(),
+          end: dayjs(date).endOf('day').toISOString(),
           pageNumber: 0,
           pageSize: 999,
         }));
@@ -111,7 +109,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
       dispatch(setLoading({ loading: false, message: '' }));
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
-      setSelectedDates([]);
+      setSelectedDate('');
       console.error('error at load appointments by date: ', error);
     }
   }
@@ -232,7 +230,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
           onDidDismiss={() => setDatePickerOpen(false)}
         >
           <IonContent fullscreen={true}>
-            <DatePicker multiple={true} dates={selectedDates} onSelectedDates={setSelectedDates} onTriggerAction={getAppointmentsHandler} />
+            <DatePicker date={selectedDate} onSelectedDate={setSelectedDate} onTriggerAction={getAppointmentsHandler} />
           </IonContent>
         </IonPopover>
       </IonPage>

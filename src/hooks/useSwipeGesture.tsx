@@ -5,13 +5,18 @@ interface UseSwipeGestureProps {
   parentRef: any;
   onSwipedLeft?: () => void;
   onSwipedRight?: () => void;
+  onSwipedDown?: () => void;
 }
 
-const UseSwipeGesture = ({ parentRef, onSwipedLeft, onSwipedRight }: UseSwipeGestureProps): { handlers: SwipeableHandlers, refPassthrough: (el: any) => void } => {
+const UseSwipeGesture = ({ parentRef, onSwipedLeft, onSwipedRight, onSwipedDown }: UseSwipeGestureProps): { handlers: SwipeableHandlers, refPassthrough: (el: any) => void } => {
   const handlers = useSwipeable({
     onSwipedLeft,
     onSwipedRight,
-    delta: 10,
+    onSwipedDown,
+    delta: {
+      up: 10,
+      down: 300,
+    },
     preventScrollOnSwipe: false,
     trackTouch: true,
     trackMouse: false,
