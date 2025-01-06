@@ -8,10 +8,11 @@ import './SelectDateTime.scss';
 const CSSPrefix = 'select-date-time';
 
 interface SelectDateTimeProps {
+  configurationId: string;
   setSelectedDateTime: (selectedDateTime: AppointmentDateTime) => void;
 }
 
-const SelectDateTime: React.FC<SelectDateTimeProps> = ({ setSelectedDateTime }) => {
+const SelectDateTime: React.FC<SelectDateTimeProps> = ({ configurationId, setSelectedDateTime }) => {
 
   return (
     <div className={CSSPrefix}>
@@ -25,7 +26,7 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({ setSelectedDateTime }) 
           Select date and time
         </IonText>
       </IonItem>
-      <Scheduling setSelectedDateTime={setSelectedDateTime} />
+      <Scheduling configurationId={configurationId} setSelectedDateTime={setSelectedDateTime} />
     </div>
   );
 }

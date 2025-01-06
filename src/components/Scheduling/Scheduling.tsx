@@ -3,6 +3,7 @@ import { NylasScheduling } from '@nylas/react';
 import { AppointmentDateTime } from '../CreateAppointment/CreateAppointment';
 
 interface SchedulingProps {
+  configurationId: string;
   setSelectedDateTime: (selectedDateTime: AppointmentDateTime) => void;
   selectedDate?: Date | null;
   start_time?: Date;
@@ -10,6 +11,7 @@ interface SchedulingProps {
 }
 
 const Scheduling: React.FC<SchedulingProps> = ({
+  configurationId,
   selectedDate,
   start_time,
   end_time,
@@ -28,7 +30,7 @@ const Scheduling: React.FC<SchedulingProps> = ({
   return (
     <>
       <NylasScheduling
-        configurationId={process.env.REACT_APP_NYLAS_CONFGI_ID}
+        configurationId={configurationId}
         schedulerApiUrl={process.env.REACT_APP_NYLAS_API_URL}
         enableUserFeedback={false}
         defaultSchedulerState={{

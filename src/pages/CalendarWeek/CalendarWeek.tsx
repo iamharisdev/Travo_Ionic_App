@@ -124,6 +124,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     const start = dayjs().startOf('week').format('YYYY-MM-DD');
     const end = dayjs().endOf('week').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
+    setSelectedSlot(undefined);
   }, []);
 
   return (

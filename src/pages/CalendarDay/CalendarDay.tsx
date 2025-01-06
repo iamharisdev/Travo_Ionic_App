@@ -110,6 +110,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     if (!selectedDate) {
       dispatch(setDate(dayjs().format('YYYY-MM-DD')));
     }
+    setSelectedSlot(undefined);
   }, []);
 
   const { handlers, refPassthrough } = UseSwipeGesture({
