@@ -151,8 +151,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     const start = dayjs().startOf('month').format('YYYY-MM-DD');
     const end = dayjs().endOf('month').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
+    setSelectedSlot(undefined);
   }, []);
-
 
   return (
     <>
@@ -168,8 +168,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
         />
         <IonContent {...handlers} ref={refPassthrough}>
           <Calendar
-            defaultDate={selectedDates[0]}
-            date={selectedDates[0]}
+            defaultDate={dayjs().startOf('month').toDate()}
+            date={dayjs().startOf('month').toDate()}
             defaultView={Views.MONTH}
             events={mappedEvents}
             localizer={localizer}
