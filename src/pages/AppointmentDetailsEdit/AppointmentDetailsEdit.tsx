@@ -23,15 +23,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import { editAppointmentSchema } from "./validation/appointmentDetailsEdit.schema";
 import { setLoading } from "../../state/loadingSlice";
-import { editAppointmentAction } from "../../state/schedulingSlice";
+import { editAppointmentAction, getEventsAction } from "../../state/schedulingSlice";
 import usePresentToast from "../../hooks/usePresentToast";
+import dayjs from "dayjs";
 
 import "./AppointmentDetailsEdit.scss";
 
 const CSSprefix = 'appointment-details-edit';
 
 const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
-  const { provider, scheduling: { services } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { services }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const location = useLocation<AppointmentDetailsEditState>();
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
@@ -58,6 +59,24 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
     return { practiceId, providerId };
   }, [provider.providerPractices]);
 
+  const getAppointmentsHandler = async () => {
+    try {
+      const [providerPractice] = provider.providerPractices;
+      if (providerPractice) {
+        await dispatch(getEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
+          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+          pageNumber: 0,
+          pageSize: 999,
+        }));
+      }
+    } catch (error) {
+      console.error('error at load appointments by date: ', error);
+    }
+  }
+
   const formik = useFormik({
     initialValues,
     enableReinitialize: true,
@@ -79,6 +98,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
         }));
 
         if (response.meta.requestStatus === 'fulfilled') {
+          await getAppointmentsHandler();
           dispatch(setLoading({ loading: false, message: undefined }));
           history.goBack();
         }
