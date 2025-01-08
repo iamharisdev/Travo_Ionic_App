@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { IonButton, IonIcon, IonItem, IonLabel, IonText } from '@ionic/react';
+import React, { useMemo, useRef, useState } from 'react';
+import { IonButton, IonIcon, IonItem, IonLabel, IonPopover, IonText } from '@ionic/react';
 import { Patient } from '../../../../state/patientSlice';
 import { Services } from '../../../../shared/types/appointment.type';
 import { AppointmentDateTime } from '../../CreateAppointment';
@@ -36,6 +36,13 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     provider,
     calendar: { selectedDate, selectedDates }
   } = useSelector((state: RootState) => state);
+  const popover = useRef<HTMLIonPopoverElement>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  const openPopover = (e: any) => {
+    popover.current!.event = e;
+    setPopoverOpen(true);
+  };
 
   const dateTime = useMemo(() => {
     if (selectedDateTime) {
@@ -43,6 +50,14 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     }
     return '';
   }, [selectedDateTime]);
+
+  const paymentType = useMemo(() => {
+    if (selectedService?.paymentType === 'At Completion') {
+      return 'At session completion';
+    }
+
+    return 'In advance of session';
+  }, [selectedService?.paymentType]);
 
   const createAppointmentsHandler = async () => {
     try {
@@ -131,7 +146,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     }
   }
 
-
   return (
     <div className={CSSPrefix}>
       <IonItem lines="none">
@@ -179,9 +193,13 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       >
         <IonLabel position="stacked">
           Payment type
-          <IonIcon className={`${CSSPrefix}-info-icon`} icon={informationCircle} />
+          <IonIcon
+            className={`${CSSPrefix}-info-icon`}
+            icon={informationCircle}
+            onClick={openPopover}
+          />
         </IonLabel>
-        <IonLabel position="stacked">At session completion</IonLabel>
+        <IonLabel position="stacked">{paymentType}</IonLabel>
       </IonItem>
       <div className={`${CSSPrefix}-button-container ion-padding-horizontal`}>
         <IonButton
@@ -192,6 +210,21 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           Schedule appointment
         </IonButton>
       </div>
+      <IonPopover
+        ref={popover}
+        isOpen={popoverOpen}
+        onDidDismiss={() => setPopoverOpen(false)}
+        triggerAction="hover"
+      >
+        <div>
+          <IonIcon
+            className={`${CSSPrefix}-info-icon`}
+            icon={informationCircle}
+            onClick={openPopover}
+          />
+          Payment type is set by the service
+        </div>
+      </IonPopover>
     </div>
   );
 }
