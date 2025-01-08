@@ -210,30 +210,31 @@ const schedulingSlice = createSlice({
         state.state.loading = true;
       })
       .addCase(getEventsAction.fulfilled, (state, action: PayloadAction<EventsResponse>) => {
-        if (state.events.total !== action.payload.total) {
-          let newEvents = [...state.events.events];
-          action.payload.events.forEach((e) => {
-            const exist = newEvents.some((nEvent) => nEvent?.id === e?.id);
-            if (!exist) {
-              newEvents.push(e);
-            }
+        let newEvents = [...state.events.events];
 
-            if (exist) {
-              newEvents = newEvents.map((nEvent) => {
-                if (nEvent?.id === e?.id) {
-                  return { id: nEvent?.id, ...e };
-                }
+        action.payload.events.forEach((updatedEvent) => {
+          const exist = newEvents.some((nEvent) => nEvent?.id === updatedEvent?.id);
+          if (!exist) {
+            newEvents.push(updatedEvent);
+          }
 
-                return nEvent;
-              })
-            }
-          });
+          if (exist) {
+            newEvents = newEvents.map((nEvent) => {
+              if (nEvent?.id === updatedEvent?.id) {
+                const assigned = Object.assign(nEvent, updatedEvent);
 
-          state.events = {
-            total: action.payload.total,
-            events: newEvents,
-          };
-        }
+                return assigned;
+              }
+
+              return nEvent;
+            })
+          }
+        });
+
+        state.events = {
+          total: action.payload.total,
+          events: newEvents,
+        };
         state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(getEventsAction.rejected, (state) => {

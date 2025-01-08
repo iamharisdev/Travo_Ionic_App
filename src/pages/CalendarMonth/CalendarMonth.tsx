@@ -168,8 +168,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
         />
         <IonContent {...handlers} ref={refPassthrough}>
           <Calendar
-            defaultDate={dayjs().startOf('month').toDate()}
-            date={dayjs().startOf('month').toDate()}
+            defaultDate={selectedDates[0]}
+            date={selectedDates[0]}
             defaultView={Views.MONTH}
             events={mappedEvents}
             localizer={localizer}
