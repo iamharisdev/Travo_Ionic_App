@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   IonCol,
   IonContent,
@@ -25,8 +25,6 @@ import dayjs from "dayjs";
 import { groupAppointmentsByDate } from "../../shared/utils/appointments.util";
 import Badge from "../../components/Badge/Badge";
 import DatePicker from "../../components/DatePicker/DatePicker";
-import { getEventsAction } from "../../state/schedulingSlice";
-import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
 import { APPOINTMENTS_MENU_ID } from "../../shared/constants/menu";
 import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
@@ -43,15 +41,16 @@ const CSSprefix = 'appointments';
 
 const Appointments: React.FC = (): React.ReactElement => {
   const pageRef = useRef<any>();
-  const createAppointmentRef = useRef<HTMLIonModalElement>(null);
-  const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
+  const { scheduling: { events, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
   const sortedEvents = useMemo(() => [...events?.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-  ).filter(({ status }) => status === AppointmentStatusEnum.CONFIRMEND), [events?.events]);
+  ).filter(({ status, startTime }) => status === AppointmentStatusEnum.CONFIRMEND && dayjs(startTime).date() === dayjs(selectedDate).date()),
+    [events?.events, selectedDate, state.loading]);
   const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
   const dateText = useMemo(() => {
     if (selectedDate) {
@@ -77,36 +76,6 @@ const Appointments: React.FC = (): React.ReactElement => {
     }
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
-
-  const getAppointmentsHandler = async () => {
-    try {
-      setDatePickerOpen(false);
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
-
-      const [providerPractice] = provider.providerPractices;
-      if (providerPractice) {
-        await dispatch(getEventsAction({
-          practiceId: providerPractice.practiceId,
-          providerId: providerPractice.providerId,
-          start: dayjs(selectedDate).startOf('day').toISOString(),
-          end: dayjs(selectedDate).endOf('day').toISOString(),
-          pageNumber: 0,
-          pageSize: 999,
-        }));
-      }
-
-      dispatch(setLoading({ loading: false, message: '' }));
-    } catch (error) {
-      dispatch(setLoading({ loading: false, message: '' }));
-      console.error('error at load appointments by date: ', error);
-    }
-  }
-
-  useEffect(() => {
-    if (selectedDate) {
-      getAppointmentsHandler();
-    }
-  }, [selectedDate]);
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: pageRef,
@@ -168,7 +137,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             {content}
           </IonList>
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton id="create-appointment">
+            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
               <IonIcon icon={addOutline}></IonIcon>
             </IonFabButton>
           </IonFab>
@@ -188,11 +157,11 @@ const Appointments: React.FC = (): React.ReactElement => {
                   dispatch(setDate(date))
                 }
               }}
-              onTriggerAction={getAppointmentsHandler}
+              onTriggerAction={() => setDatePickerOpen(false)}
             />
           </IonContent>
         </IonPopover>
-        <CreateAppointment modalRef={createAppointmentRef} trigger="create-appointment" />
+        <CreateAppointment isOpen={isCreateAppointmentOpen} setIsOpen={setIsCreateAppointmentOpen} />
       </IonPage>
     </>
   );

@@ -232,7 +232,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             />
           </IonContent>
         </IonPopover>
-        <CreateAppointment isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={setIsCreateAppointmentOpen} />
+        <CreateAppointment view="month" isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={setIsCreateAppointmentOpen} />
       </IonPage>
     </>
   );

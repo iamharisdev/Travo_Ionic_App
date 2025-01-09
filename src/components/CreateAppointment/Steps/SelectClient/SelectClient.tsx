@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { IonAvatar, IonIcon, IonInput, IonItem, IonLabel, IonList, IonText } from '@ionic/react';
+import { IonAvatar, IonIcon, IonInput, IonItem, IonLabel, IonList, IonText, useIonViewWillEnter } from '@ionic/react';
 import { searchOutline } from 'ionicons/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../state/store';
@@ -11,10 +11,11 @@ import './SelectClient.scss';
 const CSSPrefix = 'select-client';
 
 interface SelectedClientProps {
+  isOpen: boolean;
   setSelectedClient: (client: Patient) => void;
 }
 
-const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
+const SelectClient: React.FC<SelectedClientProps> = ({ isOpen, setSelectedClient }) => {
   const [clientToSearch, setClientToSearch] = useState<string | null | undefined>('');
   const dispatch = useDispatch<AppDispatch>();
   const { provider, patient } = useSelector((state: RootState) => state);
@@ -92,8 +93,10 @@ const SelectClient: React.FC<SelectedClientProps> = ({ setSelectedClient }) => {
   };
 
   useEffect(() => {
-    getSearchClient();
-  }, []);
+    if (isOpen) {
+      getSearchClient();
+    }
+  }, [isOpen]);
 
   return (
     <div className={CSSPrefix}>

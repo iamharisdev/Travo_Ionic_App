@@ -10,6 +10,8 @@ import { AppDispatch, RootState } from '../../../../state/store';
 import { setLoading } from '../../../../state/loadingSlice';
 import { createAppointmentAction, getEventsAction } from '../../../../state/schedulingSlice';
 import usePresentToast from '../../../../hooks/usePresentToast';
+import { useHistory } from 'react-router';
+import { APPOINTMENTS } from '../../../../shared/routes/routes';
 
 import './ReviewDetails.scss';
 
@@ -36,6 +38,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     provider,
     calendar: { selectedDate, selectedDates }
   } = useSelector((state: RootState) => state);
+  const history = useHistory();
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
@@ -78,7 +81,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         let start = '';
         let end = '';
 
-        dispatch(setLoading({ loading: false, message: '' }));
+        dispatch(setLoading({ loading: false, message: 'Creating appointment' }));
 
         const payload = {
           practiceId: providerPractice.practiceId,
@@ -121,6 +124,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             pageNumber: 0,
             pageSize: 999,
           }));
+
+          setTimeout(() => history.push(APPOINTMENTS), 200);
         }
 
         if (!response.payload) {
@@ -201,22 +206,22 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         </IonLabel>
         <IonLabel position="stacked">{paymentType}</IonLabel>
       </IonItem>
-      <div className={`${CSSPrefix}-button-container ion-padding-horizontal`}>
-        <IonButton
-          color="primary"
-          expand="block"
-          onClick={async () => createAppointmentsHandler()}
-        >
-          Schedule appointment
-        </IonButton>
-      </div>
+      <IonButton
+        className={`${CSSPrefix}-schedule-button ion-padding`}
+        color="primary"
+        expand="block"
+        onClick={async () => createAppointmentsHandler()}
+      >
+        Schedule Appointment
+      </IonButton>
       <IonPopover
+        className="info-popover"
         ref={popover}
         isOpen={popoverOpen}
         onDidDismiss={() => setPopoverOpen(false)}
         triggerAction="hover"
       >
-        <div>
+        <div className="info-popover-content">
           <IonIcon
             className={`${CSSPrefix}-info-icon`}
             icon={informationCircle}

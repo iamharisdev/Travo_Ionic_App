@@ -40,7 +40,6 @@ const CSSprefix = 'calendar-day';
 const CalendarDay: React.FC = (): React.ReactElement => {
   const pageRef = useRef();
   const history = useHistory();
-  const createAppointmentRef = useRef<HTMLIonModalElement>(null);
   const { provider, scheduling: { events, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const mappedEvents = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day')

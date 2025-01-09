@@ -43,6 +43,10 @@ const Scheduling: React.FC<SchedulingProps> = ({
           selectedDate,
           selectedTimeslot
         }}
+        themeConfig={{
+          '--nylas-primary': 'var(--ion-color-primary)',
+          '--nylas-font-family': 'Poppins',
+        }}
         mode="composable"
         eventOverrides={{
           timeslotConfirmed: async (
@@ -65,7 +69,7 @@ const Scheduling: React.FC<SchedulingProps> = ({
             }
           }}
         />
-        <NylasTimeslotPicker />
+        <NylasTimeslotPicker className="time-slot-picker" />
       </NylasScheduling>
     </>
   );

@@ -51,20 +51,13 @@
     color: var(--ion-trova-black)
   }
 
-  &-button-container {
+  &-schedule-button {
     width: 100%;
-    display: flex;
-    justify-content: center;
-    position: absolute;
-    bottom: 20px;
-
-    ion-button {
-      width: 100%;
-    }
+    margin-top: 22vh;
   }
 }
 
-ion-popover {
+.info-popover {
   --backdrop-opacity: 0.6;
   --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.6);
   --color: white;
@@ -74,7 +67,7 @@ ion-popover {
   overflow: hidden;
 }
 
-ion-popover div {
+.info-popover-content {
   background: var(--ion-trova-gray-text);
   color: white;
   font-family: 'Poppins';
