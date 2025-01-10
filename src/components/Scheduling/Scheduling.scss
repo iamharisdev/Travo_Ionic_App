@@ -1,0 +1,82 @@
+.scheduling {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+
+  nylas-date-picker::part(ndp__title) {
+    display: none;
+  }
+
+  nylas-date-picker::part(ndp__month-header) {
+    color: var(--ion-trova-gray-text);
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  nylas-date-picker::part(ndp__date--current-day)::after {
+    display: none;
+  }
+
+  nylas-date-picker::part(ndp__day) {
+    color: var(--ion-trova-medium-gray);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    background: var(--ion-trova-divider);
+    padding: 5px;
+    width: 97%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  nylas-date-picker::part(ndp__date) {
+    background: var(--ion-trova-white);
+    width: 20px;
+    height: 20px;
+    color: var(--ion-trova-gray-text);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  nylas-date-picker::part(ndp__date--selected) {
+    background: var(--ion-color-primary);
+    border-radius: 30px;
+    color: var(--ion-trova-white);
+    box-shadow: none;
+  }
+
+  nylas-timeslot-picker::part(ntp__timeslot--selected) {
+    background: transparent;
+    color: var(--ion-color-primary);
+    outline: 2px solid var(--ion-color-primary);
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--ion-color-primary);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  nylas-timeslot-picker::part(ntp__timeslot) {
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+}

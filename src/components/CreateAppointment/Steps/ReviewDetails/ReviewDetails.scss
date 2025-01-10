@@ -51,15 +51,42 @@
     color: var(--ion-trova-black)
   }
 
-  &-button-container {
+  &-schedule-button {
     width: 100%;
-    display: flex;
-    justify-content: center;
-    position: absolute;
-    bottom: 20px;
+    margin-top: 22vh;
+  }
+}
 
-    ion-button {
-      width: 100%;
-    }
+.info-popover {
+  --backdrop-opacity: 0.6;
+  --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.6);
+  --color: white;
+  --width: 300px;
+  border-radius: 5px;
+  --background: var(--ion-trova-gray-text);
+  overflow: hidden;
+}
+
+.info-popover-content {
+  background: var(--ion-trova-gray-text);
+  color: white;
+  font-family: 'Poppins';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: flex;
+  width: auto;
+  height: 45px;
+  align-items: center;
+  padding-left: 4px;
+  overflow: hidden;
+
+  ion-icon {
+    height: 18px;
+    width: 18px;
+    position: relative;
+    bottom: 2px;
+    margin-right: 16px;
   }
 }

@@ -4,4 +4,5 @@ export interface CreateAppointmentProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   selectedSlot?: SlotInfo;
+  view?: 'month' | 'week' | 'day' | 'appointments';
 }

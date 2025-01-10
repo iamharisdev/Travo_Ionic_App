@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { IonButton, IonIcon, IonItem, IonLabel, IonText } from '@ionic/react';
+import React, { useMemo, useRef, useState } from 'react';
+import { IonButton, IonIcon, IonItem, IonLabel, IonPopover, IonText } from '@ionic/react';
 import { Patient } from '../../../../state/patientSlice';
 import { Services } from '../../../../shared/types/appointment.type';
 import { AppointmentDateTime } from '../../CreateAppointment';
@@ -10,6 +10,8 @@ import { AppDispatch, RootState } from '../../../../state/store';
 import { setLoading } from '../../../../state/loadingSlice';
 import { createAppointmentAction, getEventsAction } from '../../../../state/schedulingSlice';
 import usePresentToast from '../../../../hooks/usePresentToast';
+import { useHistory } from 'react-router';
+import { APPOINTMENTS } from '../../../../shared/routes/routes';
 
 import './ReviewDetails.scss';
 
@@ -36,6 +38,14 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     provider,
     calendar: { selectedDate, selectedDates }
   } = useSelector((state: RootState) => state);
+  const history = useHistory();
+  const popover = useRef<HTMLIonPopoverElement>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  const openPopover = (e: any) => {
+    popover.current!.event = e;
+    setPopoverOpen(true);
+  };
 
   const dateTime = useMemo(() => {
     if (selectedDateTime) {
@@ -43,6 +53,14 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     }
     return '';
   }, [selectedDateTime]);
+
+  const paymentType = useMemo(() => {
+    if (selectedService?.paymentType === 'At Completion') {
+      return 'At session completion';
+    }
+
+    return 'In advance of session';
+  }, [selectedService?.paymentType]);
 
   const createAppointmentsHandler = async () => {
     try {
@@ -63,7 +81,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         let start = '';
         let end = '';
 
-        dispatch(setLoading({ loading: false, message: '' }));
+        dispatch(setLoading({ loading: false, message: 'Creating appointment' }));
 
         const payload = {
           practiceId: providerPractice.practiceId,
@@ -106,6 +124,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             pageNumber: 0,
             pageSize: 999,
           }));
+
+          setTimeout(() => history.push(APPOINTMENTS), 200);
         }
 
         if (!response.payload) {
@@ -130,7 +150,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       console.error('error at create appointment: ', error);
     }
   }
-
 
   return (
     <div className={CSSPrefix}>
@@ -179,19 +198,38 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       >
         <IonLabel position="stacked">
           Payment type
-          <IonIcon className={`${CSSPrefix}-info-icon`} icon={informationCircle} />
+          <IonIcon
+            className={`${CSSPrefix}-info-icon`}
+            icon={informationCircle}
+            onClick={openPopover}
+          />
         </IonLabel>
-        <IonLabel position="stacked">At session completion</IonLabel>
+        <IonLabel position="stacked">{paymentType}</IonLabel>
       </IonItem>
-      <div className={`${CSSPrefix}-button-container ion-padding-horizontal`}>
-        <IonButton
-          color="primary"
-          expand="block"
-          onClick={async () => createAppointmentsHandler()}
-        >
-          Schedule appointment
-        </IonButton>
-      </div>
+      <IonButton
+        className={`${CSSPrefix}-schedule-button ion-padding`}
+        color="primary"
+        expand="block"
+        onClick={async () => createAppointmentsHandler()}
+      >
+        Schedule Appointment
+      </IonButton>
+      <IonPopover
+        className="info-popover"
+        ref={popover}
+        isOpen={popoverOpen}
+        onDidDismiss={() => setPopoverOpen(false)}
+        triggerAction="hover"
+      >
+        <div className="info-popover-content">
+          <IonIcon
+            className={`${CSSPrefix}-info-icon`}
+            icon={informationCircle}
+            onClick={openPopover}
+          />
+          Payment type is set by the service
+        </div>
+      </IonPopover>
     </div>
   );
 }

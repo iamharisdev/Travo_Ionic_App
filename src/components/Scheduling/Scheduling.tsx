@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
-import { NylasScheduling } from '@nylas/react';
+import { NylasScheduling, NylasDatePicker, NylasTimeslotPicker } from '@nylas/react';
 import { AppointmentDateTime } from '../CreateAppointment/CreateAppointment';
+
+import './Scheduling.scss';
 
 interface SchedulingProps {
   configurationId: string;
@@ -30,15 +32,22 @@ const Scheduling: React.FC<SchedulingProps> = ({
   return (
     <>
       <NylasScheduling
+        className="scheduling"
         configurationId={configurationId}
         schedulerApiUrl={process.env.REACT_APP_NYLAS_API_URL}
         enableUserFeedback={false}
         defaultSchedulerState={{
           showBookingForm: false,
           confirmedEventInfo: undefined,
+          nylasBranding: false,
           selectedDate,
           selectedTimeslot
         }}
+        themeConfig={{
+          '--nylas-primary': 'var(--ion-color-primary)',
+          '--nylas-font-family': 'Poppins',
+        }}
+        mode="composable"
         eventOverrides={{
           timeslotConfirmed: async (
             event: CustomEvent<any>,
@@ -52,7 +61,16 @@ const Scheduling: React.FC<SchedulingProps> = ({
             });
           }
         }}
-      />
+      >
+        <NylasDatePicker
+          configSettings={{
+            scheduler: {
+              // hide_additional_guests: true,
+            }
+          }}
+        />
+        <NylasTimeslotPicker className="time-slot-picker" />
+      </NylasScheduling>
     </>
   );
 };

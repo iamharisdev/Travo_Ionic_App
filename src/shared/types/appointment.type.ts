@@ -214,7 +214,7 @@ export interface Services {
   procedureCode: string;
   procedureDescription: string | null;
   calendarColor: string;
-  paymentType: string;
+  paymentType: 'At Completion' | 'In Advance';
   active: boolean
   archived: boolean;
   local: boolean;

@@ -18,7 +18,7 @@ export interface AppointmentDateTime {
   endTime: string;
 }
 
-const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedSlot, setIsOpen }) => {
+const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, selectedSlot, setIsOpen }) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
   const [selectedService, setSelectedService] = useState<Services>();
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
@@ -65,7 +65,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
   const steps = useMemo(() => {
     switch (step) {
       case 0:
-        return <SelectClient setSelectedClient={(client) => {
+        return <SelectClient isOpen={isOpen} setSelectedClient={(client) => {
           setSelectedClient(client);
           if (prevStep === -1) {
             setStep(1);
@@ -84,7 +84,9 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
                 startTime: dayjs(selectedSlot?.start).toISOString(),
                 endTime
               });
-              setStep(3);
+              if (view !== 'month') {
+                setStep(3);
+              } else setStep(2);
             } else {
               setStep(2);
             }
@@ -124,7 +126,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ isOpen, selectedS
         />;
 
       default:
-        <SelectClient setSelectedClient={setSelectedClient} />;
+        <SelectClient isOpen={isOpen} setSelectedClient={setSelectedClient} />;
     }
   }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId]);
 
