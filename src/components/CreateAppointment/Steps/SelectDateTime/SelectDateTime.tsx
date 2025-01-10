@@ -35,13 +35,15 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
           Select date and time
         </IonText>
       </IonItem>
-      <Scheduling
-        configurationId={configurationId}
-        selectedDate={selectedDate}
-        start_time={start_time}
-        end_time={end_time}
-        setSelectedDateTime={setSelectedDateTime}
-      />
+      <div>
+        <Scheduling
+          configurationId={configurationId}
+          selectedDate={selectedDate}
+          start_time={start_time}
+          end_time={end_time}
+          setSelectedDateTime={setSelectedDateTime}
+        />
+      </div>
     </div>
   );
 }

@@ -1,6 +1,14 @@
 .select-date-time {
   margin-top: 24px;
 
+  div {
+    background: var(--ion-trova-white);
+  }
+
+  ion-item {
+    --background: var(--ion-trova-white);
+  }
+
   &-title {
     color: var(--ion-trova-gray-text);
     font-size: 28px;
