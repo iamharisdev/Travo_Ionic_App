@@ -155,6 +155,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
               day: true
             }}
             timeslots={2}
+            dayLayoutAlgorithm="no-overlap"
             components={{
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>

@@ -152,6 +152,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
               week: true
             }}
             timeslots={2}
+            dayLayoutAlgorithm="no-overlap"
             components={{
               eventWrapper: (props) => (
                 <EventCard
