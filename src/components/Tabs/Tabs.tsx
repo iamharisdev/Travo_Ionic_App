@@ -8,7 +8,7 @@ import {
   IonTabs,
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, useLocation } from "react-router-dom";
 import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR_DAY, CALENDAR_MONTH, CALENDAR_WEEK, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Profile from "../../pages/Profile/Profile";
@@ -24,10 +24,38 @@ import AppointmentCancel from "../../pages/CancelAppointment/AppointmentCancel";
 import CalendarDay from "../../pages/CalendarDay/CalendarDay";
 import CalendarWeek from "../../pages/CalendarWeek/CalendarWeek";
 import CalendarMonth from "../../pages/CalendarMonth/CalendarMonth";
+import { App } from "@capacitor/app";
+import useBiometrics from "../../hooks/useBiometrics";
 
 import "./Tabs.scss";
 
 const Tabs: React.FC = (): React.ReactElement => {
+  const location = useLocation();
+  const { checkSessionHandler } = useBiometrics();
+
+  App.addListener('appStateChange', async ({ isActive }) => {
+    console.log('App state changed. Is active?', isActive);
+    if (
+      (location.pathname === APPOINTMENTS
+        || location.pathname === CALENDAR_DAY
+        || location.pathname === CALENDAR_WEEK
+        || location.pathname === CALENDAR_MONTH
+        || location.pathname === PROFILE
+        || location.pathname === MY_PROFILE
+        || location.pathname === PROFILE_INFORMATION
+        || location.pathname === BUSINESS_INFORMATION
+        || location.pathname === BRANDING
+        || location.pathname === SUBSCRIPTION_DETAILS
+        || location.pathname === APPOINTMENT_DETAILS
+        || location.pathname === APPOINTMENT_DETAILS_EDIT
+        || location.pathname === APPOINTMENT_REQUESTS
+        || location.pathname === APPOINTMENT_CANCEL) && isActive
+    ) {
+      // TODO: review this logic that affect session once we are logged in and pass from background to foreground
+      await checkSessionHandler();
+    }
+  });
+
   return (
     <IonTabs className="tabs">
       <IonRouterOutlet>
