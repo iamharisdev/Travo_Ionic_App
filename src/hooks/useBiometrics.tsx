@@ -1,4 +1,4 @@
-import { AndroidBiometryStrength, BiometricAuth, BiometryError, BiometryErrorType } from "@aparajita/capacitor-biometric-auth"
+import { AndroidBiometryStrength, BiometricAuth, BiometryError, BiometryErrorType, CheckBiometryResult } from "@aparajita/capacitor-biometric-auth"
 import { useCallback } from "react";
 import { getStorageValue, removeStorageValue } from "../storage/storage.util";
 import { STORAGE_TOKEN } from "../constant/storage.constant";
@@ -8,9 +8,8 @@ import { useDispatch } from "react-redux";
 import { resetAll } from "../state/common.actions";
 
 interface UseBiometrics {
-  authenticate: () => Promise<boolean>;
-  checkBiometry: () => Promise<boolean>;
   checkSessionHandler: () => Promise<void>;
+  onResumeCheck: () => Promise<void>;
 }
 
 const useBiometrics = (): UseBiometrics => {
@@ -67,19 +66,14 @@ const useBiometrics = (): UseBiometrics => {
   const checkSessionHandler = useCallback(async (): Promise<void> => {
     try {
       const isAvailable = await checkBiometry();
-      console.log('isAvailable: ', isAvailable);
 
       if (isAvailable) {
         const token = await getStorageValue(STORAGE_TOKEN);
-        console.log('token: ', token);
 
         if (token) {
           const authenticated = await authenticate();
 
-          console.log('authenticated: ', authenticated);
-
           if (authenticated && location.pathname === SING_IN) {
-            console.log('redirecting to: ', LOADING);
             history.push(LOADING);
           }
 
@@ -93,10 +87,27 @@ const useBiometrics = (): UseBiometrics => {
     }
   }, [location.pathname]);
 
+  async function updateBiometryInfo(info: CheckBiometryResult): Promise<void> {
+    if (info.isAvailable) {
+      // Biometry is available, info.biometryType will tell you the primary type.
+      const authResponse = await authenticate();
+
+      if (!authResponse) {
+        await logout();
+      }
+    } else {
+      // Biometry is not available, info.reason and info.code will tell you why.
+      await logout();
+    }
+  }
+
+  async function onResumeCheck(): Promise<void> {
+    await updateBiometryInfo(await BiometricAuth.checkBiometry())
+  }
+
   return {
-    authenticate,
-    checkBiometry,
     checkSessionHandler,
+    onResumeCheck,
   };
 }
 

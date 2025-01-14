@@ -22,6 +22,7 @@ import usePresentToast from "../../hooks/usePresentToast";
 import { useFormik } from "formik";
 import { signInSchema } from "./validation/signIn.schema";
 import useBiometrics from "../../hooks/useBiometrics";
+import { isNative } from "../../shared/utils/native.util";
 
 import "./SignIn.scss";
 
@@ -89,7 +90,11 @@ const Login: React.FC = (): React.ReactElement => {
 
   useIonViewWillEnter(() => {
     formik.resetForm();
-    checkSessionHandler();
+    isNative().then((isNative) => {
+      if (location.pathname === SING_IN && isNative) {
+        checkSessionHandler();
+      }
+    })
   }, []);
 
   return (

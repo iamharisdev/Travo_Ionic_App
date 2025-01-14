@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   IonIcon,
   IonLabel,
@@ -24,17 +24,19 @@ import AppointmentCancel from "../../pages/CancelAppointment/AppointmentCancel";
 import CalendarDay from "../../pages/CalendarDay/CalendarDay";
 import CalendarWeek from "../../pages/CalendarWeek/CalendarWeek";
 import CalendarMonth from "../../pages/CalendarMonth/CalendarMonth";
-import { App } from "@capacitor/app";
 import useBiometrics from "../../hooks/useBiometrics";
+import { App } from "@capacitor/app";
+import { isNative } from "../../shared/utils/native.util";
 
 import "./Tabs.scss";
 
 const Tabs: React.FC = (): React.ReactElement => {
   const location = useLocation();
-  const { checkSessionHandler } = useBiometrics();
+  const { onResumeCheck } = useBiometrics();
+  const [comesFromForeground, setComesFromForeground] = useState(false);
+  const [checking, setChecking] = useState(false);
 
-  App.addListener('appStateChange', async ({ isActive }) => {
-    console.log('App state changed. Is active?', isActive);
+  const onResumeCheckHandler = useCallback(async () => {
     if (
       (location.pathname === APPOINTMENTS
         || location.pathname === CALENDAR_DAY
@@ -46,15 +48,46 @@ const Tabs: React.FC = (): React.ReactElement => {
         || location.pathname === BUSINESS_INFORMATION
         || location.pathname === BRANDING
         || location.pathname === SUBSCRIPTION_DETAILS
-        || location.pathname === APPOINTMENT_DETAILS
-        || location.pathname === APPOINTMENT_DETAILS_EDIT
+        || location.pathname.includes(APPOINTMENT_DETAILS)
+        || location.pathname.includes(APPOINTMENT_DETAILS_EDIT)
         || location.pathname === APPOINTMENT_REQUESTS
-        || location.pathname === APPOINTMENT_CANCEL) && isActive
+        || location.pathname === APPOINTMENT_CANCEL)
+      && comesFromForeground
+      && !checking
     ) {
-      // TODO: review this logic that affect session once we are logged in and pass from background to foreground
-      await checkSessionHandler();
+      setChecking(true);
+      await onResumeCheck();
     }
+  }, [location.pathname, comesFromForeground, checking]);
+
+  App.removeAllListeners().then(() => {
+    isNative().then((isNative) => {
+      if (isNative) {
+        App.addListener('pause', () => {
+          console.log('app state pause');
+          if (comesFromForeground) {
+            setComesFromForeground(false);
+            setChecking(false);
+          }
+        });
+
+        App.addListener('resume', () => {
+          console.log('app state resume');
+          if (!comesFromForeground) {
+            setComesFromForeground(true);
+          }
+        });
+      }
+    });
   });
+
+  useEffect(() => {
+    isNative().then((isNative) => {
+      if (isNative) {
+        onResumeCheckHandler();
+      }
+    });
+  }, [location.pathname, comesFromForeground, checking]);
 
   return (
     <IonTabs className="tabs">
