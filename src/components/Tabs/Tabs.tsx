@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   IonIcon,
   IonLabel,
@@ -8,7 +8,7 @@ import {
   IonTabs,
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, useLocation } from "react-router-dom";
 import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR_DAY, CALENDAR_MONTH, CALENDAR_WEEK, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Profile from "../../pages/Profile/Profile";
@@ -24,10 +24,78 @@ import AppointmentCancel from "../../pages/CancelAppointment/AppointmentCancel";
 import CalendarDay from "../../pages/CalendarDay/CalendarDay";
 import CalendarWeek from "../../pages/CalendarWeek/CalendarWeek";
 import CalendarMonth from "../../pages/CalendarMonth/CalendarMonth";
+import useBiometrics from "../../hooks/useBiometrics";
+import { App } from "@capacitor/app";
+import { isNative } from "../../shared/utils/native.util";
 
 import "./Tabs.scss";
 
 const Tabs: React.FC = (): React.ReactElement => {
+  const location = useLocation();
+  const { onResumeCheck } = useBiometrics();
+  const [comesFromForeground, setComesFromForeground] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [paused, setPaused] = useState(false);
+
+  const onResumeCheckHandler = useCallback(async () => {
+    if (
+      (location.pathname === APPOINTMENTS
+        || location.pathname === CALENDAR_DAY
+        || location.pathname === CALENDAR_WEEK
+        || location.pathname === CALENDAR_MONTH
+        || location.pathname === PROFILE
+        || location.pathname === MY_PROFILE
+        || location.pathname === PROFILE_INFORMATION
+        || location.pathname === BUSINESS_INFORMATION
+        || location.pathname === BRANDING
+        || location.pathname === SUBSCRIPTION_DETAILS
+        || location.pathname.includes(APPOINTMENT_DETAILS)
+        || location.pathname.includes(APPOINTMENT_DETAILS_EDIT)
+        || location.pathname === APPOINTMENT_REQUESTS
+        || location.pathname === APPOINTMENT_CANCEL)
+      && comesFromForeground
+      && !checking
+    ) {
+      setChecking(true);
+      await onResumeCheck();
+      setPaused(false);
+    }
+  }, [location.pathname, comesFromForeground, checking]);
+
+  useEffect(() => {
+    isNative().then((isNative) => {
+      if (isNative) {
+        App.addListener('pause', () => {
+          console.log('app state pause');
+          if (comesFromForeground && !paused) {
+            setComesFromForeground(false);
+            setChecking(false);
+          }
+        });
+
+        App.addListener('resume', () => {
+          console.log('app state resume');
+          if (!comesFromForeground && !paused) {
+            setComesFromForeground(true);
+            setPaused(true);
+          }
+        });
+      }
+    });
+
+    return () => {
+      App.removeAllListeners();
+    };
+  }, [comesFromForeground, paused]);
+
+  useEffect(() => {
+    isNative().then((isNative) => {
+      if (isNative) {
+        onResumeCheckHandler();
+      }
+    });
+  }, [location.pathname, comesFromForeground, checking]);
+
   return (
     <IonTabs className="tabs">
       <IonRouterOutlet>
