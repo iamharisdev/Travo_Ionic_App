@@ -176,6 +176,7 @@ code_sign_if_enabled() {
 }
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_framework "${BUILT_PRODUCTS_DIR}/AparajitaCapacitorBiometricAuth/AparajitaCapacitorBiometricAuth.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Capacitor/Capacitor.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorApp/CapacitorApp.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorCamera/CapacitorCamera.framework"
@@ -188,6 +189,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorStatusBar/CapacitorStatusBar.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_framework "${BUILT_PRODUCTS_DIR}/AparajitaCapacitorBiometricAuth/AparajitaCapacitorBiometricAuth.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Capacitor/Capacitor.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorApp/CapacitorApp.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorCamera/CapacitorCamera.framework"

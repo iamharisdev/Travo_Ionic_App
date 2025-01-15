@@ -21,6 +21,8 @@ import { setLoading } from "../../state/loadingSlice";
 import usePresentToast from "../../hooks/usePresentToast";
 import { useFormik } from "formik";
 import { signInSchema } from "./validation/signIn.schema";
+import useBiometrics from "../../hooks/useBiometrics";
+import { isNative } from "../../shared/utils/native.util";
 
 import "./SignIn.scss";
 
@@ -32,6 +34,7 @@ const Login: React.FC = (): React.ReactElement => {
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
+  const { checkSessionHandler } = useBiometrics();
 
   useEffect(() => {
     if (location.pathname === SING_IN) {
@@ -85,7 +88,14 @@ const Login: React.FC = (): React.ReactElement => {
     },
   });
 
-  useIonViewWillEnter(() => formik.resetForm(), []);
+  useIonViewWillEnter(() => {
+    formik.resetForm();
+    isNative().then((isNative) => {
+      if (location.pathname === SING_IN && isNative) {
+        checkSessionHandler();
+      }
+    })
+  }, []);
 
   return (
     <IonPage>

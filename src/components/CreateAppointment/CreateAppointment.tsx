@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { CreateAppointmentProps } from './createAppointment.type';
 import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonToolbar } from '@ionic/react';
 import SelectClient from './Steps/SelectClient/SelectClient';
@@ -24,6 +24,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
   const [step, setStep] = useState<number>(0);
   const [prevStep, setPrevStep] = useState<number>(-1);
+  const contentRef = useRef<HTMLIonContentElement | null>(null);
 
   const configNylasId = useMemo(() => {
     if (selectedService?.externalSchedulerId)
@@ -111,6 +112,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
                 setPrevStep(-1);
               }
             }}
+            onDateSelected={() => scrollBottomHandler()}
           />
         );
       case 3:
@@ -130,6 +132,10 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
     }
   }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId]);
 
+  const scrollBottomHandler = () => {
+    contentRef.current && contentRef.current.scrollToBottom();
+  };
+
   return (
     <IonModal
       isOpen={isOpen}
@@ -147,7 +153,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-no-padding">
+      <IonContent className="ion-no-padding" ref={contentRef}>
         {steps}
       </IonContent>
     </IonModal>
