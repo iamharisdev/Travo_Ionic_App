@@ -35,6 +35,7 @@ const Tabs: React.FC = (): React.ReactElement => {
   const { onResumeCheck } = useBiometrics();
   const [comesFromForeground, setComesFromForeground] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   const onResumeCheckHandler = useCallback(async () => {
     if (
@@ -57,15 +58,16 @@ const Tabs: React.FC = (): React.ReactElement => {
     ) {
       setChecking(true);
       await onResumeCheck();
+      setPaused(false);
     }
   }, [location.pathname, comesFromForeground, checking]);
 
-  App.removeAllListeners().then(() => {
+  useEffect(() => {
     isNative().then((isNative) => {
       if (isNative) {
         App.addListener('pause', () => {
           console.log('app state pause');
-          if (comesFromForeground) {
+          if (comesFromForeground && !paused) {
             setComesFromForeground(false);
             setChecking(false);
           }
@@ -73,13 +75,18 @@ const Tabs: React.FC = (): React.ReactElement => {
 
         App.addListener('resume', () => {
           console.log('app state resume');
-          if (!comesFromForeground) {
+          if (!comesFromForeground && !paused) {
             setComesFromForeground(true);
+            setPaused(true);
           }
         });
       }
     });
-  });
+
+    return () => {
+      App.removeAllListeners();
+    };
+  }, [comesFromForeground, paused]);
 
   useEffect(() => {
     isNative().then((isNative) => {
