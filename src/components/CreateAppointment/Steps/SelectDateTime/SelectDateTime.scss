@@ -26,16 +26,3 @@
     line-height: normal;
   }
 }
-
-#select-date-time::-webkit-scrollbar {
-  width: 9px;
-}
-
-#select-date-time::-webkit-scrollbar-track {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
-}
-
-#select-date-time::-webkit-scrollbar:horizontal {
-  display: none;
-}

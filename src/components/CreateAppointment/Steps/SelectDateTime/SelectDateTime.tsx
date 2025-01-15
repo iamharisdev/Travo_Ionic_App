@@ -26,7 +26,7 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
 }) => {
 
   return (
-    <div id="select-date-time" className={CSSPrefix}>
+    <div className={CSSPrefix}>
       <IonItem lines="none">
         <IonText className={`${CSSPrefix}-title`}>
           Schedule appointment
