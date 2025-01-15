@@ -10,6 +10,7 @@ interface SchedulingProps {
   selectedDate?: Date | null;
   start_time?: Date;
   end_time?: Date;
+  onDateSelected?: (date: CustomEvent<Date>) => void;
 }
 
 const Scheduling: React.FC<SchedulingProps> = ({
@@ -17,7 +18,8 @@ const Scheduling: React.FC<SchedulingProps> = ({
   selectedDate,
   start_time,
   end_time,
-  setSelectedDateTime
+  setSelectedDateTime,
+  onDateSelected,
 }): React.ReactElement => {
   const selectedTimeslot = useMemo(() => {
     if (start_time && end_time) return {
@@ -68,6 +70,7 @@ const Scheduling: React.FC<SchedulingProps> = ({
               // hide_additional_guests: true,
             }
           }}
+          onDateSelected={(date: CustomEvent<Date>) => onDateSelected && onDateSelected(date)}
         />
         <NylasTimeslotPicker className="time-slot-picker" />
       </NylasScheduling>
