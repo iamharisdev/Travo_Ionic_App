@@ -13,6 +13,7 @@ interface SelectDateTimeProps {
   selectedDate?: Date | null;
   start_time?: Date;
   end_time?: Date;
+  onDateSelected?: (date: CustomEvent<Date>) => void;
 }
 
 const SelectDateTime: React.FC<SelectDateTimeProps> = ({
@@ -20,7 +21,8 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
   selectedDate,
   start_time,
   end_time,
-  setSelectedDateTime
+  setSelectedDateTime,
+  onDateSelected
 }) => {
 
   return (
@@ -42,6 +44,7 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
           start_time={start_time}
           end_time={end_time}
           setSelectedDateTime={setSelectedDateTime}
+          onDateSelected={onDateSelected}
         />
       </div>
     </div>

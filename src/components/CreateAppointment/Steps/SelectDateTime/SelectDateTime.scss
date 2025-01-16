@@ -1,5 +1,6 @@
 .select-date-time {
-  margin-top: 24px;
+  overflow-y: scroll;
+  padding-top: 24px;
 
   div {
     background: var(--ion-trova-white);
@@ -11,7 +12,7 @@
 
   &-title {
     color: var(--ion-trova-gray-text);
-    font-size: 28px;
+    font-size: 24px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;

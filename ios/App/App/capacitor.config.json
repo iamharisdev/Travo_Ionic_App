@@ -14,6 +14,7 @@
 		"iosScheme": "https"
 	},
 	"packageClassList": [
+		"BiometricAuthNative",
 		"AppPlugin",
 		"CAPCameraPlugin",
 		"ClipboardPlugin",

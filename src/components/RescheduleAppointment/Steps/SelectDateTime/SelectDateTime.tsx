@@ -5,7 +5,7 @@ import { AppointmentDateTime } from '../../RescheduleAppointment';
 
 import './SelectDateTime.scss';
 
-const CSSPrefix = 'select-date-time';
+const CSSPrefix = 'select-date-time-reschedule';
 
 interface SelectDateTimeProps {
   configurationId: string;

@@ -12,18 +12,18 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>11</string>
+	<string>12</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Trova requires access to your phone’s camera.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>$(PRODUCT_NAME)</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Trova requires add access to your phone's photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
