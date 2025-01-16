@@ -27,7 +27,7 @@ import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
 import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
-import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
+import { AppointmentDetailTypeEnum, CALENDAR_SLOTS } from "../../shared/types/appointment.type";
 import { useHistory, useLocation } from "react-router";
 import { getDefaultDates } from "../../shared/utils/dates.util";
 
@@ -51,6 +51,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         service: event?.patientServiceName,
         patient: event?.patientName,
         color: event?.color,
+        start: dayjs(event?.startTime || '').toDate(),
+        end: dayjs(event.endTime || '').toDate(),
       }),
       start: dayjs(event?.startTime || '').toDate(),
       end: dayjs(event.endTime || '').toDate(),
@@ -131,6 +133,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }, [state.loading, location.pathname]);
 
+  const startTest = dayjs('2025-01-29').add(3.5, 'hours').toDate();
+  const endTest = dayjs('2025-01-29').add(9, 'hours').toDate();
+  console.log('dates: ', { startTest: startTest.toISOString(), endTest: endTest.toISOString() });
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />

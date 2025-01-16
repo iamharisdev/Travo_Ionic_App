@@ -55,6 +55,8 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
         service: event?.patientServiceName,
         patient: event?.patientName,
         color: event?.color,
+        start: dayjs(event?.startTime || '').toDate(),
+        end: dayjs(event.endTime || '').toDate(),
       }),
       start: dayjs(event?.startTime || '').toDate(),
       end: dayjs(event.endTime || '').toDate(),
