@@ -55,6 +55,8 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
         service: event?.patientServiceName,
         patient: event?.patientName,
         color: event?.color,
+        start: dayjs(event?.startTime || '').toDate(),
+        end: dayjs(event.endTime || '').toDate(),
       }),
       start: dayjs(event?.startTime || '').toDate(),
       end: dayjs(event.endTime || '').toDate(),
@@ -152,6 +154,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
               week: true
             }}
             timeslots={2}
+            dayLayoutAlgorithm="no-overlap"
             components={{
               eventWrapper: (props) => (
                 <EventCard
