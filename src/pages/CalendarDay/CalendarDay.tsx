@@ -133,9 +133,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }, [state.loading, location.pathname]);
 
-  const startTest = dayjs('2025-01-29').add(3.5, 'hours').toDate();
-  const endTest = dayjs('2025-01-29').add(9, 'hours').toDate();
-  console.log('dates: ', { startTest: startTest.toISOString(), endTest: endTest.toISOString() });
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />
