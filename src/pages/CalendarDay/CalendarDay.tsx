@@ -122,7 +122,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   });
 
   useEffect(() => {
-    if (location.pathname === CALENDAR_DAY) {
+    if (location.pathname === CALENDAR_DAY && !isCreateAppointmentOpen) {
       if (state.loading) {
         dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
       }
@@ -131,7 +131,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         dispatch(setLoading({ loading: false, message: '' }));
       }
     }
-  }, [state.loading, location.pathname]);
+  }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
   return (
     <>

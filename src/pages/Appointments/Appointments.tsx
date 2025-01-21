@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonCol,
   IonContent,
@@ -22,7 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
 import dayjs from "dayjs";
-import { groupAppointmentsByDate } from "../../shared/utils/appointments.util";
 import Badge from "../../components/Badge/Badge";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import { months } from "../../shared/constants/dates";
@@ -34,6 +33,9 @@ import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import { addOutline } from "ionicons/icons";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { setDate } from "../../state/calendarSlice";
+import { getEventsAction } from "../../state/schedulingSlice";
+import { APPOINTMENTS } from "../../shared/routes/routes";
+import { setLoading } from "../../state/loadingSlice";
 
 import "./Appointments.scss";
 
@@ -41,7 +43,7 @@ const CSSprefix = 'appointments';
 
 const Appointments: React.FC = (): React.ReactElement => {
   const pageRef = useRef<any>();
-  const { scheduling: { events, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
@@ -49,9 +51,8 @@ const Appointments: React.FC = (): React.ReactElement => {
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
   const sortedEvents = useMemo(() => [...events?.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-  ).filter(({ status, startTime }) => status === AppointmentStatusEnum.CONFIRMEND && dayjs(startTime).date() === dayjs(selectedDate).date()),
+  ).filter(({ status, startTime }) => status === AppointmentStatusEnum.CONFIRMEND && dayjs(startTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')),
     [events?.events, selectedDate, state.loading]);
-  const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
   const dateText = useMemo(() => {
     if (selectedDate) {
       return months[dayjs(selectedDate).month()];
@@ -77,14 +78,47 @@ const Appointments: React.FC = (): React.ReactElement => {
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
 
+  const getAppointmentsHandler = async () => {
+    try {
+      setDatePickerOpen(false);
+
+      const [providerPractice] = provider.providerPractices;
+      if (providerPractice) {
+        await dispatch(getEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(selectedDate).startOf('day').toISOString(),
+          end: dayjs(selectedDate).endOf('day').toISOString(),
+          pageNumber: 0,
+          pageSize: 999,
+        }));
+      }
+    } catch (error) {
+      console.error('error at load appointments by date: ', error);
+    }
+  }
+
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: pageRef,
     onSwipedLeft: async () => closeMenuHandler(APPOINTMENTS_MENU_ID),
     onSwipedRight: async () => openMenuHandler(APPOINTMENTS_MENU_ID),
+    onSwipedDown: () => getAppointmentsHandler(),
   });
 
+  useEffect(() => {
+    if (location.pathname === APPOINTMENTS && !isCreateAppointmentOpen) {
+      if (state.loading) {
+        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+      }
+
+      if (!state.loading) {
+        dispatch(setLoading({ loading: false, message: '' }));
+      }
+    }
+  }, [state.loading, location.pathname, isCreateAppointmentOpen]);
+
   const content = useMemo(() => {
-    if (groupedAppointments.length === 0) {
+    if (sortedEvents.length === 0) {
       return (
         <div className={`${CSSprefix}-no-appointments-container`}>
           <IonItem lines="none">
@@ -96,21 +130,21 @@ const Appointments: React.FC = (): React.ReactElement => {
       );
     }
 
-    return groupedAppointments.map((event) => (
-      <IonGrid key={event.date} fixed={true} className="ion-no-padding ion-no-margin">
+    return (
+      <IonGrid fixed={true} className="ion-no-padding ion-no-margin">
         <IonRow className="ion-margin-start ion-no-margin">
           <IonCol size="auto" className="ion-margin-top">
-            <Badge appointmentDate={event.date} />
+            <Badge appointmentDate={dayjs(sortedEvents[0].startTime).toISOString()} />
           </IonCol>
           <IonCol>
-            {event.appointments.map((appointment) => (
-              <AppointmentCard key={appointment?.id} appointment={appointment} />
+            {sortedEvents.map((event) => (
+              <AppointmentCard key={event?.id} appointment={event} />
             ))}
           </IonCol>
         </IonRow>
       </IonGrid>
-    ));
-  }, [groupedAppointments]);
+    );
+  }, [sortedEvents]);
 
   return (
     <>

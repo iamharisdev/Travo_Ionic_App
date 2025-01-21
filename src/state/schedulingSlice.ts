@@ -232,7 +232,7 @@ const schedulingSlice = createSlice({
         });
 
         state.events = {
-          total: action.payload.total,
+          total: newEvents.length,
           events: newEvents,
         };
         state.state = { ...state.state, success: true, loading: false, error: null, message: '' };

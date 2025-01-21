@@ -12,6 +12,7 @@ import { createAppointmentAction, getEventsAction } from '../../../../state/sche
 import usePresentToast from '../../../../hooks/usePresentToast';
 import { useHistory } from 'react-router';
 import { APPOINTMENTS } from '../../../../shared/routes/routes';
+import { setDate } from '../../../../state/calendarSlice';
 
 import './ReviewDetails.scss';
 
@@ -78,11 +79,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         selectedDateTime?.startTime &&
         selectedDateTime?.endTime
       ) {
-        let start = '';
-        let end = '';
-
-        dispatch(setLoading({ loading: false, message: 'Creating appointment' }));
-
         const payload = {
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
@@ -100,32 +96,19 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         const response = await dispatch(createAppointmentAction(payload));
 
         if (response.payload) {
-          closeHandler(true);
-          presentToast(
-            'Appointment added',
-            1000,
-            'middle',
-            'success'
-          );
-
-          if (selectedDates.length === 2) {
-            start = selectedDates[0];
-            end = selectedDates[1];
-          } else {
-            start = selectedDate;
-            end = selectedDate;
-          }
-
           await dispatch(getEventsAction({
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
-            start: dayjs(start).startOf('day').toISOString(),
-            end: dayjs(end).endOf('day').toISOString(),
+            start: dayjs(selectedDateTime?.startTime).startOf('day').toISOString(),
+            end: dayjs(selectedDateTime?.startTime).endOf('day').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           }));
 
-          setTimeout(() => history.push(APPOINTMENTS), 200);
+          dispatch(setDate(dayjs(selectedDateTime?.startTime).startOf('day').toISOString()));
+          dispatch(setLoading({ loading: false, message: '' }));
+          history.push(APPOINTMENTS);
+          closeHandler(true);
         }
 
         if (!response.payload) {
@@ -136,6 +119,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             'middle',
             'danger'
           );
+          dispatch(setLoading({ loading: false, message: '' }));
         }
       }
     } catch (error) {
