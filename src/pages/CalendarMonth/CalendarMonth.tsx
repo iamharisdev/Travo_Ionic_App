@@ -136,7 +136,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   );
 
   useEffect(() => {
-    if (location.pathname === CALENDAR_MONTH) {
+    if (location.pathname === CALENDAR_MONTH && !isCreateAppointmentOpen) {
       if (state.loading) {
         dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
       }
@@ -145,7 +145,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
         dispatch(setLoading({ loading: false, message: '' }));
       }
     }
-  }, [state.loading, location.pathname]);
+  }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
   useIonViewWillEnter(() => {
     const start = dayjs().startOf('month').format('YYYY-MM-DD');

@@ -38,7 +38,6 @@ const localizer = dayjsLocalizer(dayjs);
 const CSSprefix = 'calendar-week';
 
 const CalendarWeek: React.FC = (): React.ReactElement => {
-  const createAppointmentRef = useRef<HTMLIonModalElement>(null);
   const history = useHistory();
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
@@ -111,7 +110,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   );
 
   useEffect(() => {
-    if (location.pathname === CALENDAR_WEEK) {
+    if (location.pathname === CALENDAR_WEEK && !isCreateAppointmentOpen) {
       if (state.loading) {
         dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
       }
@@ -120,7 +119,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
         dispatch(setLoading({ loading: false, message: '' }));
       }
     }
-  }, [state.loading, location.pathname]);
+  }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
   useIonViewWillEnter(() => {
     const start = dayjs().startOf('week').format('YYYY-MM-DD');
