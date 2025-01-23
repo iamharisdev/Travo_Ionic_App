@@ -26,6 +26,7 @@ import usePresentToast from "../../hooks/usePresentToast";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+import { setDate } from "../../state/calendarSlice";
 
 import "./AppointmentRequests.scss";
 
@@ -39,10 +40,9 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   const appointmentRequestsRef = useRef();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const sortedEvents: any = useMemo(() => [...events.events || []].sort(
+  const sortedEvents = useMemo(() => [...events.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ).filter(({ status }) => status === AppointmentStatusEnum.PENDING), [events?.events]);
-  const groupedAppointments = useMemo(() => groupAppointmentsByDate(sortedEvents), [sortedEvents]);
   const [presentToast] = usePresentToast();
   const [selectedDate, setSelectedDate] = useState<string | undefined>(today);
   const dateText = useMemo(() => {
@@ -87,32 +87,6 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     }
     setDatePickerOpen(true);
   }, [datePickerRef.current]);
-
-  const getAppointmentsHandler = async (date: string) => {
-    try {
-      setDatePickerOpen(false);
-      setSelectedDate(date);
-      dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
-
-      const [providerPractice] = provider.providerPractices;
-      if (providerPractice) {
-        await dispatch(getEventsAction({
-          practiceId: providerPractice.practiceId,
-          providerId: providerPractice.providerId,
-          start: dayjs(date).startOf('day').toISOString(),
-          end: dayjs(date).endOf('day').toISOString(),
-          pageNumber: 0,
-          pageSize: 999,
-        }));
-      }
-
-      dispatch(setLoading({ loading: false, message: '' }));
-    } catch (error) {
-      dispatch(setLoading({ loading: false, message: '' }));
-      setSelectedDate('');
-      console.error('error at load appointments by date: ', error);
-    }
-  }
 
   const acceptHandler = async (appointmentId: string) => {
     try {
@@ -163,7 +137,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   }
 
   const content = useMemo(() => {
-    if (groupedAppointments.length === 0) {
+    if (sortedEvents.length === 0) {
       return (
         <div className={`${CSSprefix}-no-appointments-container`}>
           <IonItem lines="none">
@@ -175,25 +149,25 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
       );
     }
 
-    return groupedAppointments.map((event) => (
-      <div key={event.date}>
+    return (
+      <div>
         <IonItem lines="none">
           <IonText className={`${CSSprefix}-from-to-date`}>
-            {getDateHandler(event.date)}
+            {getDateHandler(dayjs(sortedEvents[0].startTime).toISOString())}
           </IonText>
         </IonItem>
-        {event.appointments.map((appointment) => (
-          <IonItem key={appointment?.id} lines="none">
+        {sortedEvents.map((event) => (
+          <IonItem key={event?.id} lines="none">
             <AppointmentRequestCard
-              appointment={appointment}
+              appointment={event}
               acceptCB={acceptHandler}
               declineCB={declineHandler}
             />
           </IonItem>
         ))}
       </div>
-    ));
-  }, [groupedAppointments])
+    );
+  }, [sortedEvents])
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: appointmentRequestsRef,
@@ -230,7 +204,15 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
           onDidDismiss={() => setDatePickerOpen(false)}
         >
           <IonContent fullscreen={true}>
-            <DatePicker date={selectedDate} onSelectedDate={setSelectedDate} onTriggerAction={getAppointmentsHandler} />
+            <DatePicker
+              date={selectedDate}
+              onSelectedDate={(date) => {
+                if (date) {
+                  dispatch(setDate(date))
+                }
+              }}
+              onTriggerAction={() => setDatePickerOpen(false)}
+            />
           </IonContent>
         </IonPopover>
       </IonPage>
