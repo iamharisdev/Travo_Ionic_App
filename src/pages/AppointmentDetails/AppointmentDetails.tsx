@@ -8,7 +8,9 @@ import {
   IonItem,
   IonPage,
   IonRow,
+  IonSkeletonText,
   IonText,
+  useIonViewDidEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,23 +32,29 @@ import "./AppointmentDetails.scss";
 
 const CSSprefix = 'appointment-details';
 
+interface EventData {
+  eventId?: string;
+  type?: AppointmentDetailTypeEnum;
+}
+
 const AppointmentDetails: React.FC = (): React.ReactElement => {
-  const location = useLocation<{ eventId?: string, type?: AppointmentDetailTypeEnum }>();
+  const location = useLocation<EventData>();
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const history = useHistory();
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
+  const [eventData, setEventData] = useState<EventData>();
 
   const event = useMemo(() => events?.events?.find(({ id, status, ...rest }) => {
-    if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE && id === location?.state?.eventId) {
+    if (eventData?.type === AppointmentDetailTypeEnum.RESCHEDULE && id === eventData?.eventId) {
       return { id, status, ...rest };
     }
 
-    if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT && id === location?.state?.eventId && status === AppointmentStatusEnum.PENDING) {
+    if (eventData?.type === AppointmentDetailTypeEnum.ACCEPT && id === eventData?.eventId && status === AppointmentStatusEnum.PENDING) {
       return { id, status, ...rest };
     }
-  }), [events?.events, location?.state?.eventId]);
+  }), [events?.events, eventData]);
 
   const { startTime, endTime, day, month, date, duration }:
     {
@@ -213,109 +221,120 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
   }, [location?.state?.type, location?.state?.eventId, rescheduleOpen]);
 
+  useIonViewDidEnter(() => {
+    if (location?.state?.type && location?.state?.eventId) {
+      setEventData({ eventId: location.state.eventId, type: location.state.type });
+    }
+  }, []);
+
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showEdit={showEdit} showMenu={false} editCB={editAppointmentHandler} />
       <IonContent fullscreen={true}>
-        <IonGrid className="ion-margin-top ion-padding-top">
-          <IonRow>
-            <IonCol size="auto">
-              <IonItem lines="none">
-                <div className={`${CSSprefix}-bar`} style={{ background: barColor }} />
-              </IonItem>
-            </IonCol>
-            <IonCol>
-              <IonItem lines="none" className="ion-no-padding">
-                <IonText className={`${CSSprefix}-service`}>{event?.patientServiceName}</IonText>
-              </IonItem>
-              <IonItem lines="none" className="ion-no-padding">
-                <IonText className={`${CSSprefix}-details`}>{`${day}, ${month} ${date}, ${startTime} - ${endTime}`}</IonText>
-              </IonItem>
-              <IonItem lines="none" className="ion-no-padding">
-                <IonText className={`${CSSprefix}-details`}>{event?.patientServiceType}</IonText>
-              </IonItem>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        <IonItem lines="none" className="ion-margin-top">
-          <IonIcon icon={personCircleOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
-          <IonText className={`${CSSprefix}-details`}>
-            {event?.patientName}
-          </IonText>
-        </IonItem>
-        <IonItem lines="none">
-          <IonIcon icon={timerOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
-          <IonText className={`${CSSprefix}-details`}>
-            {`${event?.location}, ${duration}`}
-          </IonText>
-        </IonItem>
-        <IonItem lines="none">
-          <IonIcon icon={pricetagOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
-          <IonText className={`${CSSprefix}-details`}>
-            {`$${event?.price?.toFixed(2)} ${currency}`}
-          </IonText>
-        </IonItem>
-        <IonItem lines="none">
-          <IonIcon icon={callOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
-          <IonText className={`${CSSprefix}-link`}>
-            <a style={{ textDecoration: 'none' }} href={`tel:${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}>
-              {`${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}
-            </a>
-          </IonText>
-        </IonItem>
-        <IonItem lines="none">
-          <IonIcon icon={mailOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
-          <IonText className={`${CSSprefix}-link`}>
-            <a style={{ textDecoration: 'none' }} href={`mailto:${provider.practice?.userName}`}>
-              {`${provider.practice?.userName}`}
-            </a>
-          </IonText>
-        </IonItem>
-        {isOnline && (
-          <IonItem lines="none">
-            <IonIcon icon={videocamOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
-            <IonText className={`${CSSprefix}-link`}>
-              <a style={{ textDecoration: 'none' }} href={event?.onlineMeetUrl} target="_blank">
-                {`${event?.onlineMeetUrl}`}
-              </a>
-            </IonText>
-            <IonIcon
-              icon={copyOutline}
-              slot="end"
-              style={{ color: 'var(--ion-trova-medium-gray)' }}
-              onClick={copyOnlineMeetUrl}
-            />
-          </IonItem>
-        )}
-        {location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE && isOnline && (
+        {event && (
           <>
+            <IonGrid className="ion-margin-top ion-padding-top">
+              <IonRow>
+                <IonCol size="auto">
+                  <IonItem lines="none">
+                    <div className={`${CSSprefix}-bar`} style={{ background: barColor }} />
+                  </IonItem>
+                </IonCol>
+                <IonCol>
+                  <IonItem lines="none" className="ion-no-padding">
+                    <IonText className={`${CSSprefix}-service`}>{event?.patientServiceName}</IonText>
+                  </IonItem>
+                  <IonItem lines="none" className="ion-no-padding">
+                    <IonText className={`${CSSprefix}-details`}>{`${day}, ${month} ${date}, ${startTime} - ${endTime}`}</IonText>
+                  </IonItem>
+                  <IonItem lines="none" className="ion-no-padding">
+                    <IonText className={`${CSSprefix}-details`}>{event?.patientServiceType}</IonText>
+                  </IonItem>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+            <IonItem lines="none" className="ion-margin-top">
+              <IonIcon icon={personCircleOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
+              <IonText className={`${CSSprefix}-details`}>
+                {event?.patientName}
+              </IonText>
+            </IonItem>
+            <IonItem lines="none">
+              <IonIcon icon={timerOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
+              <IonText className={`${CSSprefix}-details`}>
+                {`${event?.location}, ${duration}`}
+              </IonText>
+            </IonItem>
+            <IonItem lines="none">
+              <IonIcon icon={pricetagOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
+              <IonText className={`${CSSprefix}-details`}>
+                {`$${event?.price?.toFixed(2)} ${currency}`}
+              </IonText>
+            </IonItem>
+            <IonItem lines="none">
+              <IonIcon icon={callOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
+              <IonText className={`${CSSprefix}-link`}>
+                <a style={{ textDecoration: 'none' }} href={`tel:${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}>
+                  {`${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}
+                </a>
+              </IonText>
+            </IonItem>
+            <IonItem lines="none">
+              <IonIcon icon={mailOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
+              <IonText className={`${CSSprefix}-link`}>
+                <a style={{ textDecoration: 'none' }} href={`mailto:${provider.practice?.userName}`}>
+                  {`${provider.practice?.userName}`}
+                </a>
+              </IonText>
+            </IonItem>
+            {isOnline && (
+              <IonItem lines="none">
+                <IonIcon icon={videocamOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
+                <IonText className={`${CSSprefix}-link`}>
+                  <a style={{ textDecoration: 'none' }} href={event?.onlineMeetUrl} target="_blank">
+                    {`${event?.onlineMeetUrl}`}
+                  </a>
+                </IonText>
+                <IonIcon
+                  icon={copyOutline}
+                  slot="end"
+                  style={{ color: 'var(--ion-trova-medium-gray)' }}
+                  onClick={copyOnlineMeetUrl}
+                />
+              </IonItem>
+            )}
+            {location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE && isOnline && (
+              <>
+                <IonButton
+                  className="ion-padding"
+                  expand="block"
+                >
+                  Start
+                </IonButton>
+                <div className={`${CSSprefix}-divider`} />
+              </>
+            )}
             <IonButton
               className="ion-padding"
               expand="block"
+              fill={location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE ? 'outline' : 'solid'}
+              color="primary"
+              onClick={positiveHandler}
             >
-              Start
+              {positiveLabel}
             </IonButton>
-            <div className={`${CSSprefix}-divider`} />
+            <IonButton
+              className="ion-padding ion-no-margin"
+              expand="block"
+              fill={location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE ? 'clear' : 'outline'}
+              color="danger"
+              onClick={negativeHandler}
+            >
+              {negativeLabel}
+            </IonButton>
           </>
         )}
-        <IonButton
-          className="ion-padding"
-          expand="block"
-          fill={location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE ? 'outline' : 'solid'}
-          color="primary"
-          onClick={positiveHandler}
-        >
-          {positiveLabel}
-        </IonButton>
-        <IonButton
-          className="ion-padding ion-no-margin"
-          expand="block"
-          fill={location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE ? 'clear' : 'outline'}
-          color="danger"
-          onClick={negativeHandler}
-        >
-          {negativeLabel}
-        </IonButton>
+        {!event && <IonSkeletonText animated={true} style={{ width: '100%', height: '100%' }} />}
       </IonContent>
       <RescheduleAppointment
         isOpen={rescheduleOpen}
