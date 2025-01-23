@@ -27,7 +27,7 @@ import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
 import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
-import { AppointmentDetailTypeEnum, CALENDAR_SLOTS } from "../../shared/types/appointment.type";
+import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import { useHistory, useLocation } from "react-router";
 import { getDefaultDates } from "../../shared/utils/dates.util";
 
@@ -44,7 +44,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const mappedEvents = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day')
 
-    return events.events.filter(({ startTime }) => dayjs(startTime).date() === dayjs(selectedDate).date()).map((event) => ({
+    return events.events.filter(({ startTime, status }) => dayjs(startTime).date() === dayjs(selectedDate).date() && status === AppointmentStatusEnum.CONFIRMEND).map((event) => ({
       id: event?.id,
       title: JSON.stringify({
         id: event?.id,

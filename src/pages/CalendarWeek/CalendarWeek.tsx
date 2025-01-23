@@ -26,7 +26,7 @@ import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
 import { APPOINTMENT_DETAILS, CALENDAR_DAY, CALENDAR_WEEK } from "../../shared/routes/routes";
-import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
+import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import { useHistory, useLocation } from "react-router";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import { getDefaultDates } from "../../shared/utils/dates.util";
@@ -44,9 +44,10 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const mappedEvents = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'week')
 
-    return events.events.filter(({ startTime }) =>
+    return events.events.filter(({ startTime, status }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf()
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf() &&
+      status === AppointmentStatusEnum.CONFIRMEND
     ).map((event) => ({
       id: event?.id,
       title: JSON.stringify({
