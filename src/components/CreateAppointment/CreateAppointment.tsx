@@ -8,6 +8,7 @@ import { Services } from '../../shared/types/appointment.type';
 import SelectDateTime from './Steps/SelectDateTime/SelectDateTime';
 import ReviewDetails from './Steps/ReviewDetails/ReviewDetails';
 import dayjs from 'dayjs';
+import PaidInAdvance from './Steps/PaidInAdvance/PaidInAdvance';
 
 import './CreateAppointment.scss';
 
@@ -34,13 +35,13 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   }, [selectedService]);
 
   const cancelOrBackText = useMemo(() => {
-    if (step === 1 || step === 2 || step === 3 || prevStep > -1) return 'Back';
+    if (step === 1 || step === 2 || step === 3 || step === 4 || prevStep > -1) return 'Back';
 
     return 'Cancel';
   }, [step, prevStep]);
 
   const closeHandler = useCallback((close?: boolean) => {
-    if ((step === 1 || step === 2 || step === 3) && !close && prevStep === -1) {
+    if ((step === 1 || step === 2 || step === 3 || step === 4) && !close && prevStep === -1) {
       setStep(step - 1);
     }
 
@@ -54,6 +55,8 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       setPrevStep(-1);
     }
   }, [step, prevStep, isOpen]);
+  console.log('step: ', step);
+  console.log('prevStep: ', prevStep);
 
 
   // Android native back button
@@ -78,6 +81,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       case 1:
         return <SelectService setSelectedService={(service) => {
           setSelectedService(service);
+          // if comes from selected timeslot
           if (prevStep === -1) {
             if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
               const endTime = dayjs(selectedSlot?.start).add(service.duration, 'minutes').toISOString();
@@ -86,14 +90,16 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
                 endTime
               });
               if (view !== 'month') {
-                setStep(3);
-              } else setStep(2);
+                setStep(4);
+              } else {
+                setStep(2);
+              }
             } else {
               setStep(2);
             }
           } else {
-            setStep(prevStep);
-            setPrevStep(-1);
+            // from month or appointments view
+            setStep(3);
           }
         }} />;
       case 2:
@@ -106,7 +112,11 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
             setSelectedDateTime={(selectedDateTime) => {
               setSelectedDateTime({ ...selectedDateTime });
               if (prevStep === -1) {
-                setStep(3);
+                if (selectedService?.paymentType === 'In Advance') {
+                  setStep(3);
+                } else {
+                  setStep(4);
+                }
               } else {
                 setStep(prevStep);
                 setPrevStep(-1);
@@ -116,6 +126,8 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
           />
         );
       case 3:
+        return <PaidInAdvance selectedService={selectedService} />;
+      case 4:
         return <ReviewDetails
           selectedClient={selectedClient}
           selectedService={selectedService}
@@ -131,6 +143,8 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
         <SelectClient isOpen={isOpen} setSelectedClient={setSelectedClient} />;
     }
   }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId]);
+
+  console.log('selectedService: ', selectedService);
 
   const scrollBottomHandler = () => {
     contentRef.current && contentRef.current.scrollToBottom();

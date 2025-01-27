@@ -1,0 +1,44 @@
+.invoice-card {
+  border-radius: 8px;
+  border: 1px solid var(--Divider, #D1D3D4);
+  background: var(--White, #FFF);
+  box-shadow: 0px 4px 18px 0px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  padding: 0;
+  height: auto;
+  max-height: 315px;
+
+  ion-card-header {
+    margin: 0;
+    padding: 0 0 0 15px;
+    width: 100%;
+  }
+
+  ion-card-content {
+    width: 100%;
+
+    ion-input {
+      margin-bottom: 16px;
+    }
+  }
+
+  &-custom-input {
+    border-radius: 5px;
+    border: 1.5px solid #AAAAAA;
+    background: #F6F6F6;
+    width: 100%;
+    --color: #AAAAAA;
+    --padding-start: 10px;
+    height: auto;
+    max-height: 50px;
+  }
+
+  ion-item-divider {
+    background: transparent;
+    --margin: 0;
+    --padding: 0;
+  }
+}
