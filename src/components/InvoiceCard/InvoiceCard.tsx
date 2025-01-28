@@ -24,10 +24,13 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ line }): React.ReactElement =
         </IonItem>
       </IonCardHeader>
       <IonCardContent>
-        <IonInput className={`${CSSPrefix}-custom-input`} disabled={true} placeholder="Type code" value={line.code} />
-        <IonInput className={`${CSSPrefix}-custom-input`} disabled={true} placeholder="Description" value={line.description} />
-        <IonInput className={`${CSSPrefix}-custom-input`} disabled={true} placeholder="ICD 10 code" value={line.icd10Code} />
-        <IonItemDivider />
+        <IonInput className={`${CSSPrefix}-custom-input ion-margin-bottom`} disabled={true} placeholder="Type code" value={line.code} />
+        <IonInput className={`${CSSPrefix}-custom-input ion-margin-bottom`} disabled={true} placeholder="Description" value={line.description} />
+        <IonInput className={`${CSSPrefix}-custom-input ion-no-margin`} disabled={true} placeholder="ICD 10 code" value={line.icd10Code} />
+        <div className="divider ion-margin-vertical" />
+        <div className={`${CSSPrefix}-amount-container`}>
+          <IonText className={`${CSSPrefix}-amount`}>${line.amount.toFixed(2)}</IonText>
+        </div>
       </IonCardContent>
     </IonCard>
   )

@@ -9,7 +9,7 @@
   align-self: stretch;
   padding: 0;
   height: auto;
-  max-height: 315px;
+  max-height: 350px;
 
   ion-card-header {
     margin: 0;
@@ -19,26 +19,49 @@
 
   ion-card-content {
     width: 100%;
-
-    ion-input {
-      margin-bottom: 16px;
-    }
+    display: flex;
+    flex-direction: column;
   }
 
   &-custom-input {
     border-radius: 5px;
-    border: 1.5px solid #AAAAAA;
+    border: 1.5px solid var(--ion-trova-medium-gray);
     background: #F6F6F6;
     width: 100%;
-    --color: #AAAAAA;
+    --color: var(--ion-trova-medium-gray);
     --padding-start: 10px;
     height: auto;
     max-height: 50px;
+
   }
 
   ion-item-divider {
     background: transparent;
-    --margin: 0;
-    --padding: 0;
+    --padding-bottom: 0;
+    --padding-top: 0;
+  }
+
+  &-amount-container {
+    display: flex;
+    width: auto;
+    max-width: 94px;
+    height: 43px;
+    padding: 16px;
+    justify-content: flex-end;
+    align-items: center;
+    align-self: flex-end;
+    gap: 10px;
+    border-radius: 5px;
+    border: 1px solid #AAA;
+    background: #F6F6F6;
+  }
+
+  &-amount {
+    color: var(--ion-trova-black);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 11px;
   }
 }
