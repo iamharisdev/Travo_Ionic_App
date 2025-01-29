@@ -1,5 +1,5 @@
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonText } from '@ionic/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { LinePreview } from '../../shared/types/invoice.type';
 import dayjs from 'dayjs';
 import { trashOutline } from 'ionicons/icons';
@@ -13,6 +13,14 @@ interface InvoiceCardProps {
 }
 
 const InvoiceCard: React.FC<InvoiceCardProps> = ({ line }): React.ReactElement => {
+  const [amount, setAmount] = useState<number>();
+
+  useEffect(() => {
+    if (line?.amount && !amount) {
+      setAmount(line.amount);
+    }
+  }, [line.amount]);
+
   return (
     <IonCard className={CSSPrefix}>
       <IonCardHeader>
@@ -29,7 +37,12 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ line }): React.ReactElement =
         <IonInput className={`${CSSPrefix}-custom-input ion-no-margin`} disabled={true} placeholder="ICD 10 code" value={line.icd10Code} />
         <div className="divider ion-margin-vertical" />
         <div className={`${CSSPrefix}-amount-container`}>
-          <IonText className={`${CSSPrefix}-amount`}>${line.amount.toFixed(2)}</IonText>
+          <IonInput
+            type="number"
+            className={`${CSSPrefix}-amount`}
+            value={line.amount.toFixed(2)!!}
+            onIonChange={(e) => setAmount((parseInt(e.detail.value?.replace('$', '')!!)))}
+          />
         </div>
       </IonCardContent>
     </IonCard>

@@ -16,7 +16,7 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ setDiscountCB
   return (
     <IonCard className={CSSPrefix}>
       <IonCardHeader>
-        <IonLabel>
+        <IonLabel className={`${CSSPrefix}-discount-label`}>
           Discount
           <p>
             If applicable
@@ -24,9 +24,12 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ setDiscountCB
         </IonLabel>
       </IonCardHeader>
       <IonCardContent>
-        <div className={`${CSSPrefix}-discount-container`}>
-          <IonInput type="number" className={`${CSSPrefix}-discount-input`} value={`$${discount.toFixed(2)}`} onIonChange={(e) => setDiscunt((parseInt(e.detail.value?.replace('$', '')!!)))} />
-        </div>
+        <IonInput
+          type="number"
+          className={`${CSSPrefix}-discount-input`}
+          value={discount.toFixed(2)!!}
+          onIonChange={(e) => setDiscunt((parseInt(e.detail.value?.replace('$', '')!!)))}
+        />
       </IonCardContent>
     </IonCard>
   )

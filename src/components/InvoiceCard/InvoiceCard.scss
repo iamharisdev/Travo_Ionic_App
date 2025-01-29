@@ -43,21 +43,28 @@
 
   &-amount-container {
     display: flex;
-    width: auto;
     max-width: 94px;
     height: 43px;
-    padding: 16px;
     justify-content: flex-end;
     align-items: center;
     align-self: flex-end;
-    gap: 10px;
-    border-radius: 5px;
-    border: 1px solid #AAA;
-    background: #F6F6F6;
   }
 
   &-amount {
-    color: var(--ion-trova-black);
+    --border-radius: 5px;
+    --border-width: 1px;
+    --border-color: #AAA;
+    border: 1px solid #AAA;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 94px;
+    height: auto;
+    align-self: flex-end;
+    margin-top: 22px;
+    --background: #F6F6F6;
+    --highlight-color-focused: transparent;
+    --color: var(--ion-trova-black);
+    --placeholder-color: var(--ion-trova-black);
     text-align: center;
     font-size: 16px;
     font-style: normal;
