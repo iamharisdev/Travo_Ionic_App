@@ -55,12 +55,6 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       setPrevStep(-1);
     }
   }, [step, prevStep, isOpen]);
-  // console.log('step: ', step);
-  // console.log('prevStep: ', prevStep);
-
-  console.log('selectedClient: ', selectedClient);
-  console.log('selectedService: ', selectedService);
-
 
   // Android native back button
   document.addEventListener('ionBackButton', (ev: any) => {

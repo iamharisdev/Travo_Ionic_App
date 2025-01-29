@@ -94,8 +94,6 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
           }
         );
 
-        console.log('res: ', res);
-
         if (res.status === 200) {
           setPreview(res.data);
         }
