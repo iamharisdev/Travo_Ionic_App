@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { IonButton, IonIcon, IonItem, IonLabel, IonText } from '@ionic/react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { IonButton, IonIcon, IonItem, IonLabel, IonText, useIonViewDidLeave } from '@ionic/react';
 import { Services } from '../../../../shared/types/appointment.type';
 import { addOutline } from 'ionicons/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,9 @@ import usePresentToast from '../../../../hooks/usePresentToast';
 import { LinePreview, Preview } from '../../../../shared/types/invoice.type';
 import InvoiceCard from '../../../InvoiceCard/InvoiceCard';
 import InvoiceDiscountCard from '../../../InvoiceDiscountCard/InvoiceDiscountCard';
+import { generateInvoicePreview } from '../../../../api/services/billing';
+import { Patient } from '../../../../state/patientSlice';
+import { AppointmentDateTime } from '../../CreateAppointment';
 
 import './PaidInAdvance.scss';
 
@@ -15,6 +18,8 @@ const CSSPrefix = 'paid-in-advance';
 
 interface PaidInAdvanceProps {
   selectedService?: Services;
+  selectedClient?: Patient;
+  selectedDateTime?: AppointmentDateTime;
 }
 
 const mockPreview: Preview = {
@@ -40,14 +45,12 @@ const mockPreview: Preview = {
   discount: 0
 }
 
-const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService }) => {
+const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selectedClient, selectedDateTime }) => {
   const [preview, setPreview] = useState<Preview>();
   const [discount, setDiscunt] = useState<number>(0);
-  const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const {
     provider,
-    calendar: { selectedDate, selectedDates }
   } = useSelector((state: RootState) => state);
 
   const duration = useMemo(() => {
@@ -73,9 +76,44 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService }) => {
     return parsedDuration;
   }, [selectedService?.duration]);
 
+  const generateInvoicePreviewHandler = useCallback(async () => {
+    try {
+      const [providerPractice] = provider.providerPractices;
+
+      if (providerPractice && selectedService) {
+        const res = await generateInvoicePreview(
+          selectedService.practiceId,
+          selectedService.providerId,
+          selectedService.id,
+          {
+            patientId: selectedClient?.id!!,
+            currency: 'USD',
+            currencySymbol: '$',
+            amount: selectedService.price,
+            appointmentDate: selectedDateTime?.startTime!!,
+          }
+        );
+
+        console.log('res: ', res);
+
+        if (res.status === 200) {
+          setPreview(res.data);
+        }
+      }
+    } catch (error) {
+      console.error('[paid-in-advance]: ', error);
+    }
+  }, [selectedService, selectedClient, selectedDateTime, provider.providerPractices]);
+
   useEffect(() => {
-    setTimeout(() => setPreview(mockPreview), 1000);
-  }, [mockPreview]);
+    if (!preview) {
+      generateInvoicePreviewHandler();
+    }
+  }, [selectedService, selectedClient, selectedDateTime, provider.providerPractices]);
+
+  useIonViewDidLeave(() => {
+    setPreview(undefined);
+  });
 
   return (
     <>

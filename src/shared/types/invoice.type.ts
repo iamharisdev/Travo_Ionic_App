@@ -13,3 +13,11 @@ export interface Preview {
   templateId: string | null;
   discount: number;
 }
+
+export interface InvoicePreviewPayload {
+  patientId: string;
+  currency: string;
+  currencySymbol: string;
+  amount: number;
+  appointmentDate: string;
+}

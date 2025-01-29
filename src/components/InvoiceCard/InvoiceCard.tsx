@@ -21,6 +21,8 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ line }): React.ReactElement =
     }
   }, [line.amount]);
 
+  // TODO: remove disabled property for inputs to let user edit them
+
   return (
     <IonCard className={CSSPrefix}>
       <IonCardHeader>

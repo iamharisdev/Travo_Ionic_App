@@ -55,8 +55,11 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       setPrevStep(-1);
     }
   }, [step, prevStep, isOpen]);
-  console.log('step: ', step);
-  console.log('prevStep: ', prevStep);
+  // console.log('step: ', step);
+  // console.log('prevStep: ', prevStep);
+
+  console.log('selectedClient: ', selectedClient);
+  console.log('selectedService: ', selectedService);
 
 
   // Android native back button
@@ -126,7 +129,11 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
           />
         );
       case 3:
-        return <PaidInAdvance selectedService={selectedService} />;
+        return <PaidInAdvance
+          selectedService={selectedService}
+          selectedClient={selectedClient}
+          selectedDateTime={selectedDateTime}
+        />;
       case 4:
         return <ReviewDetails
           selectedClient={selectedClient}
