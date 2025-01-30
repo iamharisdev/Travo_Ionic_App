@@ -3,7 +3,7 @@ export interface LinePreview {
   description: string;
   amount: number;
   serviceDate: string;
-  icd10Code: string;
+  icd10Code?: string;
 }
 
 export interface Preview {

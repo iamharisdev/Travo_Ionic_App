@@ -1,16 +1,18 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { IonButton, IonIcon, IonItem, IonLabel, IonText, useIonViewDidLeave } from '@ionic/react';
 import { Services } from '../../../../shared/types/appointment.type';
 import { addOutline } from 'ionicons/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../state/store';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../state/store';
 import usePresentToast from '../../../../hooks/usePresentToast';
-import { LinePreview, Preview } from '../../../../shared/types/invoice.type';
+import { Preview } from '../../../../shared/types/invoice.type';
 import InvoiceCard from '../../../InvoiceCard/InvoiceCard';
 import InvoiceDiscountCard from '../../../InvoiceDiscountCard/InvoiceDiscountCard';
 import { generateInvoicePreview } from '../../../../api/services/billing';
 import { Patient } from '../../../../state/patientSlice';
 import { AppointmentDateTime } from '../../CreateAppointment';
+import dayjs from 'dayjs';
+import { FieldArray, Form, Formik } from 'formik';
 
 import './PaidInAdvance.scss';
 
@@ -22,30 +24,8 @@ interface PaidInAdvanceProps {
   selectedDateTime?: AppointmentDateTime;
 }
 
-const mockPreview: Preview = {
-  lines: [
-    {
-      code: "",
-      description: "",
-      amount: 65.00,
-      serviceDate: "2025-02-06T09:00:00Z",
-      icd10Code: "Z71.9"
-    },
-    {
-      code: "",
-      description: "",
-      amount: 65.00,
-      serviceDate: "2025-02-06T09:00:00Z",
-      icd10Code: "Z71.9"
-    },
-  ],
-  subtotal: 65.00,
-  total: 65.00,
-  templateId: null,
-  discount: 0
-}
-
 const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selectedClient, selectedDateTime }) => {
+  const formRef: any = useRef();
   const [preview, setPreview] = useState<Preview>();
   const [discount, setDiscunt] = useState<number>(0);
   const [presentToast] = usePresentToast();
@@ -76,6 +56,20 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
     return parsedDuration;
   }, [selectedService?.duration]);
 
+  const initialValues: Preview = useMemo(() => {
+    if (preview) return {
+      ...preview
+    }
+
+    return {
+      lines: [],
+      subtotal: 0,
+      total: 0,
+      templateId: null,
+      discount: 0
+    };
+  }, [preview]);
+
   const generateInvoicePreviewHandler = useCallback(async () => {
     try {
       const [providerPractice] = provider.providerPractices;
@@ -102,6 +96,10 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
       console.error('[paid-in-advance]: ', error);
     }
   }, [selectedService, selectedClient, selectedDateTime, provider.providerPractices]);
+
+  const nextHandler = (values: Preview) => {
+    console.log('next:values: ', values);
+  }
 
   useEffect(() => {
     if (!preview) {
@@ -133,13 +131,48 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
           </IonLabel>
           <IonText className={`${CSSPrefix}-price`}>${preview?.total?.toFixed(2)}</IonText>
         </IonItem>
-        {preview && preview?.lines && preview.lines?.map((line: LinePreview, index: number) => (
-          <InvoiceCard key={index} line={line} />
-        ))}
-        <IonButton fill="clear" expand="full" color="primary">
-          Add new line item
-          <IonIcon icon={addOutline} slot="start" />
-        </IonButton>
+        <Formik
+          innerRef={formRef}
+          initialValues={initialValues}
+          onSubmit={nextHandler}
+          enableReinitialize={true}
+        >
+          {({ values }) => (
+            <Form>
+              <FieldArray name="lines">
+                {({ push, remove, form: { setFieldValue } }) => (
+                  <>
+                    {values.lines.map((line, index) => (
+                      <InvoiceCard
+                        key={index}
+                        name={`lines.${index}`}
+                        line={line}
+                        removeLineItem={() => remove(index)}
+                        setFieldValue={setFieldValue}
+                      />
+                    ))}
+
+                    <IonButton
+                      fill="clear"
+                      expand="full"
+                      color="primary"
+                      onClick={() => push({
+                        code: '',
+                        description: '',
+                        icd10Code: '',
+                        amount: 0,
+                        serviceDate: dayjs(selectedDateTime?.startTime).toISOString(),
+                      })}
+                    >
+                      Add new line item
+                      <IonIcon icon={addOutline} slot="start" />
+                    </IonButton>
+                  </>
+                )}
+              </FieldArray>
+            </Form>
+          )}
+        </Formik>
         <InvoiceDiscountCard setDiscountCB={setDiscunt} />
       </div>
       <div className="paid-in-advance-footer">
@@ -158,7 +191,11 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
           </div>
         </div>
         <div className="paid-in-advance-footer-button-container">
-          <IonButton fill="solid" expand="block" color="primary">
+          <IonButton fill="solid" expand="block" color="primary" type="submit" onClick={() => {
+            if (formRef.current) {
+              (formRef?.current as any).handleSubmit();
+            }
+          }}>
             Next
           </IonButton>
         </div>
