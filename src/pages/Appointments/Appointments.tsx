@@ -135,7 +135,7 @@ const Appointments: React.FC = (): React.ReactElement => {
       <IonGrid fixed={true} className="ion-no-padding ion-no-margin">
         <IonRow className="ion-margin-start ion-no-margin">
           <IonCol size="auto" className="ion-margin-top">
-            <Badge appointmentDate={dayjs(sortedEvents[0].startTime).toISOString()} />
+            <Badge appointmentDate={dayjs(sortedEvents[0].endTime).toISOString()} />
           </IonCol>
           <IonCol>
             {sortedEvents.map((event) => (
