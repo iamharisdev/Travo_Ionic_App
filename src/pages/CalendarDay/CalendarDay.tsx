@@ -44,7 +44,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day')
 
-    return events.events.filter(({ startTime, status }) => dayjs(startTime).date() === dayjs(selectedDate).date() &&
+    return events.events.filter(({ endTime, status }) => dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
       (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)).map((event) => ({
         id: event?.id,
         title: JSON.stringify({
@@ -52,8 +52,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           service: event?.patientServiceName || event?.title,
           patient: event?.patientName || event?.providerName,
           color: event?.color,
-          start: dayjs(event?.startTime || '').toDate(),
-          end: dayjs(event.endTime || '').toDate(),
+          start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
+          end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
+          redirect: event?.status !== AppointmentStatusEnum.BUSY,
         }),
         start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
         end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
@@ -134,7 +135,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
       }
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
-
+  console.log('mappedEvents: ', mappedEvents);
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />
@@ -175,10 +176,18 @@ const CalendarDay: React.FC = (): React.ReactElement => {
                 <EventCard
                   {...props}
                   loading={state.loading}
-                  onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
-                    eventId: id,
-                    type: AppointmentDetailTypeEnum.RESCHEDULE
-                  })}
+                  onClick={(id: string) => {
+                    const redirect = JSON.parse((props?.event?.title as string) || '').redirect;
+
+                    if (redirect) {
+                      history.push(`${APPOINTMENT_DETAILS}/${id}`, {
+                        eventId: id,
+                        type: AppointmentDetailTypeEnum.RESCHEDULE
+                      })
+                    }
+
+                    return null;
+                  }}
                 />
               ),
             }}

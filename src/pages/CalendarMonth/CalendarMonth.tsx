@@ -54,6 +54,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
         service: event?.patientServiceName || event?.title,
         patient: event?.patientName || event?.providerName,
         color: event?.color,
+        redirect: event?.status !== AppointmentStatusEnum.BUSY,
       }),
       start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
       end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
@@ -195,10 +196,18 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
                     loading={state.loading}
                     index={index}
                     eventsLeft={eventsLeft}
-                    onClick={(id: string) => history.push(`${APPOINTMENT_DETAILS}/${id}`, {
-                      eventId: id,
-                      type: AppointmentDetailTypeEnum.RESCHEDULE
-                    })}
+                    onClick={(id: string) => {
+                      const redirect = JSON.parse((props?.event?.title as string) || '').redirect;
+
+                      if (redirect) {
+                        history.push(`${APPOINTMENT_DETAILS}/${id}`, {
+                          eventId: id,
+                          type: AppointmentDetailTypeEnum.RESCHEDULE
+                        })
+                      }
+
+                      return null;
+                    }}
                   />
                 );
               },
