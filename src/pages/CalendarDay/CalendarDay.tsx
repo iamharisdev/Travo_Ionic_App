@@ -12,7 +12,7 @@ import {
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import { CALENDAR_DAY_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, SlotInfo, Views } from 'react-big-calendar';
+import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -41,22 +41,24 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const pageRef = useRef();
   const history = useHistory();
   const { provider, scheduling: { events, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
-  const mappedEvents = useMemo(() => {
+  const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day')
 
-    return events.events.filter(({ startTime, status }) => dayjs(startTime).date() === dayjs(selectedDate).date() && status === AppointmentStatusEnum.CONFIRMEND).map((event) => ({
-      id: event?.id,
-      title: JSON.stringify({
+    return events.events.filter(({ startTime, status }) => dayjs(startTime).date() === dayjs(selectedDate).date() &&
+      (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)).map((event) => ({
         id: event?.id,
-        service: event?.patientServiceName,
-        patient: event?.patientName,
-        color: event?.color,
-        start: dayjs(event?.startTime || '').toDate(),
-        end: dayjs(event.endTime || '').toDate(),
-      }),
-      start: dayjs(event?.startTime || '').toDate(),
-      end: dayjs(event.endTime || '').toDate(),
-    }))
+        title: JSON.stringify({
+          id: event?.id,
+          service: event?.patientServiceName || event?.title,
+          patient: event?.patientName || event?.providerName,
+          color: event?.color,
+          start: dayjs(event?.startTime || '').toDate(),
+          end: dayjs(event.endTime || '').toDate(),
+        }),
+        start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
+        end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
+        allDay: event?.allDay
+      }))
   }, [events.events, selectedDate, state.loading]);
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);

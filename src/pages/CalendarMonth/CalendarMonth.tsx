@@ -11,7 +11,7 @@ import {
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import { CALENDAR_MONTH_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, SlotInfo, Views } from 'react-big-calendar';
+import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -40,23 +40,24 @@ const CSSprefix = 'calendar-month';
 const CalendarMonth: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
-  const mappedEvents = useMemo(() => {
+  const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'month');
 
     return events.events.filter(({ startTime, status }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
       dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf() &&
-      status === AppointmentStatusEnum.CONFIRMEND
+      (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)
     ).map((event) => ({
       id: event?.id,
       title: JSON.stringify({
         id: event?.id,
-        service: event?.patientServiceName,
-        patient: event?.patientName,
+        service: event?.patientServiceName || event?.title,
+        patient: event?.patientName || event?.providerName,
         color: event?.color,
       }),
-      start: dayjs(event?.startTime || '').toDate(),
-      end: dayjs(event.endTime || '').toDate(),
+      start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
+      end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
+      allDay: event?.allDay
     })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
   }, [events.events, state.loading, selectedDates]);
   const dispatch = useDispatch<AppDispatch>();

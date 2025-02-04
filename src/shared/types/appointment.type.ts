@@ -190,6 +190,15 @@ export interface IAppointment extends Identifiable {
   invoiceDataId?: string;
   insuranceDetails?: PatientInsuranceResponseDto;
   patientArchived?: boolean;
+  // Meeting events
+  title?: string;
+  inviteDetails?: string;
+  description?: string;
+  providerEmail?: string;
+  id?: string;
+  externalEventId?: string;
+  endTimeValid?: boolean;
+  startTimeValid?: boolean;
 }
 
 export interface SessionTimeRequest extends TimePeriod {
@@ -241,6 +250,7 @@ export enum AppointmentStatusEnum {
   PENDING = 'Pending',
   CONFIRMEND = 'Confirmed',
   CANCELLED = 'Cancelled',
+  BUSY = 'Busy',
 }
 
 export interface CancelAppointmentPayload {
