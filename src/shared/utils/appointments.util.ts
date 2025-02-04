@@ -22,7 +22,7 @@ export const getAppointmentColor = (color: CALENDAR_SLOTS | '') => {
       return 'var(--ion-trova-teal-color)';
 
     default:
-      return 'var(--ion-trova-orange-color)';
+      return color;
   }
 };
 

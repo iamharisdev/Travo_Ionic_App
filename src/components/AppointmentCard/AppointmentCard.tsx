@@ -47,7 +47,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }): React
     >
       <IonItem lines="none" className='ion-no-padding'>
         <IonIcon icon={personCircleOutline} />
-        <IonText className={`${CSSPrefix}-title`}>{appointment?.patientName}</IonText>
+        <IonText className={`${CSSPrefix}-title`}>{appointment?.patientName || appointment.providerName}</IonText>
       </IonItem>
       <IonRow>
         <IonText className={`${CSSPrefix}-description`}>
@@ -59,7 +59,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }): React
       </IonRow>
       <IonRow>
         <IonText className={`${CSSPrefix}-description`}>
-          {appointment?.patientServiceName}
+          {appointment?.patientServiceName || appointment?.title}
         </IonText>
       </IonRow>
     </IonCard>
