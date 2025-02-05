@@ -69,6 +69,40 @@
     width: 100%;
     margin-top: 22vh;
   }
+
+  &-invoice-select-container {
+    display: flex;
+    padding: 8px 16px;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    align-self: stretch;
+    border-radius: 5px;
+    border: 1px solid var(--ion-trova-divider);
+    background: var(--ion-trova-white);
+    width: 100%;
+    margin-bottom: 20px;
+
+    ion-select {
+      --padding-bottom: 0;
+      --padding-top: 0;
+      --padding-start: 0;
+      --padding-end: 0;
+      margin: 0;
+    }
+
+    ion-text {
+      color: var(--ion-trova-gray-text);
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 18px;
+      text-align: left;
+      align-self: flex-start;
+      margin: 0;
+      padding: 0;
+    }
+  }
 }
 
 .paid-in-advance-footer {

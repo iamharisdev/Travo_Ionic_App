@@ -26,6 +26,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   const [step, setStep] = useState<number>(0);
   const [prevStep, setPrevStep] = useState<number>(-1);
   const contentRef = useRef<HTMLIonContentElement | null>(null);
+  const [invoiceDataId, setInvoiceDataId] = useState<string>();
 
   const configNylasId = useMemo(() => {
     if (selectedService?.externalSchedulerId)
@@ -127,12 +128,14 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
           selectedService={selectedService}
           selectedClient={selectedClient}
           selectedDateTime={selectedDateTime}
+          setInvoiceDataId={setInvoiceDataId}
         />;
       case 4:
         return <ReviewDetails
           selectedClient={selectedClient}
           selectedService={selectedService}
           selectedDateTime={selectedDateTime}
+          invoiceDataId={invoiceDataId}
           closeHandler={closeHandler}
           goToStep={(step) => setStep((prevState) => {
             setPrevStep(prevState);
@@ -143,9 +146,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       default:
         <SelectClient isOpen={isOpen} setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId]);
-
-  console.log('selectedService: ', selectedService);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId, invoiceDataId]);
 
   const scrollBottomHandler = () => {
     contentRef.current && contentRef.current.scrollToBottom();

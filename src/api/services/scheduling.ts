@@ -19,6 +19,7 @@ export interface CreateAppointmentPayload {
   patientNumber: string;
   startTime: string;
   endTime: string;
+  invoiceDataId?: string;
 }
 
 export interface RescheduleAppointmentPayload {

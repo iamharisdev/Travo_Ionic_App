@@ -16,12 +16,13 @@ interface InvoiceCardProps {
 }
 
 const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, setFieldValue }): React.ReactElement => {
-  console.log('line: ', line);
   return (
     <IonCard className={CSSPrefix}>
       <IonCardHeader>
         <IonItem lines="none" className="ion-no-padding">
           <IonText>{dayjs(line.serviceDate).format('MMM D, YYYY')}</IonText>
+          {/*
+          // TODO: uncomment this in app V2
           <IonButton
             className="ion-no-padding"
             fill="clear"
@@ -31,23 +32,29 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, s
             onClick={removeLineItem}
           >
             <IonIcon icon={trashOutline} />
-          </IonButton>
+          </IonButton> */}
         </IonItem>
       </IonCardHeader>
       <IonCardContent>
         <IonInput
+          // TODO: remove this live in app V2
+          disabled={true}
           className={`${CSSPrefix}-custom-input ion-margin-bottom`}
           placeholder="Type code"
           value={line.code}
           onIonChange={(e) => setFieldValue(`${name}.code`, e.detail.value!!)}
         />
         <IonInput
+          // TODO: remove this live in app V2
+          disabled={true}
           className={`${CSSPrefix}-custom-input ion-margin-bottom`}
           placeholder="Description"
           value={line.description}
           onIonChange={(e) => setFieldValue(`${name}.description`, e.detail.value!!)}
         />
         <IonInput
+          // TODO: remove this live in app V2
+          disabled={true}
           className={`${CSSPrefix}-custom-input ion-no-margin`}
           placeholder="ICD 10 code"
           value={line.icd10Code}
@@ -56,9 +63,11 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, s
         <div className="divider ion-margin-vertical" />
         <div className={`${CSSPrefix}-amount-container`}>
           <IonInput
+            // TODO: remove this live in app V2
+            disabled={true}
             type="number"
             className={`${CSSPrefix}-amount`}
-            value={line.amount.toFixed(2)}
+            value={line.amount}
             onIonChange={(e) => setFieldValue(`${name}.amount`, e.detail.value!!)}
           />
         </div>
