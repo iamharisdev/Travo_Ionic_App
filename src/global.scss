@@ -166,18 +166,18 @@ ion-datetime::part(calendar-day today) {
 }
 
 .rbc-allday-cell {
-  display: none;
-  /* uncomment if we will see all day events
-    .rbc-row-bg {
-      .rbc-today {
-        background-color: var(--ion-trova-white) !important;
-      }
-    }
+  max-height: 38px;
 
-    .rbc-row-content {
-      background-color: var(--ion-trova-white) !important;
+  // comment this if we don want to see all day events
+  .rbc-row-bg {
+    .rbc-today {
+      background-color: var(--ion-trova-white);
     }
-  */
+  }
+
+  // .rbc-row-content {
+  //   background-color: var(--ion-trova-white) !important;
+  // }
 }
 
 .rbc-month-view {

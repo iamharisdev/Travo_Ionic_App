@@ -51,7 +51,8 @@ const Appointments: React.FC = (): React.ReactElement => {
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
   const sortedEvents = useMemo(() => [...events?.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-  ).filter(({ status, startTime }) => status === AppointmentStatusEnum.CONFIRMEND && dayjs(startTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')),
+  ).filter(({ status, endTime }) => (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)
+    && dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')),
     [events?.events, selectedDate, state.loading]);
   const dateText = useMemo(() => {
     if (selectedDate) {
@@ -134,7 +135,7 @@ const Appointments: React.FC = (): React.ReactElement => {
       <IonGrid fixed={true} className="ion-no-padding ion-no-margin">
         <IonRow className="ion-margin-start ion-no-margin">
           <IonCol size="auto" className="ion-margin-top">
-            <Badge appointmentDate={dayjs(sortedEvents[0].startTime).toISOString()} />
+            <Badge appointmentDate={dayjs(sortedEvents[0].endTime).toISOString()} />
           </IonCol>
           <IonCol>
             {sortedEvents.map((event) => (
