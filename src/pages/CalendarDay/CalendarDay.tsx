@@ -135,7 +135,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
       }
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
-  console.log('mappedEvents: ', mappedEvents);
+
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />

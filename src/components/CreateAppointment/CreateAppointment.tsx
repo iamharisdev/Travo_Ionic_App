@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CreateAppointmentProps } from './createAppointment.type';
 import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonToolbar } from '@ionic/react';
 import SelectClient from './Steps/SelectClient/SelectClient';
@@ -79,6 +79,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       case 1:
         return <SelectService setSelectedService={(service) => {
           setSelectedService(service);
+          setInvoiceDataId(undefined);
           // if comes from selected timeslot
           if (prevStep === -1) {
             if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
@@ -88,7 +89,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
                 endTime
               });
               if (view !== 'month') {
-                if (selectedService?.paymentType === 'In Advance') {
+                if (service.paymentType === 'In Advance') {
                   setStep(3);
                 } else {
                   setStep(4);
@@ -101,7 +102,11 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
             }
           } else {
             // from month or appointments view
-            setStep(3);
+            if (service.paymentType === 'In Advance') {
+              setStep(3);
+            } else {
+              setStep(4);
+            }
           }
         }} />;
       case 2:
@@ -132,10 +137,12 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
           selectedService={selectedService}
           selectedClient={selectedClient}
           selectedDateTime={selectedDateTime}
+          invoiceDataId={invoiceDataId}
           setInvoiceDataId={(id) => {
             setInvoiceDataId(id);
             setStep(4);
           }}
+          nextCB={() => setStep(4)}
         />;
       case 4:
         return <ReviewDetails
@@ -158,6 +165,10 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   const scrollBottomHandler = () => {
     contentRef.current && contentRef.current.scrollToBottom();
   };
+
+  useEffect(() => {
+    setInvoiceDataId(undefined);
+  }, []);
 
   return (
     <IonModal

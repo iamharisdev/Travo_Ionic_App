@@ -32,7 +32,6 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, 
           max={maxDiscount}
           onIonInput={(e) => {
             if (e.detail.value) {
-              console.log('value: ', e.detail.value);
               setDiscount(parseInt(e.detail.value));
               setDiscountCB(parseInt(e.detail.value));
             }

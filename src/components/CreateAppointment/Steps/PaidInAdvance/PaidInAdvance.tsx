@@ -1,17 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { IonButton, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, IonText, useIonViewDidLeave } from '@ionic/react';
+import { IonButton, IonIcon, IonItem, IonLabel, IonPopover, IonSelect, IonSelectOption, IonText, useIonViewDidEnter, useIonViewDidLeave } from '@ionic/react';
 import { Services } from '../../../../shared/types/appointment.type';
-import { addOutline, caretDownOutline, caretUpOutline } from 'ionicons/icons';
+import { addOutline, caretDownOutline, caretUpOutline, informationCircle } from 'ionicons/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state/store';
-import usePresentToast from '../../../../hooks/usePresentToast';
 import { AcceptInvoicePayload, Preview, Templates } from '../../../../shared/types/invoice.type';
 import InvoiceCard from '../../../InvoiceCard/InvoiceCard';
 import InvoiceDiscountCard from '../../../InvoiceDiscountCard/InvoiceDiscountCard';
 import { acceptInvoiceTemplate, generateInvoicePreview, getInvoiceTemplates } from '../../../../api/services/billing';
 import { Patient } from '../../../../state/patientSlice';
 import { AppointmentDateTime } from '../../CreateAppointment';
-import dayjs from 'dayjs';
 import { FieldArray, Form, Formik } from 'formik';
 
 import './PaidInAdvance.scss';
@@ -22,14 +20,24 @@ interface PaidInAdvanceProps {
   selectedService?: Services;
   selectedClient?: Patient;
   selectedDateTime?: AppointmentDateTime;
+  invoiceDataId?: string;
   setInvoiceDataId: (id: string) => void;
+  nextCB: () => void;
 }
 
-const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selectedClient, selectedDateTime, setInvoiceDataId }) => {
-  const formRef: any = useRef();
+const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
+  selectedService,
+  selectedClient,
+  selectedDateTime,
+  invoiceDataId,
+  setInvoiceDataId,
+  nextCB,
+}) => {
   const [preview, setPreview] = useState<Preview>();
   const [templates, setTemplates] = useState<Templates>();
-  const [presentToast] = usePresentToast();
+  const [showForm, setShowForm] = useState(false);
+  const popover = useRef<HTMLIonPopoverElement>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const {
     provider,
     practice,
@@ -165,20 +173,12 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
 
   useIonViewDidLeave(() => {
     setPreview(undefined);
+    setTemplates(undefined);
+    setShowForm(false);
   });
 
-  return (
-    <div className={CSSPrefix}>
-      <IonItem lines="none">
-        <IonText className={`${CSSPrefix}-title`}>
-          Schedule appointment
-        </IonText>
-      </IonItem>
-      <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
-        <IonText>
-          Invoice review
-        </IonText>
-      </IonItem>
+  const form = useMemo(() => (
+    <>
       <IonItem lines="none">
         <IonLabel className={`${CSSPrefix}-service`}>
           {selectedService?.name}
@@ -187,7 +187,6 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
         <IonText className={`${CSSPrefix}-price`}>${preview?.total?.toFixed(2)}</IonText>
       </IonItem>
       <Formik
-        innerRef={formRef}
         initialValues={initialValues}
         onSubmit={acceptInvoiceHandler}
         enableReinitialize={true}
@@ -282,6 +281,81 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
           </Form>
         )}
       </Formik>
+    </>
+  ), [selectedService, initialValues, duration, templates, preview, showForm, calculateDiscountHandler]);
+
+  const description = useMemo(() => showForm ? 'Invoice review' : 'Payment type', [showForm]);
+
+  const initialContent = useMemo(() => (
+    <>
+      <IonItem
+        lines="none"
+        className="ion-margin-vertical"
+      >
+        <IonText className={`${CSSPrefix}-in-advance-of-session`}>
+          In advance of session
+          <IonIcon
+            className={`${CSSPrefix}-info-icon`}
+            icon={informationCircle}
+            onClick={(e: any) => {
+              popover.current!.event = e;
+              setPopoverOpen(true);
+            }}
+          />
+        </IonText>
+      </IonItem>
+      <IonButton
+        className="ion-margin-horizontal"
+        fill="outline"
+        color="primary"
+        expand="block"
+        onClick={() => setShowForm(true)}
+      >
+        Review invoice
+      </IonButton>
+      <div className="paid-in-advance-footer no-border">
+        <IonButton
+          className={`${CSSPrefix}-next-button`}
+          fill="solid"
+          color="primary"
+          expand="block"
+          disabled={!invoiceDataId}
+          onClick={nextCB}
+        >
+          Next
+        </IonButton>
+      </div>
+    </>
+  ), [setPopoverOpen, popover]);
+
+  return (
+    <div className={CSSPrefix}>
+      <IonItem lines="none">
+        <IonText className={`${CSSPrefix}-title`}>
+          Schedule appointment
+        </IonText>
+      </IonItem>
+      <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
+        <IonText>
+          {description}
+        </IonText>
+      </IonItem>
+      {showForm ? form : initialContent}
+      <IonPopover
+        className="info-popover"
+        ref={popover}
+        isOpen={popoverOpen}
+        onDidDismiss={() => setPopoverOpen(false)}
+        triggerAction="hover"
+      >
+        <div className="info-popover-content">
+          <IonIcon
+            className={`${CSSPrefix}-info-icon`}
+            icon={informationCircle}
+          />
+          Payment type is set by the service
+        </div>
+      </IonPopover>
     </div>
   );
 }
