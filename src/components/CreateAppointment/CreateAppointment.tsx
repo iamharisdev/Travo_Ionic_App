@@ -88,7 +88,11 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
                 endTime
               });
               if (view !== 'month') {
-                setStep(4);
+                if (selectedService?.paymentType === 'In Advance') {
+                  setStep(3);
+                } else {
+                  setStep(4);
+                }
               } else {
                 setStep(2);
               }
@@ -128,7 +132,10 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
           selectedService={selectedService}
           selectedClient={selectedClient}
           selectedDateTime={selectedDateTime}
-          setInvoiceDataId={setInvoiceDataId}
+          setInvoiceDataId={(id) => {
+            setInvoiceDataId(id);
+            setStep(4);
+          }}
         />;
       case 4:
         return <ReviewDetails

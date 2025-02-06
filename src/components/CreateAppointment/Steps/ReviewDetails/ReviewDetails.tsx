@@ -81,7 +81,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         selectedDateTime?.startTime &&
         selectedDateTime?.endTime
       ) {
-        // TODO: check invoiceDataId functionality
         const payload = {
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,

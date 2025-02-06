@@ -13,11 +13,6 @@ const EventCard: React.FC<any> = ({ children, isMonth = false, loading = false, 
   const eventProps: { id: string, service: string, patient: string, color: CALENDAR_SLOTS, index: number, start: Date, end: Date } = useMemo(() => JSON.parse(rest.event.title), [rest.event.title]);
   const eventColor = useMemo(() => getAppointmentColor(eventProps.color), [eventProps.color]);
 
-  if (rest.event.id === '346cd0fa-747f-4824-8b61-ccb79f96b090') {
-    // TODO: check why all day events are not being displayed
-    console.log('rest: ', rest);
-  }
-
   const showExtraInformation = useMemo(() => {
     if (eventProps?.start && eventProps?.end) {
       const seconds = Math.floor((dayjs(eventProps.end).valueOf() - dayjs(eventProps.start).valueOf()) / 1000);

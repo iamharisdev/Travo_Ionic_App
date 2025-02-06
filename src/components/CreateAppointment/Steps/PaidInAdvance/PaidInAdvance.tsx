@@ -122,7 +122,6 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
 
   const acceptInvoiceHandler = useCallback(async (values: Preview) => {
     try {
-      // TODO: check this functionality
       if (selectedService?.practiceId && selectedService?.providerId && values.templateId !== null) {
         const res = await acceptInvoiceTemplate(
           selectedService.practiceId,
@@ -152,7 +151,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
   const calculateDiscountHandler = (discount: number, setFieldValue: (field: string, value: any) => void) => {
     if (discount > 0 && preview) {
       const newTotal = preview.total - discount;
-      setFieldValue('subtotal', newTotal);
+      setFieldValue('subtotal', preview.subtotal);
       setFieldValue('total', newTotal);
       setFieldValue('discount', discount);
     }
@@ -268,7 +267,14 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({ selectedService, selected
                 </div>
               </div>
               <div className="paid-in-advance-footer-button-container">
-                <IonButton fill="solid" expand="block" color="primary" type="submit" onClick={() => handleSubmit()}>
+                <IonButton
+                  fill="solid"
+                  expand="block"
+                  color="primary"
+                  type="submit"
+                  disabled={!values.templateId}
+                  onClick={() => handleSubmit()}
+                >
                   Next
                 </IonButton>
               </div>
