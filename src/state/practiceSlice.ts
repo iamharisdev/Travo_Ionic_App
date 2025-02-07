@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
-import { getBusinessInformation, getCountries, getPhoneCodes, updateBusinessInformation } from '../api/services/practice';
+import { getBusinessInformation, getCountries, getCurrencies, getPhoneCodes, updateBusinessInformation } from '../api/services/practice';
 
 export interface BusinessInformation {
   id: string;
@@ -32,6 +32,13 @@ export interface PhoneCode {
   code: string;
 }
 
+export interface Currencies {
+  id: string | null;
+  name: string;
+  code: string;
+  symbol: string;
+}
+
 interface UpdatebusinessInformation {
   practiceId: string;
   businessInformation: Partial<BusinessInformation>;
@@ -41,6 +48,7 @@ export interface ProviderState {
   businessInformation: BusinessInformation | null;
   countries: Array<Country>;
   phoneCodes: Array<PhoneCode>;
+  currencies: Array<Currencies>;
   state: StatusState;
 }
 
@@ -48,6 +56,7 @@ const initialState: ProviderState = {
   businessInformation: null,
   countries: [],
   phoneCodes: [],
+  currencies: [],
   state: {
     success: false,
   }
@@ -110,6 +119,20 @@ export const getPhoneCodesAction = createAsyncThunk(
   }
 );
 
+export const getCurrenciesAction = createAsyncThunk(
+  'practice/getCurrencies',
+  async (): Promise<Array<Currencies>> => {
+    try {
+      const response = await getCurrencies();
+
+      return response.data;
+    } catch (error: any) {
+      console.error('[getCurrencies]: ', error);
+      return [];
+    }
+  }
+);
+
 const practiceSlice = createSlice({
   name: 'practice',
   initialState,
@@ -159,6 +182,15 @@ const practiceSlice = createSlice({
       .addCase(getPhoneCodesAction.rejected, (state) => {
         state.businessInformation = state.businessInformation;
         state.state = { ...state.state, success: false, message: 'error at get phone codes state' }
+      })
+      .addCase(getCurrenciesAction.pending, () => console.log('pending get currencies'))
+      .addCase(getCurrenciesAction.fulfilled, (state, action: PayloadAction<Array<Currencies>>) => {
+        state.currencies = action.payload;
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(getCurrenciesAction.rejected, (state) => {
+        state.businessInformation = state.businessInformation;
+        state.state = { ...state.state, success: false, message: 'error at get currencies state' }
       });
   }
 });

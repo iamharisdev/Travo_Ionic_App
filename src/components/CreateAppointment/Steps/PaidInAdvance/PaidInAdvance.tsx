@@ -85,14 +85,16 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
       const [providerPractice] = provider.providerPractices;
 
       if (providerPractice && selectedService) {
+        const currency = practice.currencies.find(({ code }) => code === selectedService.currency);
+
         const res = await generateInvoicePreview(
           selectedService.practiceId,
           selectedService.providerId,
           selectedService.id,
           {
             patientId: selectedClient?.id!!,
-            currency: 'USD',
-            currencySymbol: '$',
+            currency: currency?.code!!,
+            currencySymbol: currency?.symbol!!,
             amount: selectedService.price,
             appointmentDate: selectedDateTime?.startTime!!,
           }
