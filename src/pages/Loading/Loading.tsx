@@ -70,7 +70,7 @@ const Loading: React.FC = (): React.ReactElement => {
             await dispatch(getEventsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
-              start: dayjs().subtract(6, 'months').toISOString(),
+              start: dayjs().subtract(3, 'months').toISOString(),
               end: dayjs().add(1, 'year').endOf('year').toISOString(),
               pageNumber: 0,
               pageSize: 999,

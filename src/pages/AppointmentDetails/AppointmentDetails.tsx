@@ -308,6 +308,8 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                 <IonButton
                   className="ion-padding"
                   expand="block"
+                  href={event?.onlineMeetUrl}
+                  target="_blank"
                 >
                   Start
                 </IonButton>
