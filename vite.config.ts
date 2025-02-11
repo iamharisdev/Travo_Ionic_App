@@ -21,6 +21,14 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env': env
     },
-    optimizeDeps: { exclude: ['node_modules/.cache'] }
+    optimizeDeps: { exclude: ['node_modules/.cache'] },
+    server: {
+      cors: {
+        origin: ['http://localhost', 'capacitor://localhost'],
+        methods: ['GET', 'POST', 'PUT', 'PATH', 'DELETE'],
+        allowedHeaders: ['Content-Type']
+      },
+      allowedHosts: ['https:/qaid.trovahealth.app']
+    }
   }
 })

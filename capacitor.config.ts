@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
       `${process.env.REACT_APP_BILLING_API_URL}`,
       `${process.env.REACT_APP_SCHEDULING_API_URL}`,
     ],
-    androidScheme: 'https',
+    androidScheme: 'http',
     iosScheme: 'https',
   }
 };
