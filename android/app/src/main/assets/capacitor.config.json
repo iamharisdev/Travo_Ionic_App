@@ -10,7 +10,7 @@
 			"undefined",
 			"undefined"
 		],
-		"androidScheme": "https",
+		"androidScheme": "http",
 		"iosScheme": "https"
 	}
 }
