@@ -55,6 +55,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
           end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
           redirect: event?.status !== AppointmentStatusEnum.BUSY,
+          isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
         }),
         start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
         end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),

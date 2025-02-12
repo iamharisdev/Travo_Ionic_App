@@ -55,6 +55,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
         patient: event?.patientName || event?.providerName,
         color: event?.color,
         redirect: event?.status !== AppointmentStatusEnum.BUSY,
+        isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
       }),
       start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
       end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
