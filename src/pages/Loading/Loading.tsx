@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from '../../state/store';
 import usePresentToast from '../../hooks/usePresentToast';
 import { useHistory, useLocation } from 'react-router';
 import { getMeAction } from '../../state/providerSlice';
-import { getBusinessInformationAction, getCountriesAction, getPhoneCodesAction } from '../../state/practiceSlice';
+import { getBusinessInformationAction, getCountriesAction, getCurrenciesAction, getPhoneCodesAction } from '../../state/practiceSlice';
 import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsAction } from '../../state/billingSlice';
 import { getEventsAction, getServicesAction } from '../../state/schedulingSlice';
 import dayjs from 'dayjs';
@@ -46,6 +46,7 @@ const Loading: React.FC = (): React.ReactElement => {
         const profileResponse = await dispatch<any>(getMeAction());
         await dispatch(getCountriesAction());
         await dispatch(getPhoneCodesAction());
+        await dispatch(getCurrenciesAction());
 
         if (profileResponse.payload?.providerPractices?.length > 0 && profileResponse.payload?.principal?.countryCode) {
           const [providerPractice] = profileResponse.payload.providerPractices;

@@ -22,6 +22,7 @@ interface ReviewDetailsProps {
   selectedClient?: Patient;
   selectedService?: Services;
   selectedDateTime?: AppointmentDateTime;
+  invoiceDataId?: string;
   closeHandler: (close?: boolean) => void;
   goToStep?: (step: number) => void;
 }
@@ -30,6 +31,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   selectedClient,
   selectedService,
   selectedDateTime,
+  invoiceDataId,
   closeHandler,
   goToStep,
 }) => {
@@ -89,7 +91,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
             patientNumber: selectedClient.patientNumber,
             startTime: selectedDateTime.startTime,
-            endTime: selectedDateTime.endTime
+            endTime: selectedDateTime.endTime,
+            invoiceDataId,
           }
         };
 

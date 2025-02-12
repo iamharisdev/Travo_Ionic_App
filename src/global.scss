@@ -295,6 +295,12 @@ ion-datetime::part(calendar-day today) {
   flex-direction: column;
 }
 
+.divider {
+  background: var(--ion-trova-divider);
+  height: 1px;
+  align-self: stretch;
+}
+
 body {
   --ion-background-color: linear-gradient(149deg, #E9F8F8 0%, #FAF5EE 100%);
 }
