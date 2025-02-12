@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { Children, cloneElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonFab,
@@ -6,12 +6,13 @@ import {
   IonIcon,
   IonPage,
   IonPopover,
+  IonText,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
 import { CALENDAR_MONTH_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
+import { Calendar, DateCellWrapperProps, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -213,6 +214,19 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
                 );
               },
               header: (props) => <HeaderCalendar {...props} type="month" />,
+              month: {
+                dateHeader: (props) => (
+                  <IonText
+                    className={props.isOffRange ? `${CSSprefix}-header-date-off-range` : `${CSSprefix}-header-date`}
+                    onClick={() => {
+                      dispatch(setDate(dayjs(props.date).toISOString()));
+                      history.push(CALENDAR_DAY);
+                    }}
+                  >
+                    {dayjs(props.date).format('D')}
+                  </IonText>
+                )
+              }
             }}
             onNavigate={() => { }}
             selectable={true}
