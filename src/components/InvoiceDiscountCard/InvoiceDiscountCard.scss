@@ -1,0 +1,78 @@
+.invoice-discount-card {
+  border-radius: 8px;
+  border: 1px solid var(--Divider, #D1D3D4);
+  background: var(--White, #FFF);
+  box-shadow: 0px 4px 18px 0px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  padding: 0;
+  height: 150px;
+
+  ion-card-header {
+    margin: 0;
+    padding: 10px 0 0 15px;
+    width: 100%;
+  }
+
+  ion-card-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &-discount-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 75px;
+    height: 43px;
+    max-height: 43px;
+    border: 1.5px solid #AAA;
+    background: #F6F6F6;
+    border-radius: 4px;
+    padding: 20px 2px;
+  }
+
+  &-discount-label {
+    color: var(--ion-trova-gray-text);
+    font-family: Poppins;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+
+    p {
+      color: var(--ion-trova-medium-gray);
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+    }
+  }
+
+  &-discount-input {
+    --border-radius: 5px;
+    --border-width: 1px;
+    --border-color: #AAA;
+    border: 1px solid #AAA;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 75px;
+    height: auto;
+    align-self: flex-end;
+    margin-top: 22px;
+    --background: #F6F6F6;
+    --highlight-color-focused: transparent;
+    --color: var(--ion-trova-black);
+    --placeholder-color: var(--ion-trova-black);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 11px;
+  }
+}
