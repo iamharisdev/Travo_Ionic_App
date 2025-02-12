@@ -10,13 +10,8 @@ import './EventCard.scss';
 const CSSprefix = 'event-card';
 
 const EventCard: React.FC<any> = ({ children, isMonth = false, loading = false, index = 1, eventsLeft = 0, onClick, ...rest }): React.ReactElement => {
-  const eventProps: { id: string, service: string, patient: string, color: CALENDAR_SLOTS, index: number, start: Date, end: Date } = useMemo(() => JSON.parse(rest.event.title), [rest.event.title]);
+  const eventProps: { id: string, service: string, patient: string, color: CALENDAR_SLOTS, index: number, start: Date, end: Date, isMeetingEvent?: boolean } = useMemo(() => JSON.parse(rest.event.title), [rest.event.title]);
   const eventColor = useMemo(() => getAppointmentColor(eventProps.color), [eventProps.color]);
-
-  if (rest.event.id === '346cd0fa-747f-4824-8b61-ccb79f96b090') {
-    // TODO: check why all day events are not being displayed
-    console.log('rest: ', rest);
-  }
 
   const showExtraInformation = useMemo(() => {
     if (eventProps?.start && eventProps?.end) {
@@ -55,8 +50,15 @@ const EventCard: React.FC<any> = ({ children, isMonth = false, loading = false, 
           <IonText className={`${CSSprefix}-service`}>{eventProps.service}</IonText>
           {showExtraInformation && (
             <div className={`${CSSprefix}-patient-container`}>
-              <IonIcon icon={personCircleOutline} color="dark" />
-              <IonText className={`${CSSprefix}-patient`}>{eventProps.patient}</IonText>
+              {!eventProps?.isMeetingEvent && (
+                <>
+                  <IonIcon icon={personCircleOutline} color="dark" />
+                  <IonText className={`${CSSprefix}-patient`}>{eventProps.patient}</IonText>
+                </>
+              )}
+              {eventProps?.isMeetingEvent && (
+                <IonText className={`${CSSprefix}-patient ion-no-margin`}>{`${dayjs(eventProps.start).format('HH:mm A')} - ${dayjs(eventProps.end).format('HH:mm A')}`}</IonText>
+              )}
             </div>
           )}
         </div>
