@@ -118,19 +118,16 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           if (
             dayjs(event.start).valueOf() <= dayjs(value.start).valueOf() && dayjs(value.start).valueOf() <= dayjs(event.end).valueOf() && !event?.allDay
           ) {
-            console.log('first')
             return event;
           }
           if (
             dayjs(event.start).valueOf() <= dayjs(value.end).valueOf() && dayjs(value.end).valueOf() <= dayjs(event.end).valueOf() && !event?.allDay
           ) {
-            console.log('second')
             return event;
           }
           if (
             dayjs(value.start).valueOf() < dayjs(event.start).valueOf() && dayjs(event.end).valueOf() < dayjs(value.end).valueOf() && !event?.allDay
           ) {
-            console.log('third')
             return event;
           }
 
