@@ -104,9 +104,43 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   }
 
   const handleSelectSlot = useCallback(
-    (slot: SlotInfo) => {
-      setIsCreateAppointmentOpen(true);
-      setSelectedSlot(slot);
+    (value: SlotInfo | { id: string }) => {
+      if ('id' in value) {
+        history.push(`${APPOINTMENT_DETAILS}/${value.id}`, {
+          eventId: value.id,
+          type: AppointmentDetailTypeEnum.RESCHEDULE
+        });
+
+        return;
+      }
+      if ('start' in value && 'end' in value) {
+        const eventExist = mappedEvents.find((event) => {
+          if (
+            dayjs(event.start).valueOf() <= dayjs(value.start).valueOf() && dayjs(value.start).valueOf() <= dayjs(event.end).valueOf() && !event?.allDay
+          ) {
+            return event;
+          }
+          if (
+            dayjs(event.start).valueOf() <= dayjs(value.end).valueOf() && dayjs(value.end).valueOf() <= dayjs(event.end).valueOf() && !event?.allDay
+          ) {
+            return event;
+          }
+          if (
+            dayjs(value.start).valueOf() < dayjs(event.start).valueOf() && dayjs(event.end).valueOf() < dayjs(value.end).valueOf() && !event?.allDay
+          ) {
+            return event;
+          }
+
+          return;
+        });
+
+        if (!eventExist) {
+          setIsCreateAppointmentOpen(true);
+          setSelectedSlot(value);
+        }
+
+        return;
+      }
     },
     [mappedEvents, isCreateAppointmentOpen]
   );
@@ -181,10 +215,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
                     const redirect = JSON.parse((props?.event?.title as string) || '').redirect;
 
                     if (redirect) {
-                      history.push(`${APPOINTMENT_DETAILS}/${id}`, {
-                        eventId: id,
-                        type: AppointmentDetailTypeEnum.RESCHEDULE
-                      })
+                      handleSelectSlot({ id });
                     }
 
                     return null;
@@ -194,7 +225,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             }}
             onNavigate={() => { }}
             selectable={true}
-            longPressThreshold={300}
+            longPressThreshold={0}
             onSelectSlot={handleSelectSlot}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">

@@ -132,14 +132,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     onSwipedDown: () => getAppointmentsHandler(),
   });
 
-  const handleSelectSlot = useCallback(
-    (slot: SlotInfo) => {
-      setIsCreateAppointmentOpen(true);
-      setSelectedSlot(slot);
-    },
-    [mappedEvents, isCreateAppointmentOpen]
-  );
-
   useEffect(() => {
     if (location.pathname === CALENDAR_MONTH && !isCreateAppointmentOpen) {
       if (state.loading) {
@@ -198,18 +190,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
                     loading={state.loading}
                     index={index}
                     eventsLeft={eventsLeft}
-                    onClick={(id: string) => {
-                      const redirect = JSON.parse((props?.event?.title as string) || '').redirect;
-
-                      if (redirect) {
-                        history.push(`${APPOINTMENT_DETAILS}/${id}`, {
-                          eventId: id,
-                          type: AppointmentDetailTypeEnum.RESCHEDULE
-                        })
-                      }
-
-                      return null;
-                    }}
                   />
                 );
               },
@@ -217,12 +197,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
               month: {
                 dateHeader: (props) => (
                   <IonText
-                    className={props.isOffRange ? `${CSSprefix}-header-date-off-range` : `${CSSprefix}-header-date`}
-                    onClick={() => {
-                      dispatch(setDate(dayjs(props.date).toISOString()));
-                      history.push(CALENDAR_DAY);
-                    }}
-                  >
+                    className={props.isOffRange ? `${CSSprefix}-header-date-off-range` : `${CSSprefix}-header-date`}>
                     {dayjs(props.date).format('D')}
                   </IonText>
                 )
@@ -230,8 +205,11 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             }}
             onNavigate={() => { }}
             selectable={true}
-            longPressThreshold={300}
-            onSelectSlot={handleSelectSlot}
+            longPressThreshold={0}
+            onSelectSlot={(slot) => {
+              dispatch(setDate(dayjs(slot.start).toISOString()));
+              history.push(CALENDAR_DAY);
+            }}
           />
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
             <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
