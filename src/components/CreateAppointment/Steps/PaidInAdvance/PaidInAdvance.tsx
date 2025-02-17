@@ -181,13 +181,6 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
 
   const form = useMemo(() => (
     <>
-      <IonItem lines="none">
-        <IonLabel className={`${CSSPrefix}-service`}>
-          {selectedService?.name}
-          <p>{selectedService?.location}, {duration}</p>
-        </IonLabel>
-        <IonText className={`${CSSPrefix}-price`}>${preview?.total?.toFixed(2)}</IonText>
-      </IonItem>
       <Formik
         initialValues={initialValues}
         onSubmit={acceptInvoiceHandler}
@@ -195,19 +188,28 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
       >
         {({ values, setFieldValue, handleSubmit }) => (
           <Form>
-            <FieldArray name="lines">
-              {({ push, remove, form: { setFieldValue } }) => (
-                <>
-                  {values.lines.map((line, index) => (
-                    <InvoiceCard
-                      key={index}
-                      name={`lines.${index}`}
-                      line={line}
-                      removeLineItem={() => remove(index)}
-                      setFieldValue={setFieldValue}
-                    />
-                  ))}
-                  {/* 
+            <div className={`${CSSPrefix}-main-form-container`}>
+              <div className={`${CSSPrefix}-form`}>
+                <IonItem lines="none">
+                  <IonLabel className={`${CSSPrefix}-service`}>
+                    {selectedService?.name}
+                    <p>{selectedService?.location}, {duration}</p>
+                  </IonLabel>
+                  <IonText className={`${CSSPrefix}-price`}>${preview?.total?.toFixed(2)}</IonText>
+                </IonItem>
+                <FieldArray name="lines">
+                  {({ push, remove, form: { setFieldValue } }) => (
+                    <>
+                      {values.lines.map((line, index) => (
+                        <InvoiceCard
+                          key={index}
+                          name={`lines.${index}`}
+                          line={line}
+                          removeLineItem={() => remove(index)}
+                          setFieldValue={setFieldValue}
+                        />
+                      ))}
+                      {/* 
                     // TODO: uncomment this in app V2
                     <IonButton
                       fill="clear"
@@ -224,60 +226,62 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                       Add new line item
                       <IonIcon icon={addOutline} slot="start" />
                     </IonButton> */}
-                </>
-              )}
-            </FieldArray>
-            <InvoiceDiscountCard setDiscountCB={(discount) => calculateDiscountHandler(discount, setFieldValue)} maxDiscount={preview?.total!!} />
-            <IonItem
-              lines="none"
-              className="ion-no-margin"
-            >
-              <div className={`${CSSPrefix}-invoice-select-container`}>
-                <IonText>Location</IonText>
-                <IonSelect
-                  name="templateId"
-                  interface="action-sheet"
-                  toggleIcon={caretDownOutline}
-                  expandedIcon={caretUpOutline}
-                  placeholder="Select your invoice template"
-                  selectedText={templates?.items.find(({ id }) => values.templateId === id)?.templateName || 'Select your invoice template'}
-                  value={values.templateId}
-                  onIonChange={(e) => setFieldValue('templateId', e.detail.value)}
+                    </>
+                  )}
+                </FieldArray>
+                <InvoiceDiscountCard setDiscountCB={(discount) => calculateDiscountHandler(discount, setFieldValue)} maxDiscount={preview?.total!!} />
+                <IonItem
+                  lines="none"
+                  className="ion-no-margin"
                 >
-                  {templates?.items.map(({ id, templateName }) => (
-                    <IonSelectOption key={id} value={id} color="dark">
-                      {templateName}
-                    </IonSelectOption>
-                  ))}
-                </IonSelect>
+                  <div className={`${CSSPrefix}-invoice-select-container`}>
+                    <IonText>Location</IonText>
+                    <IonSelect
+                      name="templateId"
+                      interface="action-sheet"
+                      toggleIcon={caretDownOutline}
+                      expandedIcon={caretUpOutline}
+                      placeholder="Select your invoice template"
+                      selectedText={templates?.items.find(({ id }) => values.templateId === id)?.templateName}
+                      value={values.templateId}
+                      onIonChange={(e) => setFieldValue('templateId', e.detail.value)}
+                    >
+                      {templates?.items.map(({ id, templateName }) => (
+                        <IonSelectOption key={id} value={id} color="dark">
+                          {templateName}
+                        </IonSelectOption>
+                      ))}
+                    </IonSelect>
+                  </div>
+                </IonItem>
               </div>
-            </IonItem>
-            <div className="paid-in-advance-footer">
-              <div className="paid-in-advance-footer-wrapper">
-                <div className="paid-in-advance-footer-container">
-                  <IonText className="paid-in-advance-footer-subtotal">Sub total:</IonText>
-                  <IonText className="paid-in-advance-footer-subtotal">${values?.subtotal.toFixed(2)}</IonText>
+              <div className="paid-in-advance-footer">
+                <div className="paid-in-advance-footer-wrapper">
+                  <div className="paid-in-advance-footer-container">
+                    <IonText className="paid-in-advance-footer-subtotal">Sub total:</IonText>
+                    <IonText className="paid-in-advance-footer-subtotal">${values?.subtotal.toFixed(2)}</IonText>
+                  </div>
+                  <div className="paid-in-advance-footer-container">
+                    <IonText className="paid-in-advance-footer-subtotal">Discount:</IonText>
+                    <IonText className="paid-in-advance-footer-subtotal">${values?.discount.toFixed(2)}</IonText>
+                  </div>
+                  <div className="paid-in-advance-footer-container">
+                    <IonText className="ion-margin-start paid-in-advance-footer-total">Total:</IonText>
+                    <IonText className="paid-in-advance-footer-total">${values?.total.toFixed(2)}</IonText>
+                  </div>
                 </div>
-                <div className="paid-in-advance-footer-container">
-                  <IonText className="paid-in-advance-footer-subtotal">Discount:</IonText>
-                  <IonText className="paid-in-advance-footer-subtotal">${values?.discount.toFixed(2)}</IonText>
+                <div className="paid-in-advance-footer-button-container">
+                  <IonButton
+                    fill="solid"
+                    expand="block"
+                    color="primary"
+                    type="submit"
+                    disabled={!values.templateId}
+                    onClick={() => handleSubmit()}
+                  >
+                    Next
+                  </IonButton>
                 </div>
-                <div className="paid-in-advance-footer-container">
-                  <IonText className="ion-margin-start paid-in-advance-footer-total">Total:</IonText>
-                  <IonText className="paid-in-advance-footer-total">${values?.total.toFixed(2)}</IonText>
-                </div>
-              </div>
-              <div className="paid-in-advance-footer-button-container">
-                <IonButton
-                  fill="solid"
-                  expand="block"
-                  color="primary"
-                  type="submit"
-                  disabled={!values.templateId}
-                  onClick={() => handleSubmit()}
-                >
-                  Next
-                </IonButton>
               </div>
             </div>
           </Form>
