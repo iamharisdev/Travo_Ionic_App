@@ -38,7 +38,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, s
       <IonCardContent>
         <IonInput
           // TODO: remove this live in app V2
-          disabled={true}
+          readonly={true}
           className={`${CSSPrefix}-custom-input ion-margin-bottom`}
           placeholder="Type code"
           value={line.code}
@@ -46,7 +46,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, s
         />
         <IonInput
           // TODO: remove this live in app V2
-          disabled={true}
+          readonly={true}
           className={`${CSSPrefix}-custom-input ion-margin-bottom`}
           placeholder="Description"
           value={line.description}
@@ -54,7 +54,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, s
         />
         <IonInput
           // TODO: remove this live in app V2
-          disabled={true}
+          readonly={true}
           className={`${CSSPrefix}-custom-input ion-no-margin`}
           placeholder="ICD 10 code"
           value={line.icd10Code}
@@ -64,10 +64,10 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, s
         <div className={`${CSSPrefix}-amount-container`}>
           <IonInput
             // TODO: remove this live in app V2
-            disabled={true}
-            type="number"
+            readonly={true}
+            type="text"
             className={`${CSSPrefix}-amount`}
-            value={line.amount}
+            value={`$${line.amount}`}
             onIonChange={(e) => setFieldValue(`${name}.amount`, e.detail.value!!)}
           />
         </div>

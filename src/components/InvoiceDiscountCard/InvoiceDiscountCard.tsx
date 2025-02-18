@@ -1,5 +1,5 @@
 import { IonCard, IonCardContent, IonCardHeader, IonInput, IonLabel } from '@ionic/react';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import './InvoiceDiscountCard.scss';
 
@@ -8,10 +8,17 @@ const CSSPrefix = 'invoice-discount-card';
 interface InvoiceDiscountCardProps {
   setDiscountCB: (discount: number) => void;
   maxDiscount: number;
+  currencySymbol: string;
 }
 
-const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, setDiscountCB }): React.ReactElement => {
-  const [discount, setDiscount] = useState<number>(0);
+const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, setDiscountCB, currencySymbol }): React.ReactElement => {
+  const [discount, setDiscount] = useState<number>();
+
+  const value = useMemo(() => {
+    if (discount === undefined) return currencySymbol;
+
+    return `${currencySymbol}${discount}`
+  }, [discount]);
 
   return (
     <IonCard className={CSSPrefix}>
@@ -25,15 +32,22 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, 
       </IonCardHeader>
       <IonCardContent>
         <IonInput
-          type="number"
+          type="text"
           className={`${CSSPrefix}-discount-input`}
-          value={discount}
+          value={value}
           min={0}
           max={maxDiscount}
           onIonInput={(e) => {
-            if (e.detail.value) {
-              setDiscount(parseInt(e.detail.value));
-              setDiscountCB(parseInt(e.detail.value));
+            if (e?.detail?.value) {
+              const value = parseInt(e.detail.value.replace(currencySymbol, ''));
+
+              if (!Number.isNaN(value)) {
+                setDiscount(value);
+                setDiscountCB(value);
+              } else {
+                setDiscount(undefined);
+                setDiscountCB(0);
+              }
             }
           }}
         />
