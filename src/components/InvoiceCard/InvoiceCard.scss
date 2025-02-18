@@ -32,7 +32,6 @@
     --padding-start: 10px;
     height: auto;
     max-height: 50px;
-
   }
 
   ion-item-divider {
@@ -71,4 +70,15 @@
     font-weight: 600;
     line-height: 11px;
   }
+}
+
+ion-input.no-opacity {
+  border-radius: 5px;
+  border: 1px solid #AAA;
+  background: #F6F6F6;
+  width: 100%;
+  --color: #AAA;
+  --padding-start: 10px;
+  height: auto;
+  max-height: 50px;
 }

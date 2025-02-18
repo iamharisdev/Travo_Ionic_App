@@ -35,9 +35,6 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
 }) => {
   const [preview, setPreview] = useState<Preview>();
   const [templates, setTemplates] = useState<Templates>();
-  const [showForm, setShowForm] = useState(false);
-  const popover = useRef<HTMLIonPopoverElement>(null);
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const {
     provider,
     practice,
@@ -80,13 +77,13 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
     };
   }, [preview]);
 
+  const currency = practice.currencies.find(({ code }) => code === selectedService?.currency);
+
   const generateInvoicePreviewHandler = useCallback(async () => {
     try {
       const [providerPractice] = provider.providerPractices;
 
       if (providerPractice && selectedService) {
-        const currency = practice.currencies.find(({ code }) => code === selectedService.currency);
-
         const res = await generateInvoicePreview(
           selectedService.practiceId,
           selectedService.providerId,
@@ -107,7 +104,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
     } catch (error) {
       console.error('[generate-invoice-handler]: ', error);
     }
-  }, [selectedService, selectedClient, selectedDateTime, provider.providerPractices]);
+  }, [selectedService, selectedClient, selectedDateTime, provider.providerPractices, currency]);
 
   const getInvoiceTemplatesHandler = useCallback(async () => {
     try {
@@ -176,7 +173,6 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
   useIonViewDidLeave(() => {
     setPreview(undefined);
     setTemplates(undefined);
-    setShowForm(false);
   });
 
   const form = useMemo(() => (
@@ -229,13 +225,17 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                     </>
                   )}
                 </FieldArray>
-                <InvoiceDiscountCard setDiscountCB={(discount) => calculateDiscountHandler(discount, setFieldValue)} maxDiscount={preview?.total!!} />
+                <InvoiceDiscountCard
+                  setDiscountCB={(discount) => calculateDiscountHandler(discount, setFieldValue)}
+                  maxDiscount={preview?.total!!}
+                  currencySymbol={currency?.symbol!!}
+                />
                 <IonItem
                   lines="none"
                   className="ion-no-margin"
                 >
                   <div className={`${CSSPrefix}-invoice-select-container`}>
-                    <IonText>Location</IonText>
+                    <IonText>Invoice template</IonText>
                     <IonSelect
                       name="templateId"
                       interface="action-sheet"
@@ -288,80 +288,21 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
         )}
       </Formik>
     </>
-  ), [selectedService, initialValues, duration, templates, preview, showForm, calculateDiscountHandler]);
-
-  const description = useMemo(() => showForm ? 'Invoice review' : 'Payment type', [showForm]);
-
-  const initialContent = useMemo(() => (
-    <>
-      <IonItem
-        lines="none"
-        className="ion-margin-vertical"
-      >
-        <IonText className={`${CSSPrefix}-in-advance-of-session`}>
-          In advance of session
-          <IonIcon
-            className={`${CSSPrefix}-info-icon`}
-            icon={informationCircle}
-            onClick={(e: any) => {
-              popover.current!.event = e;
-              setPopoverOpen(true);
-            }}
-          />
-        </IonText>
-      </IonItem>
-      <IonButton
-        className="ion-margin-horizontal"
-        fill="outline"
-        color="primary"
-        expand="block"
-        onClick={() => setShowForm(true)}
-      >
-        Review invoice
-      </IonButton>
-      <div className="paid-in-advance-footer no-border">
-        <IonButton
-          className={`${CSSPrefix}-next-button`}
-          fill="solid"
-          color="primary"
-          expand="block"
-          disabled={!invoiceDataId}
-          onClick={nextCB}
-        >
-          Next
-        </IonButton>
-      </div>
-    </>
-  ), [setPopoverOpen, popover]);
+  ), [selectedService, initialValues, duration, templates, preview, calculateDiscountHandler]);
 
   return (
     <div className={CSSPrefix}>
-      <IonItem lines="none">
+      <IonItem lines="none" className="ion-no-margin">
         <IonText className={`${CSSPrefix}-title`}>
           Schedule appointment
         </IonText>
       </IonItem>
-      <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
-        <IonText>
-          {description}
+      <IonItem lines="none" className="ion-no-margin">
+        <IonText className={`${CSSPrefix}-subtitle`}>
+          Invoice review
         </IonText>
       </IonItem>
-      {showForm ? form : initialContent}
-      <IonPopover
-        className="info-popover"
-        ref={popover}
-        isOpen={popoverOpen}
-        onDidDismiss={() => setPopoverOpen(false)}
-        triggerAction="hover"
-      >
-        <div className="info-popover-content">
-          <IonIcon
-            className={`${CSSPrefix}-info-icon`}
-            icon={informationCircle}
-          />
-          Payment type is set by the service
-        </div>
-      </IonPopover>
+      {form}
     </div>
   );
 }

@@ -1,17 +1,26 @@
 import { IonCard, IonCardContent, IonCardHeader, IonInput, IonLabel } from '@ionic/react';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import './InvoiceDiscountCard.scss';
+import usePresentToast from '../../hooks/usePresentToast';
 
 const CSSPrefix = 'invoice-discount-card';
 
 interface InvoiceDiscountCardProps {
   setDiscountCB: (discount: number) => void;
   maxDiscount: number;
+  currencySymbol: string;
 }
 
-const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, setDiscountCB }): React.ReactElement => {
-  const [discount, setDiscount] = useState<number>(0);
+const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, setDiscountCB, currencySymbol }): React.ReactElement => {
+  const [discount, setDiscount] = useState<number | undefined>(0);
+  const [presentToast] = usePresentToast();
+
+  const value = useMemo(() => {
+    if (discount === undefined) return `${currencySymbol}0`;
+
+    return `${currencySymbol}${discount}`
+  }, [discount]);
 
   return (
     <IonCard className={CSSPrefix}>
@@ -25,15 +34,34 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, 
       </IonCardHeader>
       <IonCardContent>
         <IonInput
-          type="number"
+          type="text"
           className={`${CSSPrefix}-discount-input`}
-          value={discount}
+          value={value}
+          inputMode="numeric"
           min={0}
           max={maxDiscount}
           onIonInput={(e) => {
-            if (e.detail.value) {
-              setDiscount(parseInt(e.detail.value));
-              setDiscountCB(parseInt(e.detail.value));
+            if (e?.detail?.value) {
+              const value = parseFloat(e.detail.value.replace(currencySymbol, ''));
+
+              if (!Number.isNaN(value)) {
+                if (value <= maxDiscount) {
+                  setDiscount(value);
+                  setDiscountCB(value);
+                } else {
+                  setDiscount(0);
+                  setDiscountCB(0);
+                  presentToast(
+                    'Discount cannot be greater than the price of the service',
+                    1000,
+                    'top',
+                    'danger'
+                  );
+                }
+              } else {
+                setDiscount(undefined);
+                setDiscountCB(0);
+              }
             }
           }}
         />
