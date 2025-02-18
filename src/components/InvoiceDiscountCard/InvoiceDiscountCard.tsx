@@ -2,6 +2,7 @@ import { IonCard, IonCardContent, IonCardHeader, IonInput, IonLabel } from '@ion
 import React, { useMemo, useState } from 'react';
 
 import './InvoiceDiscountCard.scss';
+import usePresentToast from '../../hooks/usePresentToast';
 
 const CSSPrefix = 'invoice-discount-card';
 
@@ -13,6 +14,7 @@ interface InvoiceDiscountCardProps {
 
 const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, setDiscountCB, currencySymbol }): React.ReactElement => {
   const [discount, setDiscount] = useState<number | undefined>(0);
+  const [presentToast] = usePresentToast();
 
   const value = useMemo(() => {
     if (discount === undefined) return `${currencySymbol}0`;
@@ -35,15 +37,27 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, 
           type="text"
           className={`${CSSPrefix}-discount-input`}
           value={value}
+          inputMode="numeric"
           min={0}
           max={maxDiscount}
           onIonInput={(e) => {
             if (e?.detail?.value) {
-              const value = parseInt(e.detail.value.replace(currencySymbol, ''));
+              const value = parseFloat(e.detail.value.replace(currencySymbol, ''));
 
               if (!Number.isNaN(value)) {
-                setDiscount(value);
-                setDiscountCB(value);
+                if (value <= maxDiscount) {
+                  setDiscount(value);
+                  setDiscountCB(value);
+                } else {
+                  setDiscount(0);
+                  setDiscountCB(0);
+                  presentToast(
+                    'Discount cannot be greater than the price of the service',
+                    1000,
+                    'top',
+                    'danger'
+                  );
+                }
               } else {
                 setDiscount(undefined);
                 setDiscountCB(0);
