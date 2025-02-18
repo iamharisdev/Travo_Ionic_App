@@ -12,10 +12,10 @@ interface InvoiceDiscountCardProps {
 }
 
 const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, setDiscountCB, currencySymbol }): React.ReactElement => {
-  const [discount, setDiscount] = useState<number>();
+  const [discount, setDiscount] = useState<number | undefined>(0);
 
   const value = useMemo(() => {
-    if (discount === undefined) return currencySymbol;
+    if (discount === undefined) return `${currencySymbol}0`;
 
     return `${currencySymbol}${discount}`
   }, [discount]);
