@@ -75,16 +75,18 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
         if (prevStep === 4 && step === 1) {
           setStep(prevStep);
           setPrevStep(-1);
-          setSelectedService(selectedPrevService);
-          setSelectedPrevService(undefined);
+          if (selectedPrevService?.paymentType === 'In Advance') {
+            setSelectedService(selectedPrevService);
+            setSelectedPrevService(undefined);
+          }
         }
         // review 
         if (prevStep === 4 && step === 4) {
           setStep(step - 1);
           setPrevStep(-1);
         }
-        // select date time
-        if (prevStep === 4 && step === 2) {
+        // select date time & select client
+        if (prevStep === 4 && step === 2 || prevStep === 4 && step === 0) {
           setStep(prevStep);
           setPrevStep(-1);
         }
@@ -96,7 +98,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       setStep(0);
       setPrevStep(-1);
     }
-  }, [step, prevStep, isOpen, selectedService]);
+  }, [step, prevStep, isOpen, selectedService, selectedPrevService]);
 
   // Android native back button
   document.addEventListener('ionBackButton', (ev: any) => {
@@ -122,7 +124,6 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
           if (service.paymentType === 'In Advance') {
             setSelectedPrevService(selectedService);
             setSelectedService(service);
-            setInvoiceDataId(undefined);
           } else {
             setSelectedService(service);
             setInvoiceDataId(undefined);
