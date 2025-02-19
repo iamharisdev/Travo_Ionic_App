@@ -21,6 +21,8 @@
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+    position: relative;
+    bottom: 8px;
   }
 
   &-service {
@@ -72,10 +74,9 @@
 
   &-invoice-select-container {
     display: flex;
-    padding: 8px 16px;
+    padding: 2px 16px;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
     align-self: stretch;
     border-radius: 5px;
     border: 1px solid var(--ion-trova-divider);
@@ -99,7 +100,7 @@
     }
 
     ion-select::part(placeholder) {
-      color: #97979a;
+      color: #AAA;
       font-size: 16px;
       font-style: normal;
       font-weight: 400;
@@ -115,7 +116,9 @@
       text-align: left;
       align-self: flex-start;
       margin: 0;
-      padding: 0;
+      padding: 8px 0 0 0;
+      position: relative;
+      top: 4px;
     }
   }
 

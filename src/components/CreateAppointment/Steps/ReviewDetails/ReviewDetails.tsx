@@ -66,6 +66,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   }, [selectedService?.paymentType]);
 
   const createAppointmentsHandler = async () => {
+    let redirect = false;
+
     try {
       dispatch(setLoading({ loading: true, message: 'Creating appointment' }));
 
@@ -96,9 +98,9 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           }
         };
 
-        const response = await dispatch(createAppointmentAction(payload));
+        const response: any = await dispatch(createAppointmentAction(payload));
 
-        if (response.payload) {
+        if (response?.payload?.id && response.type === 'scheduling/createAppointment/fulfilled') {
           await dispatch(getEventsAction({
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
@@ -110,7 +112,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 
           dispatch(setDate(dayjs(selectedDateTime?.startTime).startOf('day').toISOString()));
           dispatch(setLoading({ loading: false, message: '' }));
-          history.push(APPOINTMENTS);
+          redirect = true;
           closeHandler(true);
         }
 
@@ -135,6 +137,10 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         'danger'
       );
       console.error('error at create appointment: ', error);
+    } finally {
+      if (redirect) {
+        history.push(APPOINTMENTS);
+      }
     }
   }
 
