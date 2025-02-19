@@ -249,7 +249,10 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             />
           </IonContent>
         </IonPopover>
-        <CreateAppointment isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={setIsCreateAppointmentOpen} />
+        <CreateAppointment isOpen={isCreateAppointmentOpen} selectedSlot={selectedSlot} setIsOpen={(isOpen) => {
+          setIsCreateAppointmentOpen(isOpen);
+          setSelectedSlot(undefined);
+        }} />
       </IonPage>
     </>
   );
