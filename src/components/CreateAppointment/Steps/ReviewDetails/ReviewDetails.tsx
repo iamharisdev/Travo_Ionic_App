@@ -99,10 +99,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         };
 
         const response: any = await dispatch(createAppointmentAction(payload));
-        console.log('response: ', response);
 
         if (response?.payload?.id && response.type === 'scheduling/createAppointment/fulfilled') {
-          console.log('here: if: ');
           await dispatch(getEventsAction({
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
