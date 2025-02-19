@@ -75,7 +75,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
         if (prevStep === 4 && step === 1) {
           setStep(prevStep);
           setPrevStep(-1);
-          if (selectedPrevService?.paymentType === 'In Advance') {
+          if (!invoiceDataId) {
             setSelectedService(selectedPrevService);
             setSelectedPrevService(undefined);
           }
@@ -98,7 +98,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       setStep(0);
       setPrevStep(-1);
     }
-  }, [step, prevStep, isOpen, selectedService, selectedPrevService]);
+  }, [step, prevStep, isOpen, selectedService, selectedPrevService, invoiceDataId]);
 
   // Android native back button
   document.addEventListener('ionBackButton', (ev: any) => {
@@ -126,6 +126,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
             setSelectedService(service);
           } else {
             setSelectedService(service);
+            setSelectedPrevService(undefined);
             setInvoiceDataId(undefined);
           }
           // if comes from selected timeslot
@@ -208,12 +209,12 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       default:
         <SelectClient isOpen={isOpen} setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId, invoiceDataId]);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId, invoiceDataId, selectedPrevService]);
 
   const scrollBottomHandler = () => {
     contentRef.current && contentRef.current.scrollToBottom();
   };
-
+  console.log('selectedDateTime: ', selectedDateTime);
   useEffect(() => {
     if (!isOpen) {
       setInvoiceDataId(undefined);
