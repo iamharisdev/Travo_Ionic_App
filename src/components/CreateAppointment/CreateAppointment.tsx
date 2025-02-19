@@ -22,6 +22,7 @@ export interface AppointmentDateTime {
 const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, selectedSlot, setIsOpen }) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
   const [selectedService, setSelectedService] = useState<Services>();
+  const [selectedPrevService, setSelectedPrevService] = useState<Services>();
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
   const [step, setStep] = useState<number>(0);
   const [prevStep, setPrevStep] = useState<number>(-1);
@@ -42,20 +43,60 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   }, [step, prevStep]);
 
   const closeHandler = useCallback((close?: boolean) => {
-    if ((step === 1 || step === 2 || step === 3 || step === 4) && !close && prevStep === -1) {
-      setStep(step - 1);
+    if (!close) {
+      if ((step === 1 || step === 2 || step === 3 || step === 4) && prevStep === -1) {
+        if (selectedService?.paymentType === 'At Completion' && step === 4) {
+          // if the user comes from paid in advance and go back and change to services that is at completion
+          setStep(step - 2);
+        } else {
+          setStep(step - 1);
+        }
+      } else {
+        // In advance flow
+        setStep(step - 1);
+      }
+
+      if ((step === 0) && prevStep === -1) {
+        setIsOpen(false);
+        setStep(0);
+      }
+
+      if (prevStep > -1 && selectedService?.paymentType === 'At Completion') {
+        setStep(prevStep);
+        setPrevStep(-1);
+      } else {
+        // In advance flow
+        // Paid in advance
+        if (prevStep === 4 && step === 3) {
+          setStep(1);
+          setPrevStep(4);
+        }
+        // Paid in advance select service
+        if (prevStep === 4 && step === 1) {
+          setStep(prevStep);
+          setPrevStep(-1);
+          setSelectedService(selectedPrevService);
+          setSelectedPrevService(undefined);
+        }
+        // review 
+        if (prevStep === 4 && step === 4) {
+          setStep(step - 1);
+          setPrevStep(-1);
+        }
+        // select date time
+        if (prevStep === 4 && step === 2) {
+          setStep(prevStep);
+          setPrevStep(-1);
+        }
+      }
     }
 
-    if ((step === 0 || close) && prevStep === -1) {
+    if (close) {
       setIsOpen(false);
       setStep(0);
-    }
-
-    if (prevStep > -1) {
-      setStep(prevStep);
       setPrevStep(-1);
     }
-  }, [step, prevStep, isOpen]);
+  }, [step, prevStep, isOpen, selectedService]);
 
   // Android native back button
   document.addEventListener('ionBackButton', (ev: any) => {
@@ -78,8 +119,14 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
         }} />;
       case 1:
         return <SelectService setSelectedService={(service) => {
-          setSelectedService(service);
-          setInvoiceDataId(undefined);
+          if (service.paymentType === 'In Advance') {
+            setSelectedPrevService(selectedService);
+            setSelectedService(service);
+            setInvoiceDataId(undefined);
+          } else {
+            setSelectedService(service);
+            setInvoiceDataId(undefined);
+          }
           // if comes from selected timeslot
           if (prevStep === -1) {
             if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
@@ -113,9 +160,9 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
         return (
           <SelectDateTime
             configurationId={configNylasId}
-            selectedDate={selectedSlot?.start}
-            start_time={selectedSlot?.start}
-            end_time={selectedSlot?.end}
+            selectedDate={selectedSlot?.start || selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : null}
+            start_time={selectedSlot?.start || selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : undefined}
+            end_time={selectedSlot?.end || selectedDateTime ? (dayjs(selectedDateTime?.endTime).toDate()!!) : undefined}
             setSelectedDateTime={(selectedDateTime) => {
               setSelectedDateTime({ ...selectedDateTime });
               if (prevStep === -1) {
@@ -167,8 +214,14 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   };
 
   useEffect(() => {
-    setInvoiceDataId(undefined);
-  }, []);
+    if (!isOpen) {
+      setInvoiceDataId(undefined);
+      setSelectedClient(undefined);
+      setSelectedService(undefined);
+      setSelectedDateTime(undefined);
+      setSelectedPrevService(undefined);
+    }
+  }, [isOpen]);
 
   return (
     <IonModal

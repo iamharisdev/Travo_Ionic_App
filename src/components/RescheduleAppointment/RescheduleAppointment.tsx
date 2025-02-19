@@ -10,7 +10,8 @@ import { setLoading } from '../../state/loadingSlice';
 import { getEventsAction, rescheduleAppointmentAction } from '../../state/schedulingSlice';
 import dayjs from 'dayjs';
 import { useHistory } from 'react-router';
-import { CALENDAR_MONTH } from '../../shared/routes/routes';
+import { APPOINTMENTS } from '../../shared/routes/routes';
+import { setDate } from '../../state/calendarSlice';
 
 export interface AppointmentDateTime {
   startTime: string;
@@ -56,6 +57,8 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
   }, [step]);
 
   const rescheduleAppointmentHandler = async () => {
+    let redirect = false;
+
     try {
       dispatch(setLoading({ loading: true, message: 'Rescheduling appointment' }));
 
@@ -72,9 +75,6 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
         selectedDateTime?.startTime &&
         selectedDateTime?.endTime
       ) {
-        let start = '';
-        let end = '';
-
         const response = await dispatch(rescheduleAppointmentAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
@@ -101,25 +101,19 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
             'success'
           );
 
-          if (selectedDates.length === 2) {
-            start = selectedDates[0];
-            end = selectedDates[1];
-          } else {
-            start = selectedDate;
-            end = selectedDate;
-          }
-
           await dispatch(getEventsAction({
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
-            start: dayjs(start).startOf('day').toISOString(),
-            end: dayjs(end).endOf('day').toISOString(),
+            start: dayjs(selectedDateTime.startTime).startOf('day').toISOString(),
+            end: dayjs(selectedDateTime.endTime).endOf('day').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           }));
 
+          dispatch(setDate(dayjs(selectedDateTime.startTime).startOf('day').toISOString()));
+          dispatch(setLoading({ loading: false, message: '' }));
+          redirect = true;
           closeHandler(true);
-          history.push(CALENDAR_MONTH);
         }
 
         if (!response.payload) {
@@ -143,6 +137,10 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
         'danger'
       );
       console.error('error at reschedule appointment: ', error);
+    } finally {
+      if (redirect) {
+        history.push(APPOINTMENTS);
+      }
     }
   };
 
