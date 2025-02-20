@@ -1,5 +1,6 @@
 .select-date-time-reschedule {
   padding-top: 24px;
+  padding-bottom: 30px;
 
   ion-item {
     --background: var(--ion-trova-white);
@@ -38,11 +39,32 @@
   ion-datetime {
     --background: var(--ion-trova-white);
     --background-rgb: 255, 255, 255;
+    --wheel-highlight-background: rgb(226, 226, 227);
+    --wheel-highlight-border-radius: 8px;
     border-radius: 8px;
     width: 100%;
   }
 
-  ion-datetime::part(wheel-item active) {
+  ion-datetime.ios::part(wheel-item) {
+    text-align: center;
+    font-family: Poppins;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  ion-datetime.md::part(wheel-item) {
+    color: var(--ion-trova-divider);
+    text-align: center;
+    font-family: Poppins;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  ion-datetime.md::part(wheel-item active) {
     color: var(--ion-trova-gray-text);
     text-align: center;
     font-family: Poppins;
@@ -52,7 +74,8 @@
     line-height: normal;
   }
 
-  ion-datetime::part(wheel-item) {
+  ion-datetime.ios::part(wheel-item active) {
+    color: var(--ion-trova-gray-text);
     text-align: center;
     font-family: Poppins;
     font-size: 20px;
