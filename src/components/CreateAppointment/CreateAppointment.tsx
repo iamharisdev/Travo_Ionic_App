@@ -29,13 +29,6 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   const contentRef = useRef<HTMLIonContentElement | null>(null);
   const [invoiceDataId, setInvoiceDataId] = useState<string>();
 
-  const configNylasId = useMemo(() => {
-    if (selectedService?.externalSchedulerId)
-      return selectedService.externalSchedulerId;
-
-    return '';
-  }, [selectedService]);
-
   const cancelOrBackText = useMemo(() => {
     if (step === 1 || step === 2 || step === 3 || step === 4 || prevStep > -1) return 'Back';
 
@@ -161,10 +154,9 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       case 2:
         return (
           <SelectDateTime
-            configurationId={configNylasId}
-            selectedDate={selectedSlot?.start || selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : null}
-            start_time={selectedSlot?.start || selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : undefined}
-            end_time={selectedSlot?.end || selectedDateTime ? (dayjs(selectedDateTime?.endTime).toDate()!!) : undefined}
+            selectedDate={selectedDateTime?.startTime ? dayjs(selectedDateTime?.startTime).toISOString() : dayjs(selectedSlot?.start).toISOString()}
+            start_time={selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : selectedSlot?.start}
+            end_time={selectedDateTime ? (dayjs(selectedDateTime?.endTime).toDate()!!) : selectedSlot?.end}
             setSelectedDateTime={(selectedDateTime) => {
               setSelectedDateTime({ ...selectedDateTime });
               if (prevStep === -1) {
@@ -179,6 +171,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
               }
             }}
             onDateSelected={() => scrollBottomHandler()}
+            duration={selectedService?.duration}
           />
         );
       case 3:
@@ -209,12 +202,12 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       default:
         <SelectClient isOpen={isOpen} setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, configNylasId, invoiceDataId, selectedPrevService]);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, invoiceDataId, selectedPrevService]);
 
   const scrollBottomHandler = () => {
     contentRef.current && contentRef.current.scrollToBottom();
   };
-  console.log('selectedDateTime: ', selectedDateTime);
+
   useEffect(() => {
     if (!isOpen) {
       setInvoiceDataId(undefined);

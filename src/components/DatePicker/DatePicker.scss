@@ -92,6 +92,15 @@
           color: var(--ion-trova-white);
           border-radius: 20px;
         }
+
+        .react-datepicker__day--disabled {
+          cursor: default;
+          color: #ccc;
+        }
+
+        .react-datepicker__day--keyboard-selected {
+          background: none;
+        }
       }
     }
   }

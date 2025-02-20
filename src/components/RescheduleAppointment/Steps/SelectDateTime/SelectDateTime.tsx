@@ -1,6 +1,7 @@
-import React from 'react';
-import { IonItem, IonText } from '@ionic/react';
-import Scheduling from '../../../Scheduling/Scheduling';
+import React, { useCallback, useEffect, useState } from 'react';
+import { IonButton, IonDatetime, IonItem, IonText } from '@ionic/react';
+import DatePicker from '../../../DatePicker/DatePicker';
+import dayjs from 'dayjs';
 import { AppointmentDateTime } from '../../RescheduleAppointment';
 
 import './SelectDateTime.scss';
@@ -8,11 +9,37 @@ import './SelectDateTime.scss';
 const CSSPrefix = 'select-date-time-reschedule';
 
 interface SelectDateTimeProps {
-  configurationId: string;
+  duration?: number;
+  selectedDateTime?: AppointmentDateTime;
   setSelectedDateTime: (selectedDateTime: AppointmentDateTime) => void;
 }
 
-const SelectDateTime: React.FC<SelectDateTimeProps> = ({ configurationId, setSelectedDateTime }) => {
+const SelectDateTime: React.FC<SelectDateTimeProps> = ({
+  duration,
+  selectedDateTime,
+  setSelectedDateTime,
+}) => {
+  const [currentSelectedDate, setCurrenSelectedDate] = useState<Date>();
+  const [currentSelectedDateTime, setCurrenSelectedDateTime] = useState<AppointmentDateTime>();
+
+  const onNextHandler = useCallback(() => {
+    if (currentSelectedDateTime?.startTime && currentSelectedDateTime?.endTime && currentSelectedDate) {
+      setSelectedDateTime({
+        startTime: currentSelectedDateTime.startTime,
+        endTime: currentSelectedDateTime.endTime,
+      });
+    }
+  }, [currentSelectedDate, currentSelectedDateTime]);
+
+  useEffect(() => {
+    if (selectedDateTime && !currentSelectedDate && !currentSelectedDateTime) {
+      setCurrenSelectedDateTime({
+        startTime: dayjs(selectedDateTime.startTime).format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: dayjs(selectedDateTime.endTime).format('YYYY-MM-DDTHH:mm:ss'),
+      });
+      setCurrenSelectedDate(dayjs(selectedDateTime.startTime).toDate());
+    }
+  }, [selectedDateTime, currentSelectedDate, currentSelectedDateTime]);
 
   return (
     <div className={CSSPrefix}>
@@ -26,7 +53,58 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({ configurationId, setSel
           Select date and time
         </IonText>
       </IonItem>
-      <Scheduling configurationId={configurationId} setSelectedDateTime={setSelectedDateTime} />
+      <div className={`${CSSPrefix}-date-picker-container`}>
+        <DatePicker
+          date={currentSelectedDate?.toISOString()}
+          minDate={dayjs().toISOString()}
+          onSelectedDate={(date) => {
+            if (dayjs(date).format('YYYY-MM-DD') !== dayjs(currentSelectedDate).format('YYYY-MM-DD')) {
+              const newDate = dayjs(date);
+              setCurrenSelectedDate(newDate.toDate());
+              if (currentSelectedDateTime?.startTime && currentSelectedDateTime?.endTime) {
+                const spliteStart = currentSelectedDateTime?.startTime.split('T')!!;
+                const spliteEnd = currentSelectedDateTime?.endTime.split('T')!!;
+                const newStartTime = `${newDate.format('YYYY-MM-DD')}T${spliteStart[1]}`;
+                const newEndTime = `${newDate.format('YYYY-MM-DD')}T${spliteEnd[1]}`;
+                setCurrenSelectedDateTime({
+                  startTime: newStartTime,
+                  endTime: newEndTime,
+                });
+              }
+            }
+          }}
+          onTriggerAction={() => console.log('onTriggerAction')}
+        />
+      </div>
+      <div className={`${CSSPrefix}-divider`} />
+      <div className={`${CSSPrefix}-time-picker-container`}>
+        <IonDatetime
+          className={`${CSSPrefix}-time-picker`}
+          presentation="time"
+          hourValues="0,1,2,3,4,5,6,7,8,9,10,11"
+          minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+          preferWheel={true}
+          value={currentSelectedDateTime?.startTime}
+          onIonChange={(e) => {
+            const startTime = (dayjs(e.detail?.value!! as string));
+            const endTime = startTime.add(duration || 0, 'minutes');
+            setCurrenSelectedDateTime({
+              startTime: e.detail.value as string,
+              endTime: endTime.format('YYYY-MM-DDTHH:mm:ss'),
+            });
+          }}
+        />
+      </div>
+      <div className={`${CSSPrefix}-next-container`}>
+        <IonButton
+          color="primary"
+          expand="block"
+          disabled={!currentSelectedDate && !currentSelectedDateTime}
+          onClick={onNextHandler}
+        >
+          Next
+        </IonButton>
+      </div>
     </div>
   );
 }
