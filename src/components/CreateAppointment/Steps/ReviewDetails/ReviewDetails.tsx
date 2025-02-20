@@ -83,6 +83,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         selectedDateTime?.startTime &&
         selectedDateTime?.endTime
       ) {
+        const startTime = dayjs(selectedDateTime.startTime);
+        const endTimeByDuration = startTime.add(selectedService?.duration || 0, 'minutes');
         const payload = {
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
@@ -92,8 +94,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             patientEmail: selectedClient.email,
             patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
             patientNumber: selectedClient.patientNumber,
-            startTime: selectedDateTime.startTime,
-            endTime: selectedDateTime.endTime,
+            startTime: startTime.toISOString(),
+            endTime: endTimeByDuration.toISOString(),
             invoiceDataId,
           }
         };
