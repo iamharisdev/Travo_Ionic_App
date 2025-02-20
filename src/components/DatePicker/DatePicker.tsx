@@ -10,7 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const CSSPrefix = 'date-picker';
 
-const DatePicker: React.FC<DatePickerProps> = ({ date, onSelectedDate, onTriggerAction }) => {
+const DatePicker: React.FC<DatePickerProps> = ({ date, minDate, onSelectedDate, onTriggerAction }) => {
   const [selectedDate, setSelectedDate] = useState<string | undefined>();
 
   const selectDateHandler = (date: Date | null) => {
@@ -43,6 +43,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ date, onSelectedDate, onTrigger
       formatWeekDay={(date) => date.slice(0, 1).toUpperCase()}
       renderCustomHeader={(props) => <DatePickerHeader {...props} />}
       onChange={selectDateHandler}
+      minDate={minDate ? dayjs(minDate).toDate() : undefined}
     />
   );
 }

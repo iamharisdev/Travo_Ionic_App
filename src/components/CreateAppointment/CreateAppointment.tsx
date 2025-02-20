@@ -162,7 +162,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
         return (
           <SelectDateTime
             configurationId={configNylasId}
-            selectedDate={selectedSlot?.start || selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : null}
+            selectedDate={dayjs(selectedSlot?.start).toISOString() || dayjs(selectedDateTime?.startTime).toISOString()}
             start_time={selectedSlot?.start || selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : undefined}
             end_time={selectedSlot?.end || selectedDateTime ? (dayjs(selectedDateTime?.endTime).toDate()!!) : undefined}
             setSelectedDateTime={(selectedDateTime) => {
@@ -179,6 +179,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
               }
             }}
             onDateSelected={() => scrollBottomHandler()}
+            duration={selectedService?.duration}
           />
         );
       case 3:

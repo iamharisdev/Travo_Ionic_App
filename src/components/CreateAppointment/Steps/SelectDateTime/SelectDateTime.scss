@@ -1,13 +1,65 @@
 .select-date-time {
-  overflow-y: scroll;
+  // overflow-y: scroll;
   padding-top: 24px;
-
-  div {
-    background: var(--ion-trova-white);
-  }
 
   ion-item {
     --background: var(--ion-trova-white);
+  }
+
+  &-date-picker-container {
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &-divider {
+    width: 100%;
+    background: #D1D3D4;
+    height: 1px;
+  }
+
+  &-time-picker-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &-time-picker {
+    width: 100%;
+    margin: 56px 0 42px 0;
+    display: flex;
+    justify-content: center;
+    height: 100px;
+  }
+
+
+  ion-datetime {
+    --background: var(--ion-trova-white);
+    --background-rgb: 255, 255, 255;
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  ion-datetime::part(wheel-item active) {
+    color: var(--ion-trova-gray-text);
+    text-align: center;
+    font-family: Poppins;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  ion-datetime::part(wheel-item) {
+    text-align: center;
+    font-family: Poppins;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
   }
 
   &-title {
