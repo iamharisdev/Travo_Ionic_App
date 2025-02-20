@@ -10,7 +10,6 @@ import dayjs from 'dayjs';
 const CSSPrefix = 'select-date-time';
 
 interface SelectDateTimeProps {
-  configurationId: string;
   setSelectedDateTime: (selectedDateTime: AppointmentDateTime) => void;
   selectedDate?: string;
   start_time?: Date;
@@ -20,7 +19,6 @@ interface SelectDateTimeProps {
 }
 
 const SelectDateTime: React.FC<SelectDateTimeProps> = ({
-  configurationId,
   selectedDate,
   start_time,
   end_time,
