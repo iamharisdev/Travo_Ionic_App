@@ -13,6 +13,10 @@ import { useHistory } from 'react-router';
 import { APPOINTMENTS } from '../../shared/routes/routes';
 import { setDate } from '../../state/calendarSlice';
 
+import './RescheduleAppointment.scss';
+
+const CSSPrefix = 'reschedule-appointment';
+
 export interface AppointmentDateTime {
   startTime: string;
   endTime: string;
@@ -30,12 +34,12 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
     calendar: { selectedDate, selectedDates }
   } = useSelector((state: RootState) => state)
 
-  const configNylasId = useMemo(() => {
+  const duration = useMemo(() => {
     if (patientServiceRequestDtos && appointment?.patientServiceId) {
-      return patientServiceRequestDtos.find(({ id }) => id === appointment.patientServiceId)?.externalSchedulerId!!;
+      return patientServiceRequestDtos.find(({ id }) => id === appointment.patientServiceId)?.duration!!;
     }
 
-    return '';
+    return 0;
   }, [patientServiceRequestDtos, appointment?.patientServiceId]);
 
   const cancelOrBackText = useMemo(() => {
@@ -75,6 +79,8 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
         selectedDateTime?.startTime &&
         selectedDateTime?.endTime
       ) {
+        const startTime = dayjs(selectedDateTime.startTime);
+        const endTimeByDuration = startTime.add(duration || 0, 'minutes');
         const response = await dispatch(rescheduleAppointmentAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
@@ -87,8 +93,8 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
             patientNumber: appointment.patientNumber,
             patientServiceId: appointment.patientServiceId,
             price: appointment.price,
-            startTime: selectedDateTime.startTime,
-            endTime: selectedDateTime.endTime
+            startTime: startTime.toISOString(),
+            endTime: endTimeByDuration.toISOString(),
           }
         }));
 
@@ -159,7 +165,8 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
       case 1:
         return (
           <SelectDateTime
-            configurationId={configNylasId}
+            duration={duration}
+            selectedDateTime={selectedDateTime}
             setSelectedDateTime={(selectedDateTime) => {
               setSelectedDateTime({ ...selectedDateTime });
               setStep(0);
@@ -178,7 +185,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
           rescheduleHandler={rescheduleAppointmentHandler}
         />;
     }
-  }, [step, appointment, selectedDateTime, configNylasId]);
+  }, [step, appointment, selectedDateTime, duration]);
 
   useEffect(() => {
     if (
@@ -199,6 +206,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
   return (
     <IonModal
       isOpen={isOpen}
+      className={CSSPrefix}
     >
       <IonHeader>
         <IonToolbar>

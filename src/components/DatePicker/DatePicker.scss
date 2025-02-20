@@ -97,6 +97,10 @@
           cursor: default;
           color: #ccc;
         }
+
+        .react-datepicker__day--keyboard-selected {
+          background: none;
+        }
       }
     }
   }

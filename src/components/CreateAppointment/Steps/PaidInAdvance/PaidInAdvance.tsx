@@ -11,6 +11,7 @@ import { acceptInvoiceTemplate, generateInvoicePreview, getInvoiceTemplates } fr
 import { Patient } from '../../../../state/patientSlice';
 import { AppointmentDateTime } from '../../CreateAppointment';
 import { FieldArray, Form, Formik } from 'formik';
+import dayjs from 'dayjs';
 
 import './PaidInAdvance.scss';
 
@@ -93,7 +94,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
             currency: currency?.code!!,
             currencySymbol: currency?.symbol!!,
             amount: selectedService.price,
-            appointmentDate: selectedDateTime?.startTime!!,
+            appointmentDate: dayjs(selectedDateTime?.startTime).toISOString()!!,
           }
         );
 

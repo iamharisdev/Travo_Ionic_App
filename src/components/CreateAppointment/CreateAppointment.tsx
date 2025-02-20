@@ -162,9 +162,9 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
         return (
           <SelectDateTime
             configurationId={configNylasId}
-            selectedDate={dayjs(selectedSlot?.start).toISOString() || dayjs(selectedDateTime?.startTime).toISOString()}
-            start_time={selectedSlot?.start || selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : undefined}
-            end_time={selectedSlot?.end || selectedDateTime ? (dayjs(selectedDateTime?.endTime).toDate()!!) : undefined}
+            selectedDate={selectedDateTime?.startTime ? dayjs(selectedDateTime?.startTime).toISOString() : dayjs(selectedSlot?.start).toISOString()}
+            start_time={selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : selectedSlot?.start}
+            end_time={selectedDateTime ? (dayjs(selectedDateTime?.endTime).toDate()!!) : selectedSlot?.end}
             setSelectedDateTime={(selectedDateTime) => {
               setSelectedDateTime({ ...selectedDateTime });
               if (prevStep === -1) {
@@ -215,7 +215,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   const scrollBottomHandler = () => {
     contentRef.current && contentRef.current.scrollToBottom();
   };
-  console.log('selectedDateTime: ', selectedDateTime);
+
   useEffect(() => {
     if (!isOpen) {
       setInvoiceDataId(undefined);
