@@ -34,7 +34,7 @@ const CSSprefix = 'appointment-requests';
 const today = dayjs().format('YYYY-MM-DD');
 
 const AppointmentRequests: React.FC = (): React.ReactElement => {
-  const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
   const appointmentRequestsRef = useRef();
@@ -42,9 +42,8 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const sortedEvents = useMemo(() => [...events.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-  ).filter(({ status }) => status === AppointmentStatusEnum.PENDING), [events?.events]);
+  ).filter(({ status, endTime }) => status === AppointmentStatusEnum.PENDING && dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')), [events?.events, selectedDate]);
   const [presentToast] = usePresentToast();
-  const [selectedDate, setSelectedDate] = useState<string | undefined>(today);
   const dateText = useMemo(() => {
     if (selectedDate) {
       return months[dayjs(selectedDate).month()];
