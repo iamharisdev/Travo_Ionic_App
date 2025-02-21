@@ -9,12 +9,15 @@ import { months, weekday } from '../../shared/constants/dates';
 import { personCircleOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 import { APPOINTMENT_DETAILS } from '../../shared/routes/routes';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../state/store';
 
 const CSSprefix = 'appointment-request-card';
 
 const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment, acceptCB, declineCB }) => {
   const history = useHistory();
   const barColor = useMemo(() => getAppointmentColor(appointment?.color as CALENDAR_SLOTS), [appointment?.color]);
+  const { provider } = useSelector((state: RootState) => state);
 
   const { startTime, endTime, day, month, date, duration, showButtons }:
     {
@@ -33,6 +36,11 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
       let month = '';
       let duration = '';
       let showButtons = false;
+      let format = 'hh:mm A';
+
+      if (provider.practice?.displayTwentyFourHourTime) {
+        format = 'HH:mm';
+      }
 
       if (appointment?.startTime) {
         const start = dayjs(appointment.startTime);
@@ -42,13 +50,13 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
           showButtons = true;
         }
 
-        startTime = start.format('hh:mm A');
+        startTime = start.format(format);
         day = weekday[dayjs(getDateWithoutTime(start.toISOString())).day()].substring(0, 3);
         month = months[start.month()].substring(0, 3);
         date = dayjs(getDateWithoutTime(start.toISOString())).date().toString();
       }
 
-      if (appointment?.endTime) endTime = dayjs(appointment.endTime).format('hh:mm A');
+      if (appointment?.endTime) endTime = dayjs(appointment.endTime).format(format);
 
       if (appointment?.startTime && appointment?.endTime) {
         const seconds = Math.floor((dayjs(appointment.endTime).valueOf() - dayjs(appointment.startTime).valueOf()) / 1000);

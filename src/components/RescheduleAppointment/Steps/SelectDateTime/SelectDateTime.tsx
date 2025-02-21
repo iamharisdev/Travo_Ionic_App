@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IonButton, IonDatetime, IonItem, IonText } from '@ionic/react';
 import DatePicker from '../../../DatePicker/DatePicker';
 import dayjs from 'dayjs';
 import { AppointmentDateTime } from '../../RescheduleAppointment';
 
 import './SelectDateTime.scss';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../state/store';
 
 const CSSPrefix = 'select-date-time-reschedule';
 
@@ -19,8 +21,20 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
   selectedDateTime,
   setSelectedDateTime,
 }) => {
+  const {
+    provider,
+  } = useSelector((state: RootState) => state);
   const [currentSelectedDate, setCurrenSelectedDate] = useState<Date>();
   const [currentSelectedDateTime, setCurrenSelectedDateTime] = useState<AppointmentDateTime>();
+
+  const hourValues = useMemo(() => {
+    if (provider?.practice?.displayTwentyFourHourTime) {
+      return '00,01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,20,21,22,23';
+    }
+
+    return '0,1,2,3,4,5,6,7,8,9,10,11';
+
+  }, [provider?.practice?.displayTwentyFourHourTime]);
 
   const onNextHandler = useCallback(() => {
     if (currentSelectedDateTime?.startTime && currentSelectedDateTime?.endTime && currentSelectedDate) {
@@ -81,7 +95,8 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
         <IonDatetime
           className={`${CSSPrefix}-time-picker`}
           presentation="time"
-          hourValues="0,1,2,3,4,5,6,7,8,9,10,11"
+          hourCycle={provider.practice?.displayTwentyFourHourTime ? 'h23' : 'h11'}
+          hourValues={hourValues}
           minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
           preferWheel={true}
           value={currentSelectedDateTime?.startTime}

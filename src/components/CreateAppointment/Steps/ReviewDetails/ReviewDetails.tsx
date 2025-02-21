@@ -39,7 +39,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   const [presentToast] = usePresentToast();
   const {
     provider,
-    calendar: { selectedDate, selectedDates }
   } = useSelector((state: RootState) => state);
   const history = useHistory();
   const popover = useRef<HTMLIonPopoverElement>(null);
@@ -51,11 +50,18 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   };
 
   const dateTime = useMemo(() => {
-    if (selectedDateTime) {
-      return dayjs(selectedDateTime.startTime).format('MMMM D, hh:mm A')
+    let format = 'MMMM D, hh:mm A';
+
+    if (provider?.practice?.displayTwentyFourHourTime) {
+      format = 'MMMM D, HH:mm';
     }
+
+    if (selectedDateTime) {
+      return dayjs(selectedDateTime.startTime).format(format);
+    }
+
     return '';
-  }, [selectedDateTime]);
+  }, [selectedDateTime, provider?.practice?.displayTwentyFourHourTime]);
 
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {

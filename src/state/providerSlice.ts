@@ -44,6 +44,8 @@ export interface Practice {
   phoneNumberPrefix: string;
   userName: string;
   skipAppointmentRequestNotifications?: boolean | null;
+  displayTwentyFourHourTime: boolean | null;
+  dateFormat: string | null;
 }
 
 export interface MeInterface {
