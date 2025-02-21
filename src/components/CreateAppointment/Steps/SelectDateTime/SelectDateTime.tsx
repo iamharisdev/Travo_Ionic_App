@@ -96,8 +96,7 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
           onIonChange={(e) => {
             const startTime = (dayjs(e.detail?.value!! as string));
             const endTime = startTime.add(duration || 0, 'minutes');
-            console.log('start: ', e.detail.value);
-            console.log('end: ', endTime.format('YYYY-MM-DDTHH:mm:ss'));
+
             setCurrenSelectedDateTime({
               startTime: e.detail.value as string,
               endTime: endTime.format('YYYY-MM-DDTHH:mm:ss'),

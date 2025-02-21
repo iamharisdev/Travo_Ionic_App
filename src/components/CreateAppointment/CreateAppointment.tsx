@@ -19,7 +19,7 @@ export interface AppointmentDateTime {
   endTime: string;
 }
 
-const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, selectedSlot, setIsOpen }) => {
+const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, selectedSlot, currentDate, setIsOpen }) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
   const [selectedService, setSelectedService] = useState<Services>();
   const [selectedPrevService, setSelectedPrevService] = useState<Services>();
@@ -154,7 +154,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       case 2:
         return (
           <SelectDateTime
-            selectedDate={selectedDateTime?.startTime ? dayjs(selectedDateTime?.startTime).toISOString() : dayjs(selectedSlot?.start).toISOString()}
+            selectedDate={currentDate || (selectedDateTime?.startTime ? dayjs(selectedDateTime?.startTime).toISOString() : dayjs(selectedSlot?.start).toISOString())}
             start_time={selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : selectedSlot?.start}
             end_time={selectedDateTime ? (dayjs(selectedDateTime?.endTime).toDate()!!) : selectedSlot?.end}
             setSelectedDateTime={(selectedDateTime) => {
@@ -202,7 +202,7 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
       default:
         <SelectClient isOpen={isOpen} setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, invoiceDataId, selectedPrevService]);
+  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, invoiceDataId, selectedPrevService, currentDate]);
 
   const scrollBottomHandler = () => {
     contentRef.current && contentRef.current.scrollToBottom();
