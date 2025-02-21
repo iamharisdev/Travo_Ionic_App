@@ -11,11 +11,12 @@ const CSSPrefix = 'invoice-card';
 interface InvoiceCardProps {
   name: string;
   line: LinePreview;
+  currencySymbol: string;
   removeLineItem: (index: number | any) => void;
   setFieldValue: (name: string, value: any) => void;
 }
 
-const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, setFieldValue }): React.ReactElement => {
+const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, currencySymbol, removeLineItem, setFieldValue }): React.ReactElement => {
   return (
     <IonCard className={CSSPrefix}>
       <IonCardHeader>
@@ -67,7 +68,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, removeLineItem, s
             readonly={true}
             type="text"
             className={`${CSSPrefix}-amount`}
-            value={`$${line.amount}`}
+            value={`${currencySymbol}${line.amount}`}
             onIonChange={(e) => setFieldValue(`${name}.amount`, e.detail.value!!)}
           />
         </div>

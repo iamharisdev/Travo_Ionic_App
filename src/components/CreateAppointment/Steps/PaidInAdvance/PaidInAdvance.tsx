@@ -192,7 +192,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                     {selectedService?.name}
                     <p>{selectedService?.location}, {duration}</p>
                   </IonLabel>
-                  <IonText className={`${CSSPrefix}-price`}>${preview?.total?.toFixed(2)}</IonText>
+                  <IonText className={`${CSSPrefix}-price`}>{`${currency?.symbol!!}${preview?.total?.toFixed(2)}`}</IonText>
                 </IonItem>
                 <FieldArray name="lines">
                   {({ push, remove, form: { setFieldValue } }) => (
@@ -202,6 +202,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                           key={index}
                           name={`lines.${index}`}
                           line={line}
+                          currencySymbol={currency?.symbol!!}
                           removeLineItem={() => remove(index)}
                           setFieldValue={setFieldValue}
                         />
@@ -260,15 +261,15 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                 <div className="paid-in-advance-footer-wrapper">
                   <div className="paid-in-advance-footer-container">
                     <IonText className="paid-in-advance-footer-subtotal">Sub total:</IonText>
-                    <IonText className="paid-in-advance-footer-subtotal">${values?.subtotal.toFixed(2)}</IonText>
+                    <IonText className="paid-in-advance-footer-subtotal">{`${currency?.symbol!!}${values?.subtotal.toFixed(2)}`}</IonText>
                   </div>
                   <div className="paid-in-advance-footer-container">
                     <IonText className="paid-in-advance-footer-subtotal">Discount:</IonText>
-                    <IonText className="paid-in-advance-footer-subtotal">${values?.discount.toFixed(2)}</IonText>
+                    <IonText className="paid-in-advance-footer-subtotal">{`${currency?.symbol!!}${values?.discount.toFixed(2)}`}</IonText>
                   </div>
                   <div className="paid-in-advance-footer-container">
                     <IonText className="ion-margin-start paid-in-advance-footer-total">Total:</IonText>
-                    <IonText className="paid-in-advance-footer-total">${values?.total.toFixed(2)}</IonText>
+                    <IonText className="paid-in-advance-footer-total">{`${currency?.symbol!!}${values?.total.toFixed(2)}`}</IonText>
                   </div>
                 </div>
                 <div className="paid-in-advance-footer-button-container">
