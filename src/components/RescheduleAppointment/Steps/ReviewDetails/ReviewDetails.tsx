@@ -29,7 +29,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 }) => {
   const dateTime = useMemo(() => {
     if (selectedDateTime) {
-      return dayjs(selectedDateTime.startTime).format('MMMM D, HH:mm A')
+      return dayjs(selectedDateTime.startTime).format('MMMM D, hh:mm A')
     }
     return '';
   }, [selectedDateTime]);
