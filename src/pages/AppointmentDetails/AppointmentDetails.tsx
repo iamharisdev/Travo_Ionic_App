@@ -71,16 +71,21 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
       let date = '';
       let month = '';
       let duration = '';
+      let format = 'hh:mm A';
+
+      if (provider.practice?.displayTwentyFourHourTime) {
+        format = 'HH:mm';
+      }
 
       if (event?.startTime) {
         const start = dayjs(event.startTime);
-        startTime = start.format('hh:mm A');
+        startTime = start.format(format);
         day = weekday[start.day()];
         month = months[start.month()].substring(0, 3);
         date = start.date().toString();
       }
 
-      if (event?.endTime) endTime = dayjs(event.endTime).format('hh:mm A');
+      if (event?.endTime) endTime = dayjs(event.endTime).format(format);
 
       if (event?.startTime && event?.endTime) {
         const seconds = Math.floor((dayjs(event.endTime).valueOf() - dayjs(event.startTime).valueOf()) / 1000);
@@ -101,7 +106,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
       }
 
       return { startTime, endTime, day, date, month, duration };
-    }, [event?.startTime, event?.endTime]);
+    }, [event?.startTime, event?.endTime, provider.practice?.displayTwentyFourHourTime]);
 
   const currency = useMemo(() => {
     if (provider?.practice?.preferredCurrency) {

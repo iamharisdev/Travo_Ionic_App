@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 import { IonButton, IonIcon, IonItem, IonLabel, IonText } from '@ionic/react';
 import { AppointmentDateTime } from '../../RescheduleAppointment';
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../state/store';
 import { caretDownOutline, informationCircle } from 'ionicons/icons';
 
 import './ReviewDetails.scss';
@@ -27,12 +29,23 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   setStep,
   rescheduleHandler,
 }) => {
+  const {
+    provider,
+  } = useSelector((state: RootState) => state);
+
   const dateTime = useMemo(() => {
-    if (selectedDateTime) {
-      return dayjs(selectedDateTime.startTime).format('MMMM D, HH:mm A')
+    let format = 'MMMM D, hh:mm A';
+
+    if (provider?.practice?.displayTwentyFourHourTime) {
+      format = 'MMMM D, HH:mm';
     }
+
+    if (selectedDateTime) {
+      return dayjs(selectedDateTime.startTime).format(format)
+    }
+
     return '';
-  }, [selectedDateTime]);
+  }, [selectedDateTime, provider?.practice?.displayTwentyFourHourTime]);
 
 
   return (

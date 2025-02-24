@@ -9,6 +9,8 @@ import { useHistory } from 'react-router';
 import { APPOINTMENT_DETAILS } from '../../shared/routes/routes';
 import { AppointmentDetailTypeEnum } from '../../shared/types/appointment.type';
 import { getAppointmentColor } from '../../shared/utils/appointments.util';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../state/store';
 
 import './AppointmentCard.scss';
 
@@ -16,6 +18,9 @@ const CSSPrefix = 'appointment-card';
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }): React.ReactElement => {
   const history = useHistory();
+  const {
+    provider,
+  } = useSelector((state: RootState) => state);
 
   const { startTime, endTime }:
     {
@@ -24,15 +29,20 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }): React
     } = useMemo(() => {
       let startTime = '';
       let endTime = '';
+      let format = 'hh:mm A';
 
-      if (appointment?.startTime) {
-        startTime = dayjs(appointment.startTime).format('hh:mm A');
+      if (provider.practice?.displayTwentyFourHourTime) {
+        format = 'HH:mm';
       }
 
-      if (appointment?.endTime) endTime = dayjs(appointment.endTime).format('hh:mm A');
+      if (appointment?.startTime) {
+        startTime = dayjs(appointment.startTime).format(format);
+      }
+
+      if (appointment?.endTime) endTime = dayjs(appointment.endTime).format(format);
 
       return { startTime, endTime };
-    }, [appointment?.startTime, appointment?.endTime]);
+    }, [appointment?.startTime, appointment?.endTime, provider.practice?.displayTwentyFourHourTime]);
 
   const locationIcon = useMemo(() => appointment?.location === 'Online' ? MeetingSvg : PersonSvg, [appointment?.location]);
 

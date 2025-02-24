@@ -20,7 +20,7 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, 
     if (discount === undefined) return `${currencySymbol}0`;
 
     return `${currencySymbol}${discount}`
-  }, [discount]);
+  }, [discount, currencySymbol]);
 
   return (
     <IonCard className={CSSPrefix}>
