@@ -251,6 +251,7 @@ export enum AppointmentStatusEnum {
   CONFIRMEND = 'Confirmed',
   CANCELLED = 'Cancelled',
   BUSY = 'Busy',
+  OCCURRENCE = 'Occurrence',
 }
 
 export interface CancelAppointmentPayload {

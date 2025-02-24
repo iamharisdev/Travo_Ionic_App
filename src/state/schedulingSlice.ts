@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
 import { StatusState } from '../shared/types/state.type';
-import { cancelAppointment, confirmAppointment, createAppointment, CreateAppointmentPayload, editAppointment, EventsResponse, getEvents, getServices, rescheduleAppointment, RescheduleAppointmentPayload, ServicesResponse } from '../api/services/scheduling';
-import { AppointmentStatusEnum, CancelAppointmentPayload, ConfirmAppointmentPayload, UpdateAppointmentPayload } from '../shared/types/appointment.type';
+import { cancelAppointment, confirmAppointment, createAppointment, CreateAppointmentPayload, editAppointment, EventsResponse, getEvents, getGoogleEvents, getMicrosoftEvents, getServices, rescheduleAppointment, RescheduleAppointmentPayload, ServicesResponse } from '../api/services/scheduling';
+import { AppointmentStatusEnum, CancelAppointmentPayload, ConfirmAppointmentPayload, IAppointment, UpdateAppointmentPayload } from '../shared/types/appointment.type';
 
 export interface SchedulingState {
   events: EventsResponse;
+  microsoftEvents: Array<IAppointment>;
+  googleEvents: Array<IAppointment>;
   services: ServicesResponse;
   state: StatusState & { loading: boolean };
 }
@@ -15,6 +17,8 @@ const initialState: SchedulingState = {
     total: 0,
     events: [],
   },
+  microsoftEvents: [],
+  googleEvents: [],
   services: {
     totalPatientServices: 0,
     patientServiceRequestDtos: []
@@ -53,6 +57,54 @@ export const getEventsAction = createAsyncThunk(
     } catch (error: any) {
       console.error('[getEvents]: ', error);
       return { total: 0, events: [] };
+    }
+  }
+);
+
+export const getMicrosoftEventsAction = createAsyncThunk(
+  'scheduling/getMicrosoftEventsAction',
+  async ({
+    practiceId,
+    providerId,
+    start,
+    end,
+  }: {
+    practiceId: string;
+    providerId: string;
+    start: string;
+    end: string;
+  }): Promise<Array<IAppointment>> => {
+    try {
+      const response = await getMicrosoftEvents(practiceId, providerId, start, end);
+
+      return response.data;
+    } catch (error: any) {
+      console.error('[getMicrosoftEventsAction]: ', error);
+      return [];
+    }
+  }
+);
+
+export const getGoogleEventsAction = createAsyncThunk(
+  'scheduling/getGoogleEventsAction',
+  async ({
+    practiceId,
+    providerId,
+    start,
+    end,
+  }: {
+    practiceId: string;
+    providerId: string;
+    start: string;
+    end: string;
+  }): Promise<Array<IAppointment>> => {
+    try {
+      const response = await getGoogleEvents(practiceId, providerId, start, end);
+
+      return response.data;
+    } catch (error: any) {
+      console.error('[getGoogleEventsAction]: ', error);
+      return [];
     }
   }
 );
@@ -238,6 +290,70 @@ const schedulingSlice = createSlice({
         state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
       })
       .addCase(getEventsAction.rejected, (state) => {
+        state = initialState;
+      })
+      .addCase(getMicrosoftEventsAction.pending, (state, action: PayloadAction<void>) => {
+        console.log('pending get microsoft events');
+        state.state.loading = true;
+      })
+      .addCase(getMicrosoftEventsAction.fulfilled, (state, action: PayloadAction<Array<IAppointment>>) => {
+        let newEvents = [...state.microsoftEvents];
+
+        action.payload.forEach((updatedEvent) => {
+          const exist = newEvents.some((nEvent) => nEvent?.id === updatedEvent?.id);
+          if (!exist) {
+            newEvents.push(updatedEvent);
+          }
+
+          if (exist) {
+            newEvents = newEvents.map((nEvent) => {
+              if (nEvent?.id === updatedEvent?.id) {
+                const assigned = Object.assign(nEvent, updatedEvent);
+
+                return assigned;
+              }
+
+              return nEvent;
+            })
+          }
+        });
+
+        state.microsoftEvents = newEvents;
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
+      })
+      .addCase(getMicrosoftEventsAction.rejected, (state) => {
+        state = initialState;
+      })
+      .addCase(getGoogleEventsAction.pending, (state, action: PayloadAction<void>) => {
+        console.log('pending get google events');
+        state.state.loading = true;
+      })
+      .addCase(getGoogleEventsAction.fulfilled, (state, action: PayloadAction<Array<IAppointment>>) => {
+        let newEvents = [...state.googleEvents];
+
+        action.payload.forEach((updatedEvent) => {
+          const exist = newEvents.some((nEvent) => nEvent?.id === updatedEvent?.id);
+          if (!exist) {
+            newEvents.push(updatedEvent);
+          }
+
+          if (exist) {
+            newEvents = newEvents.map((nEvent) => {
+              if (nEvent?.id === updatedEvent?.id) {
+                const assigned = Object.assign(nEvent, updatedEvent);
+
+                return assigned;
+              }
+
+              return nEvent;
+            })
+          }
+        });
+
+        state.googleEvents = newEvents;
+        state.state = { ...state.state, success: true, loading: false, error: null, message: '' };
+      })
+      .addCase(getGoogleEventsAction.rejected, (state) => {
         state = initialState;
       })
       .addCase(getServicesAction.pending, (state) => {
