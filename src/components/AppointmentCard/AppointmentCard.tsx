@@ -7,7 +7,7 @@ import { AppointmentCardProps } from './appointmentCard.type';
 import dayjs from 'dayjs';
 import { useHistory } from 'react-router';
 import { APPOINTMENT_DETAILS } from '../../shared/routes/routes';
-import { AppointmentDetailTypeEnum } from '../../shared/types/appointment.type';
+import { AppointmentDetailTypeEnum, AppointmentStatusEnum, IAppointment } from '../../shared/types/appointment.type';
 import { getAppointmentColor } from '../../shared/utils/appointments.util';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
@@ -46,18 +46,33 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }): React
 
   const locationIcon = useMemo(() => appointment?.location === 'Online' ? MeetingSvg : PersonSvg, [appointment?.location]);
 
+  const checkRedirectionHandler = (appointment: IAppointment) => {
+    // TODO: add redirection for google, outlook and meeting events in app V2
+    const { allDay, busy, status } = appointment;
+
+    if (
+      !allDay
+      && !busy
+      && status !== AppointmentStatusEnum.BUSY
+      && status !== AppointmentStatusEnum.OCCURRENCE
+      && status !== AppointmentStatusEnum.SINGLE_INSTANCE
+    ) {
+      history.push(`${APPOINTMENT_DETAILS}/${appointment?.id}`, {
+        eventId: appointment?.id,
+        type: AppointmentDetailTypeEnum.RESCHEDULE
+      });
+    }
+  };
+
   return (
     <IonCard
       className={CSSPrefix}
       style={{ borderLeft: `8px solid ${getAppointmentColor(appointment?.color || '')}` }}
-      onClick={() => history.push(`${APPOINTMENT_DETAILS}/${appointment?.id}`, {
-        eventId: appointment?.id,
-        type: AppointmentDetailTypeEnum.RESCHEDULE
-      })}
+      onClick={() => checkRedirectionHandler(appointment)}
     >
       <IonItem lines="none" className='ion-no-padding'>
         <IonIcon icon={personCircleOutline} />
-        <IonText className={`${CSSPrefix}-title`}>{appointment?.patientName || appointment.providerName}</IonText>
+        <IonText className={`${CSSPrefix}-title`}>{appointment?.patientName || appointment.providerName || appointment.title}</IonText>
       </IonItem>
       <IonRow>
         <IonText className={`${CSSPrefix}-description`}>
@@ -67,11 +82,14 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }): React
           <IonIcon className={`${CSSPrefix}-meeting-icon`} src={locationIcon} slot="end" />
         </div>
       </IonRow>
-      <IonRow>
-        <IonText className={`${CSSPrefix}-description`}>
-          {appointment?.patientServiceName || appointment?.title}
-        </IonText>
-      </IonRow>
+      {/* Validation to avoid displace same than title section for google and outlook events */}
+      {appointment.status !== AppointmentStatusEnum.OCCURRENCE && appointment.status !== AppointmentStatusEnum.SINGLE_INSTANCE && (
+        <IonRow>
+          <IonText className={`${CSSPrefix}-description`}>
+            {appointment?.patientServiceName || appointment?.title}
+          </IonText>
+        </IonRow>
+      )}
     </IonCard>
   );
 }

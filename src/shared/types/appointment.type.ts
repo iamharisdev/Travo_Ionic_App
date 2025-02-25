@@ -199,6 +199,7 @@ export interface IAppointment extends Identifiable {
   externalEventId?: string;
   endTimeValid?: boolean;
   startTimeValid?: boolean;
+  busy?: boolean;
 }
 
 export interface SessionTimeRequest extends TimePeriod {
@@ -252,6 +253,7 @@ export enum AppointmentStatusEnum {
   CANCELLED = 'Cancelled',
   BUSY = 'Busy',
   OCCURRENCE = 'Occurrence',
+  SINGLE_INSTANCE = 'SingleInstance',
 }
 
 export interface CancelAppointmentPayload {

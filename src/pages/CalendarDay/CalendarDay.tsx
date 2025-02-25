@@ -30,6 +30,11 @@ import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import { useHistory, useLocation } from "react-router";
 import { getDefaultDates } from "../../shared/utils/dates.util";
+// import utc from 'dayjs/plugin/utc';
+// import timezone from 'dayjs/plugin/timezone';
+
+// dayjs.extend(utc);
+// dayjs.extend(timezone);
 
 import "./CalendarDay.scss";
 
@@ -69,23 +74,27 @@ const CalendarDay: React.FC = (): React.ReactElement => {
 
     const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
 
-    return externalCalendarEvents.filter(({ endTime, status }) => dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
-      (status === AppointmentStatusEnum.OCCURRENCE)).map((event) => ({
+    return externalCalendarEvents.filter(({ endTime, status, busy }) => dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
+      (
+        status === AppointmentStatusEnum.OCCURRENCE
+        || status === AppointmentStatusEnum.SINGLE_INSTANCE
+      ) && busy
+    ).map((event) => ({
+      id: event?.id,
+      title: JSON.stringify({
         id: event?.id,
-        title: JSON.stringify({
-          id: event?.id,
-          service: event?.patientServiceName || event?.title,
-          patient: event?.patientName || event?.providerName,
-          color: event?.color,
-          start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
-          end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
-          redirect: event?.status !== AppointmentStatusEnum.OCCURRENCE,
-          isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
-        }),
+        service: event?.patientServiceName || event?.title,
+        patient: event?.patientName || event?.providerName,
+        color: event?.color,
         start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
         end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
-        allDay: event?.allDay
-      }))
+        redirect: false,
+        isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
+      }),
+      start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
+      end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
+      allDay: event?.allDay
+    }))
   }, [microsoftEvents, googleEvents, selectedDate, state.loading]);
 
   const dispatch = useDispatch<AppDispatch>();

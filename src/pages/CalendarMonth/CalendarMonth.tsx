@@ -69,10 +69,13 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
     const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
 
-    return externalCalendarEvents.filter(({ startTime, status }) =>
+    return externalCalendarEvents.filter(({ startTime, status, busy }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
       dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf() &&
-      (status === AppointmentStatusEnum.OCCURRENCE)
+      (
+        status === AppointmentStatusEnum.OCCURRENCE
+        || status === AppointmentStatusEnum.SINGLE_INSTANCE
+      ) && busy
     ).map((event) => ({
       id: event?.id,
       title: JSON.stringify({
@@ -80,7 +83,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
         service: event?.patientServiceName || event?.title,
         patient: event?.patientName || event?.providerName,
         color: event?.color,
-        redirect: event?.status !== AppointmentStatusEnum.OCCURRENCE,
+        redirect: false,
         isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
       }),
       start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
