@@ -20,7 +20,7 @@ import EventCard from "../../components/EventCard/EventCard";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
-import { getEventsAction } from "../../state/schedulingSlice";
+import { getEventsAction, getGoogleEventsAction, getMicrosoftEventsAction } from "../../state/schedulingSlice";
 import { setDate, setNextDay, setPrevDay } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
@@ -30,6 +30,11 @@ import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import { useHistory, useLocation } from "react-router";
 import { getDefaultDates } from "../../shared/utils/dates.util";
+// import utc from 'dayjs/plugin/utc';
+// import timezone from 'dayjs/plugin/timezone';
+
+// dayjs.extend(utc);
+// dayjs.extend(timezone);
 
 import "./CalendarDay.scss";
 
@@ -40,7 +45,8 @@ const CSSprefix = 'calendar-day';
 const CalendarDay: React.FC = (): React.ReactElement => {
   const pageRef = useRef();
   const history = useHistory();
-  const { provider, scheduling: { events, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events, microsoftEvents, googleEvents, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
+
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day')
 
@@ -62,6 +68,35 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         allDay: event?.allDay
       }))
   }, [events.events, selectedDate, state.loading]);
+
+  const mappedBackgroundEvents: Array<Event & { id?: string }> = useMemo(() => {
+    if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day');
+
+    const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
+
+    return externalCalendarEvents.filter(({ endTime, status, busy }) => dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
+      (
+        status === AppointmentStatusEnum.OCCURRENCE
+        || status === AppointmentStatusEnum.SINGLE_INSTANCE
+      ) && busy
+    ).map((event) => ({
+      id: event?.id,
+      title: JSON.stringify({
+        id: event?.id,
+        service: event?.patientServiceName || event?.title,
+        patient: event?.patientName || event?.providerName,
+        color: event?.color,
+        start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
+        end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
+        redirect: false,
+        isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
+      }),
+      start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
+      end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
+      allDay: event?.allDay
+    }))
+  }, [microsoftEvents, googleEvents, selectedDate, state.loading]);
+
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -96,6 +131,18 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           end: dayjs(selectedDate).endOf('day').toISOString(),
           pageNumber: 0,
           pageSize: 999,
+        }));
+        await dispatch(getMicrosoftEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(selectedDate).startOf('day').toISOString(),
+          end: dayjs(selectedDate).endOf('day').toISOString(),
+        }));
+        await dispatch(getGoogleEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(selectedDate).startOf('day').toISOString(),
+          end: dayjs(selectedDate).endOf('day').toISOString(),
         }));
       }
     } catch (error) {
@@ -189,6 +236,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             date={selectedDate}
             defaultView={Views.DAY}
             events={mappedEvents}
+            backgroundEvents={mappedBackgroundEvents}
             localizer={localizer}
             toolbar={false}
             views={{

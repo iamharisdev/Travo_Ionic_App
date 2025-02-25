@@ -7,7 +7,7 @@ import { useHistory, useLocation } from 'react-router';
 import { getMeAction } from '../../state/providerSlice';
 import { getBusinessInformationAction, getCountriesAction, getCurrenciesAction, getPhoneCodesAction } from '../../state/practiceSlice';
 import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsAction } from '../../state/billingSlice';
-import { getEventsAction, getServicesAction } from '../../state/schedulingSlice';
+import { getEventsAction, getGoogleEventsAction, getMicrosoftEventsAction, getServicesAction } from '../../state/schedulingSlice';
 import dayjs from 'dayjs';
 import { getStorageValue } from '../../storage/storage.util';
 import { STORAGE_TOKEN } from '../../constant/storage.constant';
@@ -75,6 +75,18 @@ const Loading: React.FC = (): React.ReactElement => {
               end: dayjs().add(1, 'year').endOf('year').toISOString(),
               pageNumber: 0,
               pageSize: 999,
+            }));
+            await dispatch(getMicrosoftEventsAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
+              start: dayjs().subtract(3, 'months').toISOString(),
+              end: dayjs().add(1, 'year').endOf('year').toISOString(),
+            }));
+            await dispatch(getGoogleEventsAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
+              start: dayjs().subtract(3, 'months').toISOString(),
+              end: dayjs().add(1, 'year').endOf('year').toISOString(),
             }));
             setProgress((prevProgress) => prevProgress + 0.08);
             await dispatch(getServicesAction({

@@ -43,15 +43,20 @@ const CSSprefix = 'appointments';
 
 const Appointments: React.FC = (): React.ReactElement => {
   const pageRef = useRef<any>();
-  const { provider, scheduling: { events, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events, microsoftEvents, googleEvents, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
-  const sortedEvents = useMemo(() => [...events?.events || []].sort(
+  const sortedEvents = useMemo(() => [...events?.events, ...microsoftEvents, ...googleEvents || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-  ).filter(({ status, endTime }) => (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)
+  ).filter(({ status, endTime }) => (
+    status === AppointmentStatusEnum.CONFIRMEND
+    || status === AppointmentStatusEnum.BUSY
+    || status === AppointmentStatusEnum.OCCURRENCE
+    || status === AppointmentStatusEnum.SINGLE_INSTANCE
+  )
     && dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')),
     [events?.events, selectedDate, state.loading]);
   const dateText = useMemo(() => {

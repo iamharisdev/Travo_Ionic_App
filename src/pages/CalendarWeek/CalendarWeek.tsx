@@ -18,7 +18,7 @@ import { AppDispatch, RootState } from "../../state/store";
 import EventCard from "../../components/EventCard/EventCard";
 import { months } from "../../shared/constants/dates";
 import { setLoading } from "../../state/loadingSlice";
-import { getEventsAction } from "../../state/schedulingSlice";
+import { getEventsAction, getGoogleEventsAction, getMicrosoftEventsAction } from "../../state/schedulingSlice";
 import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
 import { setNextWeek, setPrevWeek, setDates, setDate } from "../../state/calendarSlice";
 import UseSwipeGesture from "../../hooks/useSwipeGesture";
@@ -39,7 +39,7 @@ const CSSprefix = 'calendar-week';
 
 const CalendarWeek: React.FC = (): React.ReactElement => {
   const history = useHistory();
-  const { provider, scheduling: { events, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
+  const { provider, scheduling: { events, microsoftEvents, googleEvents, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'week')
@@ -65,6 +65,35 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
       allDay: event?.allDay
     }))
   }, [events.events, state.loading, selectedDates]);
+
+  const mappedBackgroundEvents: Array<Event & { id?: string }> = useMemo(() => {
+    if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'month');
+
+    const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
+
+    return externalCalendarEvents.filter(({ startTime, status, busy }) =>
+      dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf() &&
+      (
+        status === AppointmentStatusEnum.OCCURRENCE
+        || status === AppointmentStatusEnum.SINGLE_INSTANCE
+      ) && busy
+    ).map((event) => ({
+      id: event?.id,
+      title: JSON.stringify({
+        id: event?.id,
+        service: event?.patientServiceName || event?.title,
+        patient: event?.patientName || event?.providerName,
+        color: event?.color,
+        redirect: false,
+        isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
+      }),
+      start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
+      end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
+      allDay: event?.allDay
+    })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
+  }, [microsoftEvents, googleEvents, state.loading, selectedDates]);
+
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -91,6 +120,18 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
           end: dayjs(selectedDates[1]).endOf('day').toISOString(),
           pageNumber: 0,
           pageSize: 999,
+        }));
+        await dispatch(getMicrosoftEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
+          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+        }));
+        await dispatch(getGoogleEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
+          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
         }));
       }
     } catch (error) {
@@ -142,6 +183,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
             date={selectedDates[0]}
             defaultView={Views.WEEK}
             events={mappedEvents}
+            backgroundEvents={mappedBackgroundEvents}
             localizer={localizer}
             showAllEvents={true}
             toolbar={false}
