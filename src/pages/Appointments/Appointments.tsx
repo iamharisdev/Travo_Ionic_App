@@ -201,7 +201,11 @@ const Appointments: React.FC = (): React.ReactElement => {
             />
           </IonContent>
         </IonPopover>
-        <CreateAppointment isOpen={isCreateAppointmentOpen} setIsOpen={setIsCreateAppointmentOpen} />
+        <CreateAppointment
+          isOpen={isCreateAppointmentOpen}
+          currentDate={selectedDate}
+          setIsOpen={setIsCreateAppointmentOpen}
+        />
       </IonPage>
     </>
   );
