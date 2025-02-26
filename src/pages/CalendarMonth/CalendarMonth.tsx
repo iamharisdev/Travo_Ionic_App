@@ -46,7 +46,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
     return events.events.filter(({ startTime, status }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf() &&
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
       (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)
     ).map((event) => ({
       id: event?.id,
@@ -102,7 +102,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const location = useLocation<{ prevPath?: string }>();
   const eventsInSameDate = useMemo(() => {
     let eventsInSameDate: Array<{ date: string, ids: Array<string> }> = [];
-    mappedEvents.forEach(({ id, start }) => {
+    [...mappedEvents, ...mappedBackgroundEvents].forEach(({ id, start }) => {
       const startDate = dayjs(start).format('YYYY-MM-DD');
       const exist = eventsInSameDate.find(({ date }) => date === startDate);
 
@@ -127,7 +127,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     });
 
     return eventsInSameDate;
-  }, [mappedEvents]);
+  }, [mappedEvents, mappedBackgroundEvents]);
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -194,8 +194,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
   return (
     <>
-      <Menu menuId={CALENDAR_MONTH_MENU_ID} contentId="calendar-week-content" />
-      <IonPage ref={calendarMonthRef} className={CSSprefix} id="calendar-week-content">
+      <Menu menuId={CALENDAR_MONTH_MENU_ID} contentId="calendar-month-content" />
+      <IonPage ref={calendarMonthRef} className={CSSprefix} id="calendar-month-content">
         <SwipeHandler parentRef={calendarMonthRef} />
         <Header
           showMenu
@@ -253,12 +253,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
               history.push(CALENDAR_DAY);
             }}
           />
-          <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
-              <IonIcon icon={addOutline} />
-            </IonFabButton>
-          </IonFab>
         </IonContent>
+        <IonFab slot="fixed" vertical="bottom" horizontal="end">
+          <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
+            <IonIcon icon={addOutline} />
+          </IonFabButton>
+        </IonFab>
         <IonPopover
           ref={datePickerRef}
           className={`${CSSprefix}-date-picker-popover`}

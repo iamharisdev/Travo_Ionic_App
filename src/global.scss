@@ -159,6 +159,10 @@ ion-datetime::part(calendar-day today) {
 
 .rbc-time-content>.rbc-day-slot {
   background-color: transparent;
+
+  .rbc-slot-selection {
+    display: none;
+  }
 }
 
 .rbc-current-time-indicator {

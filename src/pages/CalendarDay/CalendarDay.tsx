@@ -150,46 +150,56 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }
 
+  const { handlers, scrollingUpOrDown, tapped, refPassthrough } = UseSwipeGesture({
+    parentRef: pageRef,
+    onSwipedLeft: () => dispatch(setNextDay()),
+    onSwipedRight: () => dispatch(setPrevDay()),
+    onSwipedDown: () => getAppointmentsHandler(),
+  });
+
   const handleSelectSlot = useCallback(
-    (value: SlotInfo | { id: string }) => {
-      if ('id' in value) {
-        history.push(`${APPOINTMENT_DETAILS}/${value.id}`, {
-          eventId: value.id,
-          type: AppointmentDetailTypeEnum.RESCHEDULE
-        });
+    (value: SlotInfo) => {
+      if (value && tapped && !scrollingUpOrDown) {
+        if ('start' in value && 'end' in value) {
+          const eventExist = [...mappedEvents, ...mappedBackgroundEvents].find((event) => {
+            if (
+              dayjs(event.start).valueOf() <= dayjs(value.start).valueOf() && dayjs(value.start).valueOf() <= dayjs(event.end).valueOf() && !event?.allDay
+            ) {
 
-        return;
-      }
-      if ('start' in value && 'end' in value) {
-        const eventExist = mappedEvents.find((event) => {
-          if (
-            dayjs(event.start).valueOf() <= dayjs(value.start).valueOf() && dayjs(value.start).valueOf() <= dayjs(event.end).valueOf() && !event?.allDay
-          ) {
-            return event;
-          }
-          if (
-            dayjs(event.start).valueOf() <= dayjs(value.end).valueOf() && dayjs(value.end).valueOf() <= dayjs(event.end).valueOf() && !event?.allDay
-          ) {
-            return event;
-          }
-          if (
-            dayjs(value.start).valueOf() < dayjs(event.start).valueOf() && dayjs(event.end).valueOf() < dayjs(value.end).valueOf() && !event?.allDay
-          ) {
-            return event;
+              return event;
+            }
+            if (
+              dayjs(event.start).valueOf() <= dayjs(value.end).valueOf() && dayjs(value.end).valueOf() <= dayjs(event.end).valueOf() && !event?.allDay
+            ) {
+
+              return event;
+            }
+            if (
+              dayjs(value.start).valueOf() < dayjs(event.start).valueOf() && dayjs(event.end).valueOf() < dayjs(value.end).valueOf() && !event?.allDay
+            ) {
+
+              return event;
+            }
+          });
+
+          if (!eventExist) {
+            setIsCreateAppointmentOpen(true);
+            setSelectedSlot(value);
           }
 
-          return;
-        });
-
-        if (!eventExist) {
-          setIsCreateAppointmentOpen(true);
-          setSelectedSlot(value);
+          if (eventExist && 'id' in eventExist && 'title' in eventExist) {
+            const redirect = JSON.parse((eventExist?.title as string) || '').redirect;
+            if (redirect) {
+              history.push(`${APPOINTMENT_DETAILS}/${eventExist.id}`, {
+                eventId: eventExist.id,
+                type: AppointmentDetailTypeEnum.RESCHEDULE
+              });
+            }
+          }
         }
-
-        return;
       }
     },
-    [mappedEvents, isCreateAppointmentOpen]
+    [mappedEvents, mappedBackgroundEvents, isCreateAppointmentOpen, tapped, scrollingUpOrDown]
   );
 
   useIonViewWillEnter(() => {
@@ -198,13 +208,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
     setSelectedSlot(undefined);
   }, []);
-
-  const { handlers, refPassthrough } = UseSwipeGesture({
-    parentRef: pageRef,
-    onSwipedLeft: () => dispatch(setNextDay()),
-    onSwipedRight: () => dispatch(setPrevDay()),
-    onSwipedDown: () => getAppointmentsHandler(),
-  });
 
   useEffect(() => {
     if (location.pathname === CALENDAR_DAY && !isCreateAppointmentOpen) {
@@ -218,10 +221,23 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
+  const content = useMemo(() => null, [
+    pageRef,
+    dateText,
+    selectedDate,
+    mappedEvents,
+    selectedSlot,
+    mappedBackgroundEvents,
+    isCreateAppointmentOpen,
+    setSelectedSlot,
+    handleSelectSlot,
+    setIsCreateAppointmentOpen,
+  ]);
+
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />
-      <IonPage className={CSSprefix} id="calendar-day-content" {...handlers} ref={refPassthrough}>
+      <IonPage ref={pageRef} className={CSSprefix} id="calendar-day-content">
         <SwipeHandler parentRef={pageRef} />
         <Header
           showMenu
@@ -230,7 +246,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           datePickerText={dateText}
           datePickerCB={openDatePickerHandler}
         />
-        <IonContent fullscreen={true}>
+        <IonContent {...handlers} ref={refPassthrough}>
           <Calendar
             defaultDate={selectedDate}
             date={selectedDate}
@@ -259,29 +275,20 @@ const CalendarDay: React.FC = (): React.ReactElement => {
                 <EventCard
                   {...props}
                   loading={state.loading}
-                  onClick={(id: string) => {
-                    const redirect = JSON.parse((props?.event?.title as string) || '').redirect;
-
-                    if (redirect) {
-                      handleSelectSlot({ id });
-                    }
-
-                    return null;
-                  }}
                 />
               ),
             }}
             onNavigate={() => { }}
             selectable={true}
-            longPressThreshold={0}
+            longPressThreshold={60}
             onSelectSlot={handleSelectSlot}
           />
-          <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
-              <IonIcon icon={addOutline} />
-            </IonFabButton>
-          </IonFab>
         </IonContent>
+        <IonFab className="big-z-index" slot="fixed" vertical="bottom" horizontal="end">
+          <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
+            <IonIcon icon={addOutline} />
+          </IonFabButton>
+        </IonFab>
         <IonPopover
           ref={datePickerRef}
           className={`${CSSprefix}-date-picker-popover`}

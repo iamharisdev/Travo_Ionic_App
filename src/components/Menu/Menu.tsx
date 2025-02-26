@@ -23,7 +23,7 @@ const Menu: React.FC<MenuProps> = ({ menuId, contentId }) => {
   }
 
   return (
-    <IonMenu menuId={menuId} contentId={contentId}>
+    <IonMenu menuId={menuId} contentId={contentId} aria-hidden={true}>
       <IonContent className={`${CSSprefix} ion-padding`}>
         <IonItem lines='none' className={`${CSSprefix}-first-item`}>
           <IonImg
