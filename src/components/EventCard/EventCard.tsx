@@ -49,7 +49,10 @@ const EventCard: React.FC<any> = ({ children, isMonth = false, loading = false, 
           height: isMonth ? '2vh' : children.props.style.height,
           padding: isMonth && '0 5px',
         }}
-        onClick={() => onClick(eventProps.id)}
+        onClick={() => {
+          if (onClick)
+            onClick(eventProps.id);
+        }}
       >
 
         <div className={`${CSSprefix}-event-wrapper-container`} style={{ maxHeight: isMonth ? '27px' : '61px' }}>
