@@ -221,51 +221,23 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
-  const longPressThreshold = useMemo(() => scrollingUpOrDown ? 150 : 0, [scrollingUpOrDown]);
-
-  const calendarContent = useMemo(() => (
-    <Calendar
-      defaultDate={selectedDate}
-      date={selectedDate}
-      defaultView={Views.DAY}
-      events={mappedEvents}
-      backgroundEvents={mappedBackgroundEvents}
-      localizer={localizer}
-      toolbar={false}
-      views={{
-        day: true
-      }}
-      timeslots={2}
-      dayLayoutAlgorithm="no-overlap"
-      components={{
-        timeGutterHeader: () => (
-          <div className={`${CSSprefix}-date-container`}>
-            <IonText className={`${CSSprefix}-date`}>
-              {dayjs(selectedDate).format('ddd')}
-            </IonText>
-            <IonText className={`${CSSprefix}-day`}>
-              {dayjs(selectedDate).date()}
-            </IonText>
-          </div>
-        ),
-        eventWrapper: (props) => (
-          <EventCard
-            {...props}
-            loading={state.loading}
-          />
-        ),
-      }}
-      onNavigate={() => { }}
-      selectable={true}
-      longPressThreshold={longPressThreshold}
-      onSelectSlot={handleSelectSlot}
-    />
-  ), [selectedDate, mappedEvents, mappedBackgroundEvents, longPressThreshold, handleSelectSlot]);
+  const content = useMemo(() => null, [
+    pageRef,
+    dateText,
+    selectedDate,
+    mappedEvents,
+    selectedSlot,
+    mappedBackgroundEvents,
+    isCreateAppointmentOpen,
+    setSelectedSlot,
+    handleSelectSlot,
+    setIsCreateAppointmentOpen,
+  ]);
 
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />
-      <IonPage className={CSSprefix} id="calendar-day-content" {...handlers} ref={refPassthrough}>
+      <IonPage ref={pageRef} className={CSSprefix} id="calendar-day-content">
         <SwipeHandler parentRef={pageRef} />
         <Header
           showMenu
@@ -274,14 +246,49 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           datePickerText={dateText}
           datePickerCB={openDatePickerHandler}
         />
-        <IonContent fullscreen={true}>
-          {calendarContent}
-          <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
-              <IonIcon icon={addOutline} />
-            </IonFabButton>
-          </IonFab>
+        <IonContent {...handlers} ref={refPassthrough}>
+          <Calendar
+            defaultDate={selectedDate}
+            date={selectedDate}
+            defaultView={Views.DAY}
+            events={mappedEvents}
+            backgroundEvents={mappedBackgroundEvents}
+            localizer={localizer}
+            toolbar={false}
+            views={{
+              day: true
+            }}
+            timeslots={2}
+            dayLayoutAlgorithm="no-overlap"
+            components={{
+              timeGutterHeader: () => (
+                <div className={`${CSSprefix}-date-container`}>
+                  <IonText className={`${CSSprefix}-date`}>
+                    {dayjs(selectedDate).format('ddd')}
+                  </IonText>
+                  <IonText className={`${CSSprefix}-day`}>
+                    {dayjs(selectedDate).date()}
+                  </IonText>
+                </div>
+              ),
+              eventWrapper: (props) => (
+                <EventCard
+                  {...props}
+                  loading={state.loading}
+                />
+              ),
+            }}
+            onNavigate={() => { }}
+            selectable={true}
+            longPressThreshold={100}
+            onSelectSlot={handleSelectSlot}
+          />
         </IonContent>
+        <IonFab className="big-z-index" slot="fixed" vertical="bottom" horizontal="end">
+          <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
+            <IonIcon icon={addOutline} />
+          </IonFabButton>
+        </IonFab>
         <IonPopover
           ref={datePickerRef}
           className={`${CSSprefix}-date-picker-popover`}

@@ -48,7 +48,6 @@ const EventCard: React.FC<any> = ({ children, isMonth = false, loading = false, 
           border: 'none',
           height: isMonth ? '2vh' : children.props.style.height,
           padding: isMonth && '0 5px',
-          zIndex: 999
         }}
         onClick={() => onClick(eventProps.id)}
       >

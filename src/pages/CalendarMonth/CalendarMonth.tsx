@@ -194,8 +194,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
   return (
     <>
-      <Menu menuId={CALENDAR_MONTH_MENU_ID} contentId="calendar-week-content" />
-      <IonPage ref={calendarMonthRef} className={CSSprefix} id="calendar-week-content">
+      <Menu menuId={CALENDAR_MONTH_MENU_ID} contentId="calendar-month-content" />
+      <IonPage ref={calendarMonthRef} className={CSSprefix} id="calendar-month-content">
         <SwipeHandler parentRef={calendarMonthRef} />
         <Header
           showMenu
@@ -253,12 +253,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
               history.push(CALENDAR_DAY);
             }}
           />
-          <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
-              <IonIcon icon={addOutline} />
-            </IonFabButton>
-          </IonFab>
         </IonContent>
+        <IonFab slot="fixed" vertical="bottom" horizontal="end">
+          <IonFabButton onClick={() => setIsCreateAppointmentOpen(true)}>
+            <IonIcon icon={addOutline} />
+          </IonFabButton>
+        </IonFab>
         <IonPopover
           ref={datePickerRef}
           className={`${CSSprefix}-date-picker-popover`}
