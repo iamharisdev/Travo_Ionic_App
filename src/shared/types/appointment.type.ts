@@ -154,6 +154,9 @@ export enum CALENDAR_SLOTS {
 };
 
 export interface IAppointment extends Identifiable {
+  frequency?: string | null;
+  count?: number | null;
+  recurring?: boolean;
   appointmentNumber?: string;
   patientId?: string;
   patientNumber?: string;
@@ -199,6 +202,7 @@ export interface IAppointment extends Identifiable {
   externalEventId?: string;
   endTimeValid?: boolean;
   startTimeValid?: boolean;
+  busy?: boolean;
 }
 
 export interface SessionTimeRequest extends TimePeriod {
@@ -251,6 +255,8 @@ export enum AppointmentStatusEnum {
   CONFIRMEND = 'Confirmed',
   CANCELLED = 'Cancelled',
   BUSY = 'Busy',
+  OCCURRENCE = 'Occurrence',
+  SINGLE_INSTANCE = 'SingleInstance',
 }
 
 export interface CancelAppointmentPayload {

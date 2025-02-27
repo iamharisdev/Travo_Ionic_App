@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { SwipeableHandlers, useSwipeable } from 'react-swipeable';
 
 interface UseSwipeGestureProps {
@@ -6,13 +6,51 @@ interface UseSwipeGestureProps {
   onSwipedLeft?: () => void;
   onSwipedRight?: () => void;
   onSwipedDown?: () => void;
+  onSwipedUp?: () => void;
 }
 
-const UseSwipeGesture = ({ parentRef, onSwipedLeft, onSwipedRight, onSwipedDown }: UseSwipeGestureProps): { handlers: SwipeableHandlers, refPassthrough: (el: any) => void } => {
+const UseSwipeGesture = ({
+  parentRef,
+  onSwipedLeft,
+  onSwipedRight,
+  onSwipedDown,
+  onSwipedUp,
+}: UseSwipeGestureProps): {
+  handlers: SwipeableHandlers,
+  scrollingUpOrDown: boolean,
+  tapped: boolean,
+  refPassthrough: (el: any) => void
+} => {
+  const [scrollingUpOrDown, setScrollingUpOrDown] = useState(true);
+  const [tapped, setTapped] = useState(false);
+
   const handlers = useSwipeable({
     onSwipedLeft,
     onSwipedRight,
     onSwipedDown,
+    onSwipedUp,
+    onSwipeStart: (e) => {
+      if (e.dir === 'Up' || e.dir === 'Down') {
+        setScrollingUpOrDown(true);
+        setTapped(false);
+      }
+    },
+    onSwiping: (e) => {
+      if (e.dir === 'Up' || e.dir === 'Down') {
+        setScrollingUpOrDown(true);
+      }
+    },
+    onSwiped: () => {
+      if (scrollingUpOrDown) {
+        setScrollingUpOrDown(false);
+        setTapped(false);
+      }
+    },
+    onTap: () => {
+      setScrollingUpOrDown(false);
+      setTapped(true);
+      setTimeout(() => setTapped(false), 100);
+    },
     delta: {
       up: 10,
       down: 300,
@@ -30,7 +68,7 @@ const UseSwipeGesture = ({ parentRef, onSwipedLeft, onSwipedRight, onSwipedDown 
     parentRef.current = el;
   }, [parentRef]);
 
-  return { handlers, refPassthrough };
+  return { handlers, scrollingUpOrDown, tapped, refPassthrough };
 };
 
 export default UseSwipeGesture;

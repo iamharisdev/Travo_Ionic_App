@@ -56,6 +56,34 @@ export const getEvents = async (
   });
 }
 
+export const getMicrosoftEvents = async (
+  practiceId: string,
+  providerId: string,
+  start: string,
+  end: string,
+) => {
+  return await schedulingApiInstance.get<Array<IAppointment>>(`/practices/${practiceId}/providers/${providerId}/connected-calendars/microsoft/events`, {
+    params: {
+      start,
+      end,
+    }
+  });
+}
+
+export const getGoogleEvents = async (
+  practiceId: string,
+  providerId: string,
+  start: string,
+  end: string,
+) => {
+  return await schedulingApiInstance.get<Array<IAppointment>>(`/practices/${practiceId}/providers/${providerId}/connected-calendars/google/events`, {
+    params: {
+      start,
+      end,
+    }
+  });
+}
+
 export const getServices = async (
   practiceId: string,
   providerId: string,

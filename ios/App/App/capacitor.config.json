@@ -13,6 +13,12 @@
 		"androidScheme": "http",
 		"iosScheme": "https"
 	},
+	"plugins": {
+		"Keyboard": {
+			"resize": "native",
+			"resizeOnFullScreen": true
+		}
+	},
 	"packageClassList": [
 		"BiometricAuthNative",
 		"AppPlugin",
