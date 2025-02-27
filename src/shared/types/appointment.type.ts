@@ -154,6 +154,9 @@ export enum CALENDAR_SLOTS {
 };
 
 export interface IAppointment extends Identifiable {
+  frequency?: string | null;
+  count?: number | null;
+  recurring?: boolean;
   appointmentNumber?: string;
   patientId?: string;
   patientNumber?: string;

@@ -27,6 +27,7 @@ import usePresentToast from "../../hooks/usePresentToast";
 import { setLoading } from "../../state/loadingSlice";
 import { confirmAppointmentAction } from "../../state/schedulingSlice";
 import RescheduleAppointment from "../../components/RescheduleAppointment/RescheduleAppointment";
+import Recurring from "../../components/Recurring/Recurring";
 
 import "./AppointmentDetails.scss";
 
@@ -45,6 +46,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events } } = useSelector((state: RootState) => state);
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
   const [eventData, setEventData] = useState<EventData>();
+  const [isRecurringOpen, setIsRecurringOpen] = useState(false);
 
   const event = useMemo(() => events?.events?.find(({ id, status, ...rest }) => {
     if (eventData?.type === AppointmentDetailTypeEnum.RESCHEDULE && id === eventData?.eventId) {
@@ -222,9 +224,13 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
 
     if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
-      setRescheduleOpen(true);
+      if (event?.recurring) {
+        setIsRecurringOpen(true);
+      } else {
+        setRescheduleOpen(true);
+      }
     }
-  }, [location?.state?.type, location?.state?.eventId, rescheduleOpen]);
+  }, [location?.state?.type, location?.state?.eventId, rescheduleOpen, event?.recurring, isRecurringOpen]);
 
   useIonViewDidEnter(() => {
     if (location?.state?.type && location?.state?.eventId) {
@@ -347,6 +353,10 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
         isOpen={rescheduleOpen}
         appointment={event}
         setIsOpen={setRescheduleOpen}
+      />
+      <Recurring
+        isOpen={isRecurringOpen}
+        close={() => setIsRecurringOpen(false)}
       />
     </IonPage>
   );

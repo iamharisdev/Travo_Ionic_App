@@ -1,0 +1,62 @@
+ion-modal#recurring-modal {
+  --height: 270px;
+  --width: 302px;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+ion-modal#recurring-modal::part(backdrop) {
+  opacity: 1;
+}
+
+.recurring {
+  ion-list {
+    background: var(--ion-trova-white);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0;
+  }
+
+  .ios ion-list {
+    padding-bottom: 24px;
+  }
+
+  .md ion-list {
+    padding-bottom: 20px;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin: auto;
+  }
+
+  &-description {
+    color: var(--ion-trova-input-placeholder);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: 14px auto 20px auto;
+  }
+
+  &-buttons {
+    margin-top: 14px;
+
+    ion-button {
+      margin: auto;
+      width: 100%;
+      height: 48px;
+    }
+  }
+}
