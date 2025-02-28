@@ -30,11 +30,6 @@ import { APPOINTMENT_DETAILS, CALENDAR_DAY } from "../../shared/routes/routes";
 import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import { useHistory, useLocation } from "react-router";
 import { getDefaultDates } from "../../shared/utils/dates.util";
-// import utc from 'dayjs/plugin/utc';
-// import timezone from 'dayjs/plugin/timezone';
-
-// dayjs.extend(utc);
-// dayjs.extend(timezone);
 
 import "./CalendarDay.scss";
 
@@ -74,11 +69,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
 
     const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
 
-    return externalCalendarEvents.filter(({ endTime, status, busy }) => dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
-      (
-        status === AppointmentStatusEnum.OCCURRENCE
-        || status === AppointmentStatusEnum.SINGLE_INSTANCE
-      ) && busy
+    return externalCalendarEvents.filter(({ endTime, busy }) => dayjs(endTime).format('YYYY-MM-DD')
+      === dayjs(selectedDate).format('YYYY-MM-DD')
+      && busy
     ).map((event) => ({
       id: event?.id,
       title: JSON.stringify({
@@ -221,19 +214,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
-  const content = useMemo(() => null, [
-    pageRef,
-    dateText,
-    selectedDate,
-    mappedEvents,
-    selectedSlot,
-    mappedBackgroundEvents,
-    isCreateAppointmentOpen,
-    setSelectedSlot,
-    handleSelectSlot,
-    setIsCreateAppointmentOpen,
-  ]);
-
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />
@@ -260,6 +240,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             }}
             timeslots={2}
             dayLayoutAlgorithm="no-overlap"
+            showAllEvents={true}
             components={{
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>

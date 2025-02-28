@@ -160,6 +160,11 @@ ion-datetime::part(calendar-day today) {
 .rbc-time-content>.rbc-day-slot {
   background-color: transparent;
 
+  .rbc-background-event {
+    background-color: var(var(--ion-trova-external-events-color));
+    opacity: 1;
+  }
+
   .rbc-slot-selection {
     display: none;
   }

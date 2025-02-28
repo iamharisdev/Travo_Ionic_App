@@ -25,8 +25,8 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { APPOINTMENT_DETAILS, CALENDAR_DAY, CALENDAR_WEEK } from "../../shared/routes/routes";
-import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
+import { CALENDAR_DAY, CALENDAR_WEEK } from "../../shared/routes/routes";
+import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import { useHistory, useLocation } from "react-router";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import { getDefaultDates } from "../../shared/utils/dates.util";
@@ -46,7 +46,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
 
     return events.events.filter(({ startTime, status }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf() &&
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
       (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)
     ).map((event) => ({
       id: event?.id,
@@ -71,13 +71,9 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
 
     const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
 
-    return externalCalendarEvents.filter(({ startTime, status, busy }) =>
+    return externalCalendarEvents.filter(({ startTime, busy }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf() &&
-      (
-        status === AppointmentStatusEnum.OCCURRENCE
-        || status === AppointmentStatusEnum.SINGLE_INSTANCE
-      ) && busy
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() && busy
     ).map((event) => ({
       id: event?.id,
       title: JSON.stringify({

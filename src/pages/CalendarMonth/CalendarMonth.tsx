@@ -1,4 +1,4 @@
-import React, { Children, cloneElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonFab,
@@ -26,7 +26,7 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
 import { addOutline } from "ionicons/icons";
-import { CALENDAR_DAY, CALENDAR_MONTH, LOADING } from "../../shared/routes/routes";
+import { CALENDAR_DAY, CALENDAR_MONTH } from "../../shared/routes/routes";
 import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
 import { useHistory, useLocation } from "react-router";
 import DatePicker from "../../components/DatePicker/DatePicker";
@@ -69,13 +69,9 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
     const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
 
-    return externalCalendarEvents.filter(({ startTime, status, busy }) =>
+    return externalCalendarEvents.filter(({ startTime, busy }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).valueOf() &&
-      (
-        status === AppointmentStatusEnum.OCCURRENCE
-        || status === AppointmentStatusEnum.SINGLE_INSTANCE
-      ) && busy
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() && busy
     ).map((event) => ({
       id: event?.id,
       title: JSON.stringify({
@@ -209,8 +205,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             defaultDate={selectedDates[0]}
             date={selectedDates[0]}
             defaultView={Views.MONTH}
-            events={mappedEvents}
-            backgroundEvents={mappedBackgroundEvents}
+            events={[...mappedEvents, ...mappedBackgroundEvents]}
             localizer={localizer}
             showAllEvents={true}
             toolbar={false}

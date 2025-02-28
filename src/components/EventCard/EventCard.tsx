@@ -10,7 +10,7 @@ import './EventCard.scss';
 const CSSprefix = 'event-card';
 
 const EventCard: React.FC<any> = ({ children, isMonth = false, loading = false, index = 1, eventsLeft = 0, onClick, ...rest }): React.ReactElement => {
-  const eventProps: { id: string, service: string, patient: string, color: CALENDAR_SLOTS, index: number, start: Date, end: Date, isMeetingEvent?: boolean } = useMemo(() => JSON.parse(rest.event.title), [rest.event.title]);
+  const eventProps: { id: string, service: string, patient: string, color: CALENDAR_SLOTS, index: number, start: Date, end: Date, isMeetingEvent?: boolean, redirect?: boolean } = useMemo(() => JSON.parse(rest.event.title), [rest.event.title]);
   const eventColor = useMemo(() => getAppointmentColor(eventProps.color), [eventProps.color]);
 
   const showExtraInformation = useMemo(() => {
@@ -61,7 +61,7 @@ const EventCard: React.FC<any> = ({ children, isMonth = false, loading = false, 
             <div className={`${CSSprefix}-patient-container`}>
               {!eventProps?.isMeetingEvent && (
                 <>
-                  <IonIcon icon={personCircleOutline} color="dark" />
+                  {eventProps?.patient && <IonIcon icon={personCircleOutline} color="dark" />}
                   <IonText className={`${CSSprefix}-patient`}>{eventProps.patient}</IonText>
                 </>
               )}
