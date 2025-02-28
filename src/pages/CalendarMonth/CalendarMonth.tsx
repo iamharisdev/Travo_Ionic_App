@@ -44,10 +44,10 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'month');
 
-    return events.events.filter(({ startTime, status }) =>
+    return [...events.events, ...microsoftEvents, ...googleEvents].filter(({ startTime, status, busy }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
       dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
-      (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)
+      (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY || busy)
     ).map((event) => ({
       id: event?.id,
       title: JSON.stringify({
@@ -62,31 +62,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
       allDay: event?.allDay
     })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
-  }, [events.events, state.loading, selectedDates]);
-
-  const mappedBackgroundEvents: Array<Event & { id?: string }> = useMemo(() => {
-    if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'month');
-
-    const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
-
-    return externalCalendarEvents.filter(({ startTime, busy }) =>
-      dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() && busy
-    ).map((event) => ({
-      id: event?.id,
-      title: JSON.stringify({
-        id: event?.id,
-        service: event?.patientServiceName || event?.title,
-        patient: event?.patientName || event?.providerName,
-        color: event?.color,
-        redirect: false,
-        isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
-      }),
-      start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
-      end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
-      allDay: event?.allDay
-    })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
-  }, [microsoftEvents, googleEvents, state.loading, selectedDates]);
+  }, [events.events, microsoftEvents, googleEvents, state.loading, selectedDates]);
 
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
@@ -98,7 +74,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const location = useLocation<{ prevPath?: string }>();
   const eventsInSameDate = useMemo(() => {
     let eventsInSameDate: Array<{ date: string, ids: Array<string> }> = [];
-    [...mappedEvents, ...mappedBackgroundEvents].forEach(({ id, start }) => {
+    mappedEvents.forEach(({ id, start }) => {
       const startDate = dayjs(start).format('YYYY-MM-DD');
       const exist = eventsInSameDate.find(({ date }) => date === startDate);
 
@@ -123,7 +99,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     });
 
     return eventsInSameDate;
-  }, [mappedEvents, mappedBackgroundEvents]);
+  }, [mappedEvents]);
 
   const openDatePickerHandler = useCallback((e: any) => {
     if (datePickerRef.current) {
@@ -205,7 +181,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             defaultDate={selectedDates[0]}
             date={selectedDates[0]}
             defaultView={Views.MONTH}
-            events={[...mappedEvents, ...mappedBackgroundEvents]}
+            events={mappedEvents}
             localizer={localizer}
             showAllEvents={true}
             toolbar={false}
