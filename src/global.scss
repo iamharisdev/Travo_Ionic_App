@@ -161,7 +161,7 @@ ion-datetime::part(calendar-day today) {
   background-color: transparent;
 
   .rbc-background-event {
-    background-color: var(var(--ion-trova-external-events-color));
+    background-color: var(--ion-trova-external-events-color);
     opacity: 1;
   }
 
