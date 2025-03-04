@@ -17,7 +17,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>29</string>
+	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
@@ -25,9 +25,9 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Trova requires add access to your phone's photo library.</string>
+	<string>Trova requires add access to your phone&apos;s photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Trova requires access to your phone's photo library.</string>
+	<string>Trova requires access to your phone&apos;s photo library.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
