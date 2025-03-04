@@ -16,6 +16,8 @@ interface ReviewDetailsProps {
   price: number;
   location: string;
   selectedDateTime?: AppointmentDateTime;
+  paymentType: string;
+  disableSaveChanges: boolean;
   setStep: (step: number) => void;
   rescheduleHandler: () => void;
 }
@@ -26,6 +28,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   price,
   location,
   selectedDateTime,
+  paymentType,
+  disableSaveChanges,
   setStep,
   rescheduleHandler,
 }) => {
@@ -105,12 +109,13 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           Payment type
           <IonIcon className={`${CSSPrefix}-info-icon`} icon={informationCircle} />
         </IonLabel>
-        <IonLabel position="stacked">At session completion</IonLabel>
+        <IonLabel position="stacked">{paymentType}</IonLabel>
       </IonItem>
       <div className={`${CSSPrefix}-button-container ion-padding-horizontal`}>
         <IonButton
           color="primary"
           expand="block"
+          disabled={disableSaveChanges}
           onClick={rescheduleHandler}
         >
           Save changes
