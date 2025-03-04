@@ -12,14 +12,13 @@ import Menu from "../../components/Menu/Menu";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import dayjs from "dayjs";
-import { groupAppointmentsByDate } from "../../shared/utils/appointments.util";
 import DatePicker from "../../components/DatePicker/DatePicker";
-import { confirmAppointmentAction, getEventsAction } from "../../state/schedulingSlice";
+import { confirmAppointmentAction } from "../../state/schedulingSlice";
 import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
 import { APPOINTMENT_REQUESTS_MENU_ID } from "../../shared/constants/menu";
 import AppointmentRequestCard from "../../components/AppointmentRequestCard/AppointmentRequestCard";
-import { AppointmentDetailTypeEnum, AppointmentStatusEnum } from "../../shared/types/appointment.type";
+import { AppointmentDetailTypeEnum, AppointmentStatusEnum, IAppointment } from "../../shared/types/appointment.type";
 import { useHistory } from "react-router";
 import { APPOINTMENT_CANCEL } from "../../shared/routes/routes";
 import usePresentToast from "../../hooks/usePresentToast";
@@ -31,7 +30,6 @@ import { setDate } from "../../state/calendarSlice";
 import "./AppointmentRequests.scss";
 
 const CSSprefix = 'appointment-requests';
-const today = dayjs().format('YYYY-MM-DD');
 
 const AppointmentRequests: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
@@ -42,7 +40,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const sortedEvents = useMemo(() => [...events.events || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-  ).filter(({ status, endTime }) => status === AppointmentStatusEnum.PENDING && dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')), [events?.events, selectedDate]);
+  ).filter(({ status }) => status === AppointmentStatusEnum.PENDING), [events?.events]);
   const [presentToast] = usePresentToast();
   const dateText = useMemo(() => {
     if (selectedDate) {
@@ -135,8 +133,37 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     history.push(APPOINTMENT_CANCEL, { appointmentId, type: AppointmentDetailTypeEnum.ACCEPT });
   }
 
+  const appointmentsRequestInSameDate = useMemo(() => {
+    let eventsInSameDate: Array<{ date: string, events: Array<IAppointment> }> = [];
+    sortedEvents.forEach((event) => {
+      const startDate = dayjs(event.startTime).format('YYYY-MM-DD');
+      const exist = eventsInSameDate.find(({ date }) => date === startDate);
+
+      if (exist) {
+        eventsInSameDate = eventsInSameDate.map((e) => {
+          if (e.date === startDate) {
+            const newEvents = [...e.events];
+            newEvents.push(event);
+            return {
+              ...e,
+              events: newEvents
+            }
+          }
+
+          return { ...e };
+        });
+      }
+
+      if (!exist) {
+        eventsInSameDate.push({ date: startDate, events: [event] });
+      }
+    });
+
+    return eventsInSameDate;
+  }, [sortedEvents]);
+
   const content = useMemo(() => {
-    if (sortedEvents.length === 0) {
+    if (appointmentsRequestInSameDate.length === 0) {
       return (
         <div className={`${CSSprefix}-no-appointments-container`}>
           <IonItem lines="none">
@@ -148,14 +175,14 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
       );
     }
 
-    return (
+    return appointmentsRequestInSameDate.map(({ date, events }) => (
       <div>
         <IonItem lines="none">
           <IonText className={`${CSSprefix}-from-to-date`}>
-            {getDateHandler(dayjs(sortedEvents[0].startTime).toISOString())}
+            {getDateHandler(dayjs(date).toISOString())}
           </IonText>
         </IonItem>
-        {sortedEvents.map((event) => (
+        {events.map((event) => (
           <IonItem key={event?.id} lines="none">
             <AppointmentRequestCard
               appointment={event}
@@ -165,8 +192,8 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
           </IonItem>
         ))}
       </div>
-    );
-  }, [sortedEvents])
+    ));
+  }, [appointmentsRequestInSameDate])
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: appointmentRequestsRef,
