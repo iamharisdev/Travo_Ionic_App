@@ -44,17 +44,25 @@ const Branding: React.FC = (): React.ReactElement => {
 
   const changePhotoHandler = async (action: 'take' | 'pick') => {
     setOpenUploadImageActionSheet(false);
-    let practiceLogo: FileResponse = { file: null, url: '' };
 
     if (action === "take") {
-      practiceLogo = await takePhoto();
+      const res = await takePhoto();
+
+      if (res.file === null && res.url === '') {
+        setPracticeLogo({ file: null, url: practice.businessInformation?.logoUrl!! });
+      } else {
+        setPracticeLogo(res);
+      }
     }
 
     if (action === "pick") {
-      practiceLogo = await pickPhoto();
+      const res = await pickPhoto();
+      if (res.file === null && res.url === '') {
+        setPracticeLogo({ file: null, url: practice.businessInformation?.logoUrl!! });
+      } else {
+        setPracticeLogo(res);
+      }
     }
-
-    setPracticeLogo(practiceLogo);
   };
 
   const saveAndUpdateLogoHandler = async () => {
@@ -117,6 +125,7 @@ const Branding: React.FC = (): React.ReactElement => {
         data: {
           action: "cancel",
         },
+        handler: () => setPracticeLogo({ file: null, url: practice.businessInformation?.logoUrl!! }),
       },
     ];
 
