@@ -82,10 +82,14 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
   return (
     <IonGrid className="ion-margin-top ion-padding-top">
       <IonRow
-        onClick={() => history.push(`${APPOINTMENT_DETAILS}/${appointment?.id}`, {
-          eventId: appointment?.id,
-          type: AppointmentDetailTypeEnum.ACCEPT
-        })}
+        onClick={() => {
+          if (showButtons) {
+            history.push(`${APPOINTMENT_DETAILS}/${appointment?.id}`, {
+              eventId: appointment?.id,
+              type: AppointmentDetailTypeEnum.ACCEPT
+            });
+          }
+        }}
       >
         <IonCol className="ion-margin-end" size="auto">
           <div className={`${CSSprefix}-bar`} style={{ background: barColor }} />
