@@ -177,7 +177,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
 
     return appointmentsRequestInSameDate.map(({ date, events }) => (
       <div>
-        <IonItem lines="none">
+        <IonItem key={dayjs(date).toISOString()} lines="none">
           <IonText className={`${CSSprefix}-from-to-date`}>
             {getDateHandler(dayjs(date).toISOString())}
           </IonText>
