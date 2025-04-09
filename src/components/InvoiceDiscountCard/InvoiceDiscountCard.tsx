@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 
 import './InvoiceDiscountCard.scss';
 import usePresentToast from '../../hooks/usePresentToast';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'invoice-discount-card';
 
@@ -15,6 +16,7 @@ interface InvoiceDiscountCardProps {
 const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, setDiscountCB, currencySymbol }): React.ReactElement => {
   const [discount, setDiscount] = useState<number | undefined>(0);
   const [presentToast] = usePresentToast();
+      const { t } = useTranslation();
 
   const value = useMemo(() => {
     if (discount === undefined) return `${currencySymbol}0`;
@@ -26,9 +28,9 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, 
     <IonCard className={CSSPrefix}>
       <IonCardHeader>
         <IonLabel className={`${CSSPrefix}-discount-label`}>
-          Discount
+          {t("schedule_appointment_discount")}
           <p>
-            If applicable
+            {t("add_new_client_if_applicable")}
           </p>
         </IonLabel>
       </IonCardHeader>

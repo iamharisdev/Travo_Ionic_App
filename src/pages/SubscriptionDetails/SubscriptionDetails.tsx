@@ -20,12 +20,14 @@ import { useHistory } from "react-router";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./SubscriptionDetails.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'subscription-deatils';
 
 const SubscriptionDetails: React.FC = (): React.ReactElement => {
   const subscriptionDetailsRef = useRef();
   const history = useHistory();
+  const { t } = useTranslation();
   const { billing } = useSelector((state: RootState) => state);
   const productName = useMemo(() => billing.productDetails?.productName, [billing.productDetails]);
   const productDetail = useMemo(() => billing.productsDetails.find(({ name }) => name === productName), [productName, billing.productsDetails]);
@@ -45,7 +47,7 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title ion-margin-top`}>
-            Subscription details
+            {t("profile_settings_subscription_details")}
           </IonText>
         </IonItem>
         <IonList className="ion-no-padding">

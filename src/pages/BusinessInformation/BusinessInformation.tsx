@@ -27,6 +27,7 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import { useHistory } from "react-router";
 
 import "./BusinessInformation.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'business-information';
 
@@ -36,6 +37,7 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
   const [presentToast] = usePresentToast();
+  const { t } = useTranslation();
   const initialValues = useMemo(() => ({
     // Booking page personalized url
     subdomain: practice.businessInformation?.subdomain,
@@ -161,7 +163,7 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
             <IonLabel position="stacked" class="custom-input">
-              Country*
+            {t("add_new_client_country")}*
             </IonLabel>
             <IonSelect
               placeholder="Select country"

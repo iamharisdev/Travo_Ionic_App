@@ -33,6 +33,7 @@ import { useHistory } from "react-router";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./ProfileInformation.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'profile-information';
 
@@ -44,6 +45,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
   const [presentToast] = usePresentToast();
   const { takePhoto, pickPhoto } = useFiles();
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
+      const { t } = useTranslation();
   const [openUploadImageActionSheet, setOpenUploadImageActionSheet] =
     useState<boolean>(false);
   const initialValues = useMemo(() => provider.practice || {
@@ -169,7 +171,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
       <IonContent className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title ion-margin-top`}>
-            My profile information
+            {t("profile_settings_my_profile_information")}
           </IonText>
         </IonItem>
         <IonList>
@@ -188,7 +190,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
                 color="primary"
                 onClick={() => setOpenUploadImageActionSheet(true)}
               >
-                Upload photo
+                {t("profile_settings_upload_photo")}
               </IonButton>
               {formik.values?.profilePictureUrl !== null && (
                 <>
@@ -206,15 +208,14 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
           </IonRow>
           <IonRow className="ion-justify-content-center">
             <IonText className={`${CSSprefix}-image-description`}>
-              Preferred image size: 240px x 240px @ 72DPI
-              Maximum size of 1MB.
+            {t("profile_settings_preferred_image_size")}
             </IonText>
           </IonRow>
           <IonItem
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">First name*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("add_new_client_first_name")}*</IonLabel>
             <IonInput
               name="firstName"
               class="custom"
@@ -228,7 +229,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">Last name*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("add_new_client_last_name")}*</IonLabel>
             <IonInput
               name="lastName"
               class="custom"
@@ -242,7 +243,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">Mobile</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("add_new_client_mobile")}</IonLabel>
             <IonItem
               lines="none"
               className={`${CSSprefix}-nested-item`}
@@ -264,7 +265,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
                 name="phoneNumber"
                 class="custom"
                 type="number"
-                placeholder="Number"
+                placeholder={t("add_new_client_number")}
                 value={formik.values.phoneNumber}
                 onIonInput={(e) => formik.setFieldValue('phoneNumber', e.detail.value)}
               />
@@ -275,7 +276,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">Display name*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_display_name")}*</IonLabel>
             <IonInput
               name="displayName"
               class="custom"
@@ -289,12 +290,12 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">Qualifications and titles</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_qualifications_and_titles")}</IonLabel>
             <IonInput
               name="qualificationsAndTitle"
               class="custom"
               type="text"
-              placeholder="Enter qualifications and titles"
+              placeholder={t("profile_settings_enter_qualifications_and_titles")}
               value={formik.values.qualificationsAndTitle}
               onIonInput={(e) => formik.setFieldValue('qualificationsAndTitle', e.detail.value)}
             />

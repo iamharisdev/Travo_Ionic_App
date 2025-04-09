@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { trashOutline } from 'ionicons/icons';
 
 import './InvoiceCard.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'invoice-card';
 
@@ -17,6 +18,8 @@ interface InvoiceCardProps {
 }
 
 const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, currencySymbol, removeLineItem, setFieldValue }): React.ReactElement => {
+  const { t } = useTranslation();
+  
   return (
     <IonCard className={CSSPrefix}>
       <IonCardHeader>
@@ -41,7 +44,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, currencySymbol, r
           // TODO: remove this live in app V2
           readonly={true}
           className={`${CSSPrefix}-custom-input ion-margin-bottom`}
-          placeholder="Type code"
+          placeholder={t("schedule_appointment_type_code")}
           value={line.code}
           onIonChange={(e) => setFieldValue(`${name}.code`, e.detail.value!!)}
         />
@@ -49,7 +52,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, currencySymbol, r
           // TODO: remove this live in app V2
           readonly={true}
           className={`${CSSPrefix}-custom-input ion-margin-bottom`}
-          placeholder="Description"
+          placeholder={t("schedule_appointment_description")}
           value={line.description}
           onIonChange={(e) => setFieldValue(`${name}.description`, e.detail.value!!)}
         />

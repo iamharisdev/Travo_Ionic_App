@@ -25,6 +25,7 @@ import useBiometrics from "../../hooks/useBiometrics";
 import { isNative } from "../../shared/utils/native.util";
 
 import "./SignIn.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'sign-in';
 
@@ -35,6 +36,7 @@ const Login: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const { checkSessionHandler } = useBiometrics();
+  const {t} = useTranslation();
 
   useEffect(() => {
     if (location.pathname === SING_IN) {
@@ -68,18 +70,18 @@ const Login: React.FC = (): React.ReactElement => {
           history.push(LOADING);
         } else {
           dispatch(setLoading({ loading: false }));
-          presentToast('Username/Password combination is not correct', 3000, 'middle', 'danger');
+          presentToast(`${t("login_username/password_error")}`, 3000, 'middle', 'danger');
         }
 
         if (response.meta.requestStatus === 'rejected') {
           dispatch(setLoading({ loading: false }));
-          presentToast('Username/Password combination is not correct', 3000, 'middle', 'danger');
+          presentToast(`${t("login_username/password_error")}`, 3000, 'middle', 'danger');
         }
       } catch (error) {
         formik.resetForm();
         dispatch(setLoading({ loading: false, message: undefined }));
         presentToast(
-          'Username/Password combination is not correct',
+          `${t("login_username/password_error")}`,
           3000,
           'middle',
           'danger'
@@ -117,7 +119,7 @@ const Login: React.FC = (): React.ReactElement => {
             <>
               <IonItem lines="none" className="ion-no-padding">
                 <IonText className={`${CSSprefix}-sign-in`}>
-                  Sign in
+                  {t("login_sign_in")}
                 </IonText>
               </IonItem>
               <IonItem lines="none" className="ion-no-padding ion-margin-bottom">
@@ -125,30 +127,30 @@ const Login: React.FC = (): React.ReactElement => {
                   color="dark"
                   className={`${CSSprefix}-welcome`}
                 >
-                  Welcome back! Please enter your details.
+                  {t("login_welcome_message")}
                 </IonText>
               </IonItem>
               <IonItem lines="none" className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}>
-                <IonLabel position="stacked" class="custom-input">Email address</IonLabel>
+                <IonLabel position="stacked" class="custom-input">{t("login_email_address")}</IonLabel>
                 <IonInput
                   className={`${formik.errors?.email && 'ion-invalid'} ${formik.touched?.email && 'ion-touched'}`}
                   name="email"
                   class="custom"
                   type="email"
-                  placeholder="Enter email address"
+                  placeholder={t("login_enter_email_address")}
                   errorText={formik.errors?.email}
                   value={formik.values.email}
                   onIonInput={(e) => formik.setFieldValue('email', e.detail.value || '')}
                 />
               </IonItem>
               <IonItem lines="none" className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}>
-                <IonLabel position="stacked" class="custom-input">Password</IonLabel>
+                <IonLabel position="stacked" class="custom-input">{t("login_password")}</IonLabel>
                 <IonInput
                   className={`${formik.errors?.password && 'ion-invalid'} ${formik.touched?.password && 'ion-touched'}`}
                   name="password"
                   class="custom"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t("login_enter_your_password")}
                   errorText={formik.errors?.password}
                   value={formik.values.password}
                   onIonInput={(e) => formik.setFieldValue('password', e.detail.value || '')}
@@ -162,7 +164,7 @@ const Login: React.FC = (): React.ReactElement => {
                 fill="clear"
                 target="blank_state"
               >
-                Forgot Password?
+                {t("login_forgot_password?")}
               </IonButton>
               <IonButton
                 className="login-button"
@@ -171,7 +173,7 @@ const Login: React.FC = (): React.ReactElement => {
                 expand="block"
                 onClick={() => formik.submitForm()}
               >
-                Sign in
+                {t("login_sign_in")}
               </IonButton>
             </>
           )}

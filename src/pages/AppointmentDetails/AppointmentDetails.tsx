@@ -30,6 +30,7 @@ import RescheduleAppointment from "../../components/RescheduleAppointment/Resche
 import Recurring from "../../components/Recurring/Recurring";
 
 import "./AppointmentDetails.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'appointment-details';
 
@@ -47,6 +48,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
   const [eventData, setEventData] = useState<EventData>();
   const [isRecurringOpen, setIsRecurringOpen] = useState(false);
+    const { t } = useTranslation();
 
   const event = useMemo(() => events?.events?.find(({ id, status, ...rest }) => {
     if (eventData?.type === AppointmentDetailTypeEnum.RESCHEDULE && id === eventData?.eventId) {
@@ -322,7 +324,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                   href={event?.onlineMeetUrl}
                   target="_blank"
                 >
-                  Start
+                  {t("scheduling_start")}
                 </IonButton>
                 <div className={`${CSSprefix}-divider`} />
               </>

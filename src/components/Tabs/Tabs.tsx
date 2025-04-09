@@ -29,6 +29,7 @@ import { App } from "@capacitor/app";
 import { isNative } from "../../shared/utils/native.util";
 
 import "./Tabs.scss";
+import { useTranslation } from "react-i18next";
 
 const Tabs: React.FC = (): React.ReactElement => {
   const location = useLocation();
@@ -36,6 +37,7 @@ const Tabs: React.FC = (): React.ReactElement => {
   const [comesFromForeground, setComesFromForeground] = useState(false);
   const [checking, setChecking] = useState(false);
   const [paused, setPaused] = useState(false);
+    const {t} = useTranslation();
 
   const onResumeCheckHandler = useCallback(async () => {
     if (
@@ -118,15 +120,15 @@ const Tabs: React.FC = (): React.ReactElement => {
       <IonTabBar slot="bottom" defaultValue="appointments">
         <IonTabButton tab="calendar" href={CALENDAR_MONTH}>
           <IonIcon icon={calendarOutline} />
-          <IonLabel>Calendar</IonLabel>
+          <IonLabel>{t("scheduling_calendar")}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="appointments" href={APPOINTMENTS}>
           <IonIcon icon={clipboardOutline} />
-          <IonLabel>Appointments</IonLabel>
+          <IonLabel>{t("scheduling_appointments")}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="profile" href={PROFILE}>
           <IonIcon icon={personCircleOutline} />
-          <IonLabel>Profile</IonLabel>
+          <IonLabel>{t("scheduling_profile")}</IonLabel>
         </IonTabButton>
       </IonTabBar>
     </IonTabs>

@@ -14,12 +14,14 @@ import { useHistory } from 'react-router';
 import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
 
 import './PasswordSuccess.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSprefix = 'password-success';
 
 const PasswordSuccess: React.FC = (): React.ReactElement => {
   const passwordSuccessRef = useRef();
   const history = useHistory();
+  const {t} = useTranslation();
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: passwordSuccessRef,
@@ -40,7 +42,7 @@ const PasswordSuccess: React.FC = (): React.ReactElement => {
           </IonItem>
           <IonItem className='ion-no-padding' lines='none'>
             <IonText className={`${CSSprefix}-title`}>
-              Password changed successfully!
+            {t("forgot_password_password_changed_successfully")}
             </IonText>
           </IonItem>
           <IonItem className='ion-no-padding' lines='none'>
@@ -48,7 +50,7 @@ const PasswordSuccess: React.FC = (): React.ReactElement => {
               color='dark'
               className={`${CSSprefix}-description`}
             >
-              Congratulations! Your password has been successfully changed.
+              {t("forgot_password_password_changed_message")}
             </IonText>
           </IonItem>
           <IonButton
@@ -57,7 +59,7 @@ const PasswordSuccess: React.FC = (): React.ReactElement => {
             expand='block'
             href={SING_IN}
           >
-            Back to sign in
+            {t("forgot_password_back_to_sign_in")}
           </IonButton>
         </div>
       </IonContent>

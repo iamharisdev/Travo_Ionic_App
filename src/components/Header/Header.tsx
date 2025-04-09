@@ -14,6 +14,7 @@ import { caretDownOutline, menu } from "ionicons/icons";
 import { menuController } from '@ionic/core/components';
 
 import './Header.scss';
+import { useTranslation } from "react-i18next";
 
 const CSSPrefix = 'header';
 
@@ -35,6 +36,7 @@ const Header: React.FC<HeaderProps> = ({
   datePickerCB,
 }): React.ReactElement => {
   const history = useHistory();
+      const {t} = useTranslation();
 
   async function openMenuHandler() {
     await menuController.open(menuId);
@@ -55,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() =>
                 customBackRoute ? history.push(customBackRoute) : history.goBack()}
             >
-              Back
+              {t("scheduling_back")};
             </IonButton>
           </IonButtons>
         )}
@@ -85,7 +87,7 @@ const Header: React.FC<HeaderProps> = ({
               color="primary"
               onClick={editCB}
             >
-              Edit
+              {t("scheduling_edit")};
             </IonButton>
           </IonButtons>
         )}

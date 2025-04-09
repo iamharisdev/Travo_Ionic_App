@@ -24,6 +24,7 @@ import { useHistory } from "react-router";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./Branding.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'branding';
 
@@ -33,6 +34,7 @@ const Branding: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
   const [presentToast] = usePresentToast();
+    const { t } = useTranslation();
   const { takePhoto, pickPhoto } = useFiles();
   const [openUploadImageActionSheet, setOpenUploadImageActionSheet] =
     useState<boolean>(false);
@@ -177,8 +179,7 @@ const Branding: React.FC = (): React.ReactElement => {
           </IonRow>
           <IonRow className="ion-justify-content-center">
             <IonText className={`${CSSprefix}-image-description`}>
-              Preferred image size: 240px x 240px @ 72DPI
-              Maximum size of 1MB.
+            {t("profile_settings_preferred_image_size")}
             </IonText>
           </IonRow>
           <IonButton

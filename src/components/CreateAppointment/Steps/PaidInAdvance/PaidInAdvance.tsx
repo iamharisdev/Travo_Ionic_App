@@ -14,6 +14,7 @@ import { FieldArray, Form, Formik } from 'formik';
 import dayjs from 'dayjs';
 
 import './PaidInAdvance.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'paid-in-advance';
 
@@ -40,6 +41,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
     provider,
     practice,
   } = useSelector((state: RootState) => state);
+  const { t } = useTranslation();
 
   const duration = useMemo(() => {
     let parsedDuration = '';
@@ -221,7 +223,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                         serviceDate: dayjs(selectedDateTime?.startTime).toISOString(),
                       })}
                     >
-                      Add new line item
+                      {t("schedule_appointment_add_new_line_item")}
                       <IonIcon icon={addOutline} slot="start" />
                     </IonButton> */}
                     </>
@@ -260,15 +262,15 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
               <div className="paid-in-advance-footer">
                 <div className="paid-in-advance-footer-wrapper">
                   <div className="paid-in-advance-footer-container">
-                    <IonText className="paid-in-advance-footer-subtotal">Sub total:</IonText>
+                    <IonText className="paid-in-advance-footer-subtotal">{t("schedule_appointment_sub_total")}:</IonText>
                     <IonText className="paid-in-advance-footer-subtotal">{`${currency?.symbol!!}${values?.subtotal.toFixed(2)}`}</IonText>
                   </div>
                   <div className="paid-in-advance-footer-container">
-                    <IonText className="paid-in-advance-footer-subtotal">Discount:</IonText>
+                    <IonText className="paid-in-advance-footer-subtotal">{t("schedule_appointment_discount")}:</IonText>
                     <IonText className="paid-in-advance-footer-subtotal">{`${currency?.symbol!!}${values?.discount.toFixed(2)}`}</IonText>
                   </div>
                   <div className="paid-in-advance-footer-container">
-                    <IonText className="ion-margin-start paid-in-advance-footer-total">Total:</IonText>
+                    <IonText className="ion-margin-start paid-in-advance-footer-total">{t("schedule_appointment_total")}:</IonText>
                     <IonText className="paid-in-advance-footer-total">{`${currency?.symbol!!}${values?.total.toFixed(2)}`}</IonText>
                   </div>
                 </div>
@@ -281,7 +283,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                     disabled={!values.templateId}
                     onClick={() => handleSubmit()}
                   >
-                    Next
+                    {t("schedule_appointment_next")}
                   </IonButton>
                 </div>
               </div>
@@ -296,12 +298,12 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
     <div className={CSSPrefix}>
       <IonItem lines="none" className="ion-no-margin">
         <IonText className={`${CSSPrefix}-title`}>
-          Schedule appointment
+          {t("schedule_appointment")}
         </IonText>
       </IonItem>
       <IonItem lines="none" className="ion-no-margin">
         <IonText className={`${CSSPrefix}-subtitle`}>
-          Invoice review
+          {t("schedule_appointment_invoice_review")}
         </IonText>
       </IonItem>
       {form}

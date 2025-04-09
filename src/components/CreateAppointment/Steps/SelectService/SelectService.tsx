@@ -7,6 +7,7 @@ import { Services } from '../../../../shared/types/appointment.type';
 import ServiceCard from '../../../ServiceCard/ServiceCard';
 
 import './SelectService.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'select-service';
 
@@ -17,6 +18,7 @@ interface SelectServiceProps {
 const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => {
   const [serviceToSearch, setClientToSearch] = useState<string | null | undefined>('');
   const { scheduling } = useSelector((state: RootState) => state);
+    const { t } = useTranslation();
 
   const services = useMemo(() => {
     if (serviceToSearch) {
@@ -32,7 +34,7 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
         <div className={`${CSSPrefix}-no-services-container`}>
           <IonItem lines="none">
             <IonText className={`${CSSPrefix}-no-services ion-text-center`}>
-              You have no services yet.
+            {t("blank_states_no_services_message")}
             </IonText>
           </IonItem>
         </div>
@@ -48,12 +50,12 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
     <div className={CSSPrefix}>
       <IonItem lines="none">
         <IonText className={`${CSSPrefix}-title`}>
-          Schedule appointment
+          {t("schedule_appointment")}
         </IonText>
       </IonItem>
       <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
         <IonText>
-          Select service
+          {t("schedule_appointment_select_service")}
         </IonText>
       </IonItem>
       <IonItem lines="none" className="ion-margin-top">
@@ -61,7 +63,7 @@ const SelectService: React.FC<SelectServiceProps> = ({ setSelectedService }) => 
           className={`${CSSPrefix}-search-input`}
           class="custom"
           type="text"
-          placeholder="Search service"
+          placeholder={t("schedule_appointment_search_service")}
           value={serviceToSearch}
           onIonInput={(e) => setClientToSearch(e.detail.value)}
         >

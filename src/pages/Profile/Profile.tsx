@@ -23,6 +23,7 @@ import { removeStorageValue } from "../../storage/storage.util";
 import { STORAGE_TOKEN } from "../../constant/storage.constant";
 
 import "./Profile.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'profile';
 
@@ -30,6 +31,7 @@ const Profile: React.FC = (): React.ReactElement => {
   const profileRef = useRef();
   const history = useHistory();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: profileRef,
@@ -46,7 +48,7 @@ const Profile: React.FC = (): React.ReactElement => {
         <IonContent fullscreen={true} className={CSSprefix}>
           <IonItem className="ion-margin-vertical" lines="none">
             <IonText className={`${CSSprefix}-title`}>
-              Profile settings
+              {t("profile_settings")}
             </IonText>
           </IonItem>
           <IonItem
@@ -54,7 +56,7 @@ const Profile: React.FC = (): React.ReactElement => {
             lines="none"
             onClick={() => history.push(MY_PROFILE)}
           >
-            <IonText>My profile</IonText>
+            <IonText>{t("profile_settings_my_profile")}</IonText>
             <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
               <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
             </IonButton>
@@ -63,7 +65,7 @@ const Profile: React.FC = (): React.ReactElement => {
             lines="none"
             onClick={() => history.push(SUBSCRIPTION_DETAILS)}
           >
-            <IonText>Subscription details</IonText>
+            <IonText>{t("profile_settings_subscription_details")}</IonText>
             <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
               <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
             </IonButton>

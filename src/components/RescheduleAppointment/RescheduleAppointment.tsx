@@ -15,6 +15,7 @@ import { setDate } from '../../state/calendarSlice';
 import PaidInAdvance from './Steps/PaidInAdvance/PaidInAdvance';
 
 import './RescheduleAppointment.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'reschedule-appointment';
 
@@ -30,6 +31,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const history = useHistory();
+      const { t } = useTranslation();
   const {
     provider,
   } = useSelector((state: RootState) => state)
@@ -55,10 +57,10 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
 
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {
-      return 'At session completion';
+      return `${t("scheduling_at_session_completion")}`;
     }
 
-    return 'In advance of session';
+    return `${t("schedule_appointment_in_advance_of_session")}`;
   }, [selectedService?.paymentType]);
 
   const disableSaveChanges = useMemo(() => {
