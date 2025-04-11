@@ -3,6 +3,7 @@ import { IonButton, IonContent, IonItem, IonLabel, IonList, IonModal, IonText } 
 import { useRef } from "react";
 
 import './Logout.scss';
+import { useTranslation } from 'react-i18next';
 
 interface LogoutProps {
   id: string;
@@ -15,7 +16,7 @@ const CSSprefix = 'logout';
 
 const Logout: React.FC<LogoutProps> = ({ id, trigger, cancel, logout }) => {
   const modal = useRef<HTMLIonModalElement>(null);
-
+  const { t } = useTranslation();
   const dismiss = () => {
     modal.current?.dismiss();
   }
@@ -26,8 +27,8 @@ const Logout: React.FC<LogoutProps> = ({ id, trigger, cancel, logout }) => {
         <IonList>
           <IonItem lines="none">
             <IonText className={`${CSSprefix}-title`}>
-              Log out
-              <p className={`${CSSprefix}-description`}>Are you sure you want to log out?</p>
+              {t("log_out")}
+              <p className={`${CSSprefix}-description`}>{t("log_out_are_you_sure_want_to_log_out")}?</p>
             </IonText>
           </IonItem>
           <IonItem className={`${CSSprefix}-buttons`} lines="none">
@@ -39,7 +40,7 @@ const Logout: React.FC<LogoutProps> = ({ id, trigger, cancel, logout }) => {
                 cancel();
               }}
             >
-              Cancel
+              {t("log_out_cancel")}
             </IonButton>
             <IonButton
               color="danger"
@@ -49,7 +50,7 @@ const Logout: React.FC<LogoutProps> = ({ id, trigger, cancel, logout }) => {
                 logout();
               }}
             >
-              Log out
+              {t("log_out")}
             </IonButton>
           </IonItem>
         </IonList>

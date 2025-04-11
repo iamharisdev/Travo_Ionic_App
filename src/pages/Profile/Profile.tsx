@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { caretForwardOutline, exitOutline } from "ionicons/icons";
-import { MY_PROFILE, SING_IN, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
+import {CONFIGRATION, MY_PROFILE, SING_IN, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 import Menu from "../../components/Menu/Menu";
 import { PROFILE_MENU_ID } from "../../shared/constants/menu";
@@ -71,10 +71,19 @@ const Profile: React.FC = (): React.ReactElement => {
             </IonButton>
           </IonItem>
           <IonItem
+            lines="none"
+            onClick={() => history.push(CONFIGRATION)}
+          >
+            <IonText>{t("configuration")}</IonText>
+            <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
+              <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
+            </IonButton>
+          </IonItem>
+          <IonItem
             id="open-logout-modal"
             lines="none"
           >
-            <IonText color="danger">Log out</IonText>
+            <IonText color="danger"> {t("log_out")} </IonText>
             <IonButton fill="clear" size="small" className="ion-no-margin">
               <IonIcon slot="icon-only" color="danger" icon={exitOutline} size="medium" />
             </IonButton>

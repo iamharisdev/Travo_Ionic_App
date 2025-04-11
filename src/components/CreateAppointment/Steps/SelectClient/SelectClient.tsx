@@ -24,7 +24,7 @@ const SelectClient: React.FC<SelectedClientProps> = ({ isOpen, setSelectedClient
 
   const getSearchClient = async () => {
     try {
-      dispatch(setLoading({ loading: true, message: 'Searching client' }));
+      dispatch(setLoading({ loading: true, message: `${t("Searching_client_loading")}` }));
 
       const [providerPractice] = provider.providerPractices;
       if (providerPractice && typeof clientToSearch === 'string') {

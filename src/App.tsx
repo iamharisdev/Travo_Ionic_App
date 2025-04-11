@@ -38,8 +38,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Loading from './pages/Loading/Loading';
 import { useTranslation } from 'react-i18next';
 import "./i18n"; // Ensure this is at the top
-import LanguageToggle from './components/LanguageSwitcher/LanguageSwitcher';
-
+ 
 setupIonicReact();
 
 const App: React.FC = () => {

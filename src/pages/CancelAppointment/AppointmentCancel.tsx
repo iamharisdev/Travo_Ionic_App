@@ -89,9 +89,9 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
     let buttonText = `${t("scheduling_cancel_appointment")}`;
 
     if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
-      title = 'Appointment request not accepted';
-      description = 'Select a reason to not accepting the request';
-      buttonText = 'Decline request';
+      title = `${t("appointment_request_not_accepted")}`;
+      description = `${t("appointment_request_reason_to_not_accepting_message")}`;
+      buttonText = `${t("appointment_request_decline_request")}`;
     }
 
     return { title, description, buttonText }
@@ -122,7 +122,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
 
           if (response.meta.requestStatus === 'rejected') {
             presentToast(
-              '¡Error at cancel appointment!',
+              `!${t("toast_messages_error_cancel_appointment")}!`,
               1000,
               'top',
               'danger'
@@ -143,7 +143,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
         formik.resetForm();
         dispatch(setLoading({ loading: false, message: undefined }));
         presentToast(
-          '¡Error at cancel appointment!',
+          `!${t("toast_messages_error_cancel_appointment")}!`,
           1000,
           'top',
           'danger'

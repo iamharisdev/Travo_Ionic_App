@@ -93,7 +93,7 @@ const Branding: React.FC = (): React.ReactElement => {
       } catch (error) {
         dispatch(setLoading({ loading: false, message: '' }));
         presentToast(
-          '¡Error at upload practice logo!',
+          `!${t("toast_messages_error_upload_practice_logo")}!`,
           1000,
           'top',
           'danger'
@@ -154,12 +154,12 @@ const Branding: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title ion-margin-top`}>
-            Branding
+            {t("profile_settings_branding")}
           </IonText>
         </IonItem>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-description ion-margin-top`}>
-            Your logo will appear on your public profile and your invoices.
+            {t("profile_settings_logo_appearance_message")}
           </IonText>
         </IonItem>
         <IonList>
@@ -173,7 +173,7 @@ const Branding: React.FC = (): React.ReactElement => {
                 color="primary"
                 onClick={() => setOpenUploadImageActionSheet(true)}
               >
-                Upload logo
+                {t("profile_settings_Upload_logo")}
               </IonButton>
             </IonItem>
           </IonRow>
@@ -189,7 +189,7 @@ const Branding: React.FC = (): React.ReactElement => {
             disabled={initialLogoUrl === practiceLogo.url}
             onClick={saveAndUpdateLogoHandler}
           >
-            Save and update
+            {t("profile_settings_save_and_update")}
           </IonButton>
         </IonList>
       </IonContent>

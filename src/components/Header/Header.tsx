@@ -25,6 +25,9 @@ const Header: React.FC<HeaderProps> = ({
   showBack = false,
   showEdit = false,
   showMenu = true,
+  showSave,
+  selectedLang,
+  newLang,
   menuId,
   showCancel = false,
   customBackRoute,
@@ -34,6 +37,7 @@ const Header: React.FC<HeaderProps> = ({
   editCB,
   cancelCB,
   datePickerCB,
+  saveCB,
 }): React.ReactElement => {
   const history = useHistory();
       const {t} = useTranslation();
@@ -57,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() =>
                 customBackRoute ? history.push(customBackRoute) : history.goBack()}
             >
-              {t("scheduling_back")};
+              {t("scheduling_back")}
             </IonButton>
           </IonButtons>
         )}
@@ -68,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({
               color="primary"
               onClick={cancelCB}
             >
-              Cancel
+              {t("log_out_cancel")}
             </IonButton>
           </IonButtons>
         )}
@@ -88,6 +92,18 @@ const Header: React.FC<HeaderProps> = ({
               onClick={editCB}
             >
               {t("scheduling_edit")};
+            </IonButton>
+          </IonButtons>
+        )}
+           {showSave && (
+          <IonButtons slot="end">
+            <IonButton
+              className="header-button"
+              color={selectedLang === newLang ?  "medium": "primary"}
+              disabled={selectedLang === newLang}
+              onClick={saveCB}
+            >
+              {t("configuration_save")}
             </IonButton>
           </IonButtons>
         )}

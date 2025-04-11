@@ -126,14 +126,14 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
   const { positiveLabel, negativeLabel }: { positiveLabel: string, negativeLabel: string } = useMemo(() => {
     if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
-      return { positiveLabel: 'Accept appointment', negativeLabel: 'Decline appointment' };
+      return { positiveLabel: `${t("appointment_request_accept_appointment")}`, negativeLabel: `${t("appointment_request_decline_appointment")}` };
     }
 
     if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
-      return { positiveLabel: 'Reschedule appointment', negativeLabel: 'Cancel appointment' };
+      return { positiveLabel: `${t("scheduling_reschedule_appointment")}`, negativeLabel: `${t("scheduling_cancel_appointment")}` };
     }
 
-    return { positiveLabel: 'Reschedule appointment', negativeLabel: 'Cancel appointment' };
+    return { positiveLabel: `${t("scheduling_reschedule_appointment")}`, negativeLabel: `${t("scheduling_cancel_appointment")}` };
   }, [location?.state?.type]);
 
   const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
@@ -198,7 +198,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
           if (response.meta.requestStatus === 'rejected') {
             presentToast(
-              '¡Error at confirm appointment!',
+              `!${t("toast_messages_error_confirm_appointment")}!`,
               1000,
               'top',
               'danger'
@@ -207,7 +207,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
           dispatch(setLoading({ loading: false, message: undefined }));
           presentToast(
-            '¡Appointment confimed!',
+            `${t("toast_messages_appointment_confirmed")}`,
             1000,
             'top',
             'success'
@@ -217,7 +217,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
       } catch (error) {
         dispatch(setLoading({ loading: false, message: undefined }));
         presentToast(
-          '¡Error at cancel appointment!',
+          `!${t("toast_messages_error_cancel_appointment")}!`,
           1000,
           'top',
           'danger'

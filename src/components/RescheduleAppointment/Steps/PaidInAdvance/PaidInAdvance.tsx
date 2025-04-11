@@ -234,13 +234,13 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                   className="ion-no-margin"
                 >
                   <div className={`${CSSPrefix}-invoice-select-container`}>
-                    <IonText>Invoice template</IonText>
+                    <IonText>{t("schedule_appointment_invoice_template")}</IonText>
                     <IonSelect
                       name="templateId"
                       interface="action-sheet"
                       toggleIcon={caretDownOutline}
                       expandedIcon={caretUpOutline}
-                      placeholder="Select your invoice template"
+                      placeholder={t("schedule_appointment_Select_your_invoice_template")}
                       selectedText={templates?.items.find(({ id }) => values.templateId === id)?.templateName}
                       value={values.templateId}
                       onIonChange={(e) => setFieldValue('templateId', e.detail.value)}

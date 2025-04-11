@@ -58,14 +58,14 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
                 <IonCardTitle>{productName}</IonCardTitle>
                 <div className={`${CSSprefix}-subscription-wrapper`}>
                   <IonText className={`${CSSprefix}-subscription-price`}>{`${productDetail?.currencySymbol}${productDetail?.price}`}</IonText>
-                  <IonText slot="end" className={`${CSSprefix}-subscription-month`}>/ Monthly</IonText>
+                  <IonText slot="end" className={`${CSSprefix}-subscription-month`}>/ {t("profile_settings_subscription_Monthly")}</IonText>
                 </div>
               </IonItem>
             </IonCardHeader>
           </IonCard>
           <IonCard className={`${CSSprefix}-next-payment`}>
             <IonCardHeader>
-              <IonCardTitle>Next payment</IonCardTitle>
+              <IonCardTitle>{t("profile_settings_next_payment")}</IonCardTitle>
             </IonCardHeader>
             <IonCardContent>
               <IonItem lines="none" className="ion-no-padding">
@@ -82,10 +82,10 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
               </IonItem>
               <IonItem lines="none" className="ion-no-padding">
                 <IonText className={`${CSSprefix}-next-payment-description`}>
-                  Only the account creator has the permission to change payment method on file. Please contact your account creator.
+                   {t("profile_settings_account_creator_permission_message")}
                   <br />
                   <br />
-                  Please Contact Support at hello@trova.health to cancel your Subscription.
+                   {t("profile_settings_contact_support_message")}
                 </IonText>
               </IonItem>
             </IonCardContent>

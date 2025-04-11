@@ -21,7 +21,7 @@ const Recurring: React.FC<LogoutProps> = ({ isOpen, close }) => {
             <IonText className={`${CSSprefix}-title`}>
               {t("scheduling_reschedule_appointment")}
               <p className={`${CSSprefix}-description`}>
-                This is a recurring appointment. Please reschedule on the Trova web platform.
+                {t("recurring_appointment_recurring_appointment_message")}{t("recurring_appointment_reaschedule_on_web_platform")}
               </p>
             </IonText>
           </IonItem>
@@ -32,7 +32,7 @@ const Recurring: React.FC<LogoutProps> = ({ isOpen, close }) => {
               expand="block"
               onClick={close}
             >
-              close
+              {t("recurring_appointment_close")}
             </IonButton>
           </IonItem>
         </IonList>

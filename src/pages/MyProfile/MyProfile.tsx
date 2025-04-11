@@ -69,7 +69,7 @@ const MyProfile: React.FC = (): React.ReactElement => {
               onClick={() => history.push(BUSINESS_INFORMATION)}
             >
               <IonText>
-                Business information
+                {t("profile_settings_business_information")}
               </IonText>
               <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
                 <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
@@ -81,7 +81,7 @@ const MyProfile: React.FC = (): React.ReactElement => {
               onClick={() => history.push(BRANDING)}
             >
               <IonText>
-                Branding
+                {t("profile_settings_branding")}
               </IonText>
               <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
                 <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />

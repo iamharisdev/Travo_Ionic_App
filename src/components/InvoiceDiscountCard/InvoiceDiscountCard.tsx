@@ -54,7 +54,7 @@ const InvoiceDiscountCard: React.FC<InvoiceDiscountCardProps> = ({ maxDiscount, 
                   setDiscount(0);
                   setDiscountCB(0);
                   presentToast(
-                    'Discount cannot be greater than the price of the service',
+                    `${t("schedule_appointment_discount_cannot_be_greater_than_service")}`,
                     1000,
                     'top',
                     'danger'

@@ -10,31 +10,14 @@ import { getMenuIdByLocation } from '../../shared/utils/menu.util';
 
 import './Menu.scss';
 import { useTranslation } from 'react-i18next';
-import LanguageToggle from '../LanguageSwitcher/LanguageSwitcher';
 
 const CSSprefix = 'menu';
 
 const Menu: React.FC<MenuProps> = ({ menuId, contentId }) => {
   const history = useHistory();
   const location = useLocation();
-  const { i18n, t } = useTranslation();
-  const [currentLang, setCurrentLang] = useState(i18n.language);
+  const { t } = useTranslation();
 
-  // Load saved language from localStorage
-  useEffect(() => {
-    const savedLang = localStorage.getItem("language") || "en";
-    i18n.changeLanguage(savedLang);
-    setCurrentLang(savedLang);
-  }, [i18n]);
-  const changeLanguageas = () => {
-    console.log("here");
-    
-  };
-  const changeLanguage = (lang: string) => {
-    i18n.changeLanguage(lang);
-    setCurrentLang(lang);
-    localStorage.setItem("language", lang); // Save language preference
-  };
   const { closeMenuHandler } = useMenu();
   const navigateHandler = async (route: string) => {
     await closeMenuHandler(getMenuIdByLocation(location.pathname));
@@ -70,10 +53,6 @@ const Menu: React.FC<MenuProps> = ({ menuId, contentId }) => {
         <IonItem className="ion-margin-bottom" lines="none" onClick={async () => navigateHandler(APPOINTMENT_REQUESTS)}>
           <IonIcon aria-hidden="true" icon={enterOutline} slot="start" />
           <IonLabel>{t("appointment_requests")}</IonLabel>
-        </IonItem>
-        <IonItem className="ion-margin-bottom" lines="none">
-          <IonLabel>{t("language")}</IonLabel>
-          <LanguageToggle/>
         </IonItem>
       </IonContent>
     </IonMenu>

@@ -99,7 +99,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
 
         if (response.meta.requestStatus === 'rejected') {
           presentToast(
-            '¡Error at update practice!',
+            `${t("toast_messages_error_update_practice")}`,
             1000,
             'top',
             'danger'
@@ -200,7 +200,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
                     color="danger"
                     onClick={removePhotoHandler}
                   >
-                    Remove photo
+                    {t("profile_settings_remove_photo")}
                   </IonButton>
                 </>
               )}
@@ -220,7 +220,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
               name="firstName"
               class="custom"
               type="text"
-              placeholder="Enter first name"
+              placeholder={t("add_new_client_first_name_placeholder")}
               value={formik.values.firstName}
               onIonInput={(e) => formik.setFieldValue('firstName', e.detail.value)}
             />
@@ -234,7 +234,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
               name="lastName"
               class="custom"
               type="text"
-              placeholder="Enter last name"
+              placeholder={t("add_new_client_last_name_placeholder")}
               value={formik.values.lastName}
               onIonInput={(e) => formik.setFieldValue('lastName', e.detail.value)}
             />
@@ -250,7 +250,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             >
               <IonSelect
                 name="phoneNumberPrefix"
-                placeholder="Country Code"
+                placeholder={t("add_new_client_country_code")}
                 toggleIcon={caretDownOutline}
                 expandedIcon={caretUpOutline}
                 selectedText={formik.values.phoneNumberPrefix}
@@ -281,7 +281,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
               name="displayName"
               class="custom"
               type="text"
-              placeholder="Enter display name"
+              placeholder={t("add_new_client_enter_display_name")}
               value={formik.values.displayName}
               onIonInput={(e) => formik.setFieldValue('displayName', e.detail.value)}
             />
@@ -304,10 +304,10 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">Currency*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_currency")}*</IonLabel>
             <IonSelect
               name="preferredCurrency"
-              placeholder="Enter currency"
+              placeholder={t("profile_settings_enter_currency")}
               toggleIcon={caretDownOutline}
               expandedIcon={caretUpOutline}
               selectedText={formik.values.preferredCurrency}
@@ -323,7 +323,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">Bio*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_bio")}*</IonLabel>
             <IonTextarea
               name="bio"
               autoGrow
@@ -340,7 +340,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
             disabled={!formik.dirty}
             onClick={() => formik.submitForm()}
           >
-            Save details
+            {t("profile_settings_save_details")}
           </IonButton>
         </IonList>
       </IonContent>

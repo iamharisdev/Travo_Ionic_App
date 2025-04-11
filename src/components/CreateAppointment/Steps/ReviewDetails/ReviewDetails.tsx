@@ -77,7 +77,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     let redirect = false;
 
     try {
-      dispatch(setLoading({ loading: true, message: 'Creating appointment' }));
+      dispatch(setLoading({ loading: true, message: `${t("schedule_appointment_creating_appointment")}` }));
 
       const [providerPractice] = provider.providerPractices;
       if (
@@ -129,7 +129,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         if (!response.payload) {
           closeHandler(true);
           presentToast(
-            'Error at create appointment',
+            `${t("toast_messages_error_create_appointment")}`,
             1000,
             'middle',
             'danger'
@@ -141,12 +141,12 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       dispatch(setLoading({ loading: false, message: '' }));
       closeHandler();
       presentToast(
-        'Error at create appointment',
+        `${t("toast_messages_error_create_appointment")}`,
         1000,
         'top',
         'danger'
       );
-      console.error('error at create appointment: ', error);
+      console.error(`${t("toast_messages_error_create_appointment")} :`, error);
     } finally {
       if (redirect) {
         history.push(APPOINTMENTS);
@@ -230,7 +230,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             icon={informationCircle}
             onClick={openPopover}
           />
-          Payment type is set by the service
+          {t("toast_messages_payment_type_message")}
         </div>
       </IonPopover>
     </div>

@@ -71,7 +71,7 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
 
         if (response.meta.requestStatus === 'rejected') {
           presentToast(
-            '¡Error at update business information!',
+            `${t("toast_messages_error_update_business_information")}`,
             1000,
             'top',
             'danger'
@@ -105,7 +105,7 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title ion-margin-top`}>
-            Business information
+            {t("profile_settings_business_information")}
           </IonText>
         </IonItem>
         <IonList>
@@ -114,12 +114,12 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
             <IonLabel position="stacked" class="custom-input">
-              Booking page personalized URL*
+              {t("profile_settings_booking_page_personalized_url")}*
             </IonLabel>
             <IonInput
               class="custom"
               type="text"
-              placeholder="Enter page name"
+              placeholder={t("profile_settings_enter_page_name")}
               value={formik.values.subdomain}
               onIonInput={(e) => {
                 formik.setFieldValue('subdomain', e.detail.value);
@@ -132,13 +132,13 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
             <IonLabel position="stacked" class="custom-input">
-              Auto booking page personalized URL
+              {t("profile_settings_auto_booking_page_personalized_url")}
             </IonLabel>
             <IonInput
               disabled
               class="custom"
               type="text"
-              placeholder="Enter page name above to generate"
+              placeholder={t("profile_settings_enter_page_name_above_to_generate")}
               value={formik.values.fqDomain}
             />
             <IonIcon className={`${CSSprefix}-copy-icon`} slot="end" icon={copyOutline} onClick={copyPersonalizedUrl} />
@@ -148,12 +148,12 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
             <IonLabel position="stacked" class="custom-input">
-              Business legal name*
+              {t("profile_settings_business_legal_name")}*
             </IonLabel>
             <IonInput
               class="custom"
               type="text"
-              placeholder="Enter business legal name"
+              placeholder={t("profile_settings_enter_business_legal_name")}
               value={formik.values.legalName}
               onIonInput={(e) => formik.setFieldValue('legalName', e.detail.value)}
             />
@@ -166,7 +166,7 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             {t("add_new_client_country")}*
             </IonLabel>
             <IonSelect
-              placeholder="Select country"
+              placeholder={t("profile_settings_select_country")}
               toggleIcon={caretDownOutline}
               expandedIcon={caretUpOutline}
               selectedText={formik.values.country}
@@ -182,11 +182,11 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">State*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_state")}*</IonLabel>
             <IonInput
               class="custom"
               type="text"
-              placeholder="Enter state"
+              placeholder={t("profile_settings_enter_state")}
               value={formik.values.state}
               onIonInput={(e) => formik.setFieldValue('state', e.detail.value)}
             />
@@ -195,11 +195,11 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">City*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_city")}*</IonLabel>
             <IonInput
               class="custom"
               type="text"
-              placeholder="Enter city"
+              placeholder={t("profile_settings_enter_city")}
               value={formik.values.city}
               onIonInput={(e) => formik.setFieldValue('city', e.detail.value)}
             />
@@ -208,11 +208,11 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">Address line 1*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_address_line_1")}*</IonLabel>
             <IonInput
               class="custom"
               type="text"
-              placeholder="Enter address line"
+              placeholder={t("profile_settings_enter_address_line")}
               value={formik.values.addressLineOne}
               onIonInput={(e) => formik.setFieldValue('addressLineOne', e.detail.value)}
             />
@@ -221,11 +221,11 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">Address line 2</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_address_line_2")}</IonLabel>
             <IonInput
               class="custom"
               type="text"
-              placeholder="Enter address line"
+              placeholder={t("profile_settings_enter_address_line")}
               value={formik.values.addressLineTwo}
               onIonInput={(e) => formik.setFieldValue('addressLineTwo', e.detail.value)}
             />
@@ -234,11 +234,11 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
           >
-            <IonLabel position="stacked" class="custom-input">ZIP code*</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("profile_settings_zip_code")}*</IonLabel>
             <IonInput
               class="custom"
               type="text"
-              placeholder="Enter ZIP code"
+              placeholder={t("profile_settings_enter_zip_code")}
               value={formik.values.zipCode}
               onIonInput={(e) => formik.setFieldValue('zipCode', e.detail.value)}
             />
@@ -250,7 +250,7 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             disabled={!formik.dirty}
             onClick={() => formik.submitForm()}
           >
-            Save details
+            {t("profile_settings_save_details")}
           </IonButton>
         </IonList>
       </IonContent>

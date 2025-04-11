@@ -105,7 +105,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
 
         if (response.meta.requestStatus === 'rejected') {
           presentToast(
-            '¡Error at confirm appointment!',
+            `!${t("toast_messages_error_confirm_appointment")}!`,
             1000,
             'top',
             'danger'
@@ -114,7 +114,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
 
         dispatch(setLoading({ loading: false, message: undefined }));
         presentToast(
-          '¡Appointment confimed!',
+         `!${t("toast_messages_appointment_confirmed")}!`,
           1000,
           'top',
           'success'
@@ -123,7 +123,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     } catch (error) {
       dispatch(setLoading({ loading: false, message: undefined }));
       presentToast(
-        '¡Error at cancel appointment!',
+        `!${t("toast_messages_error_cancel_appointment")}!`,
         1000,
         'top',
         'danger'

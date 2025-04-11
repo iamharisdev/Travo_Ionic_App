@@ -15,6 +15,7 @@ import { reloadAuth } from '../../state/authSlice';
 import { CALENDAR_MONTH, LOADING } from '../../shared/routes/routes';
 
 import './Loading.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSprefix = 'loading';
 
@@ -33,6 +34,7 @@ const Loading: React.FC = (): React.ReactElement => {
     calendar,
     patient,
   } = useSelector((state: RootState) => state);
+  const { t } = useTranslation();
 
   useIonViewWillEnter(() => {
     setProgress(0);
@@ -115,7 +117,7 @@ const Loading: React.FC = (): React.ReactElement => {
         }
       } catch (error) {
         presentToast(
-          '¡Error at loading data!',
+          `! ${t("toast_messages_error_loading_data")} !`,
           1000,
           'top',
           'danger'
@@ -155,7 +157,7 @@ const Loading: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true}>
         <div className={`${CSSprefix}-main`}>
           <div className={`${CSSprefix}-container`}>
-            <IonText>Loading appointments</IonText>
+            <IonText>{t("loading_appointments")}</IonText>
             <IonProgressBar value={progress} />
           </div>
         </div>

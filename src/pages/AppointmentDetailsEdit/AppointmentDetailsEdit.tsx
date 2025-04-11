@@ -107,7 +107,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
 
         if (response.meta.requestStatus === 'rejected') {
           presentToast(
-            '¡Error at edit appointment location!',
+            `${t("toast_messages_error_edit_appointment")}`,
             1000,
             'top',
             'danger'
@@ -204,7 +204,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
               onIonChange={(e) => formik.setFieldValue('location', e.detail.value)}
             >
               <IonSelectOption value="Online">{t("scheduling_online")}</IonSelectOption>
-              <IonSelectOption value="In Person">In Person</IonSelectOption>
+              <IonSelectOption value="In Person">{t("scheduling_in_person")}</IonSelectOption>
             </IonSelect>
           </IonItem>
           <IonItem
