@@ -31,7 +31,7 @@ const Profile: React.FC = (): React.ReactElement => {
   const profileRef = useRef();
   const history = useHistory();
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const { t ,i18n} = useTranslation();
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: profileRef,
@@ -95,6 +95,11 @@ const Profile: React.FC = (): React.ReactElement => {
           cancel={() => null}
           logout={async () => {
             await removeStorageValue(STORAGE_TOKEN);
+            const systemLang = (navigator.language).split('-')[0];
+            const supportedLangs = ['en', 'pt'];
+            const selectedLang = supportedLangs.includes(systemLang) ? systemLang : "en";
+            i18n.changeLanguage(selectedLang);
+            localStorage.removeItem("language")
             dispatch(resetAll());
             history.push(SING_IN);
           }}
