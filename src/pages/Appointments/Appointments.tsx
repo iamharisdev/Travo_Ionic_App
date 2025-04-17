@@ -165,6 +165,8 @@ const Appointments: React.FC = (): React.ReactElement => {
           showDatePicker={true}
           datePickerText={dateText}
           datePickerCB={openDatePickerHandler}
+          showNotifications
+          showSearchOption
         />
         <IonContent fullscreen={true}>
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>

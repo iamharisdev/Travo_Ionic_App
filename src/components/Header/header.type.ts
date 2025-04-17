@@ -14,6 +14,8 @@ export interface HeaderProps {
   showDatePicker?: boolean;
   datePickerText?: string;
   leftLabel?: string;
+  showNotifications?:boolean;
+  showSearchOption?:boolean;
   editCB?: () => void;
   cancelCB?: () => void;
   datePickerCB?: (e: any) => void;
