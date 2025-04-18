@@ -54,8 +54,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   const [isChecked, setIsChecked] = useState(false);
   const [repeatOption, setRepeatOption] = useState<string>();
   const [endsAfter, setEndsAfter] = useState<number>();
-console.log("repeatOption : ", repeatOption)
-console.log("isChecked : ", isChecked)
   const handleClick = () => {
     setIsChecked(!isChecked);
   };
@@ -79,18 +77,12 @@ console.log("isChecked : ", isChecked)
     return '';
   }, [selectedDateTime, provider?.practice?.displayTwentyFourHourTime]);
 
-  console.log("dateTime : ", dateTime)
-  console.log("selectedDateTime : ", selectedDateTime);
-
   const selectedDayName = useMemo(() => {
     if (selectedDateTime?.startTime) {
       return dayjs(selectedDateTime.startTime).format('dddd');
     }
     return '';
   }, [selectedDateTime?.startTime]);
-  
-  console.log("Selected Day Name:", selectedDayName);
-
 
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {
@@ -147,8 +139,6 @@ console.log("isChecked : ", isChecked)
             recurring: false
           }
         };
-
-console.log("payload :",payload);
 
         const response: any = await dispatch(createAppointmentAction(payload));
 
@@ -249,49 +239,41 @@ console.log("payload :",payload);
       <IonLabel class='custom-radio-text'>Recurring appointment</IonLabel>
     </IonItem>
 
- {/* Conditional Input Section */}
- {isChecked && (
-  <IonGrid>
-  <IonRow class={`${CSSPrefix}-recurring-appointment-row`} >
-    {/* Repeats on Select Box */}
-    <IonCol size="5.9" className="custom-box" >
-      {/* <IonItem className="custom-box" lines="none"> */}
-        <IonLabel className="custom-label" position="stacked">Repeats on</IonLabel>
-        <IonSelect
-          className="custom-select"
-          placeholder="Select"
-          interface="action-sheet"
-          value={repeatOption}
-          onIonChange={(e) => setRepeatOption(e.detail.value)}
-        >
-          <IonSelectOption value="Daily">Daily</IonSelectOption>
-          <IonSelectOption value="Weekly">Weekly on {selectedDayName}</IonSelectOption>
-          <IonSelectOption value="Biweekly">Every two weeks on {selectedDayName}</IonSelectOption>
-          <IonSelectOption value="Monthly">Monthly on the third {selectedDayName}</IonSelectOption>
-        </IonSelect>
-      {/* </IonItem> */}
-    </IonCol>
+    {isChecked && (
+        <IonGrid>
+        <IonRow class={`${CSSPrefix}-recurring-appointment-row`} >
+          <IonCol size="5.9" className="custom-box" >
+              <IonLabel className="custom-label" position="stacked">Repeats on</IonLabel>
+              <IonSelect
+                className="custom-select"
+                placeholder="Select"
+                interface="action-sheet"
+                value={repeatOption}
+                onIonChange={(e) => setRepeatOption(e.detail.value)}
+              >
+                <IonSelectOption value="Daily">Daily</IonSelectOption>
+                <IonSelectOption value="Weekly">Weekly on {selectedDayName}</IonSelectOption>
+                <IonSelectOption value="Biweekly">Every two weeks on {selectedDayName}</IonSelectOption>
+                <IonSelectOption value="Monthly">Monthly on the third {selectedDayName}</IonSelectOption>
+              </IonSelect>
+          </IonCol>
 
-    {/* Ends after input box */}
-    <IonCol size="5.9">
-      <IonItem className="custom-box" lines="none" detail={false}>
-        <IonLabel className="custom-label" position="stacked">Ends after</IonLabel>
-        <IonInput
-          className="custom-input"
-          type="number"
-          value={endsAfter}
-          placeholder='0'
-          onIonInput={(e: any) => setEndsAfter(e.target.value)}
-        />
-        <IonText className="suffix-label">occurrences</IonText>
-      </IonItem>
-    </IonCol>
-  </IonRow>
-</IonGrid>
-
-
+          <IonCol size="5.9">
+            <IonItem className="custom-box" lines="none" detail={false}>
+              <IonLabel className="custom-label" position="stacked">Ends after</IonLabel>
+              <IonInput
+                className="custom-input"
+                type="number"
+                value={endsAfter}
+                placeholder='0'
+                onIonInput={(e: any) => setEndsAfter(e.target.value)}
+              />
+              <IonText className="suffix-label">occurrences</IonText>
+            </IonItem>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
       )}
-
 
       <IonItem
         lines="none"
