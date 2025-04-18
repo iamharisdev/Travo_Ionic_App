@@ -56,6 +56,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         || location.pathname === SUBSCRIPTION_DETAILS
         || location.pathname === CONFIGRATION
         || location.pathname === LANGUAGE
+        || location.pathname === NOTIFICATIONS_DETAILS
         || location.pathname.includes(APPOINTMENT_DETAILS)
         || location.pathname.includes(APPOINTMENT_DETAILS_EDIT)
         || location.pathname === APPOINTMENT_REQUESTS
