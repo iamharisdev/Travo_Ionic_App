@@ -10,6 +10,14 @@
     --background: var(--ion-trova-white);
   }
 
+  ion-input.has-focus .input-highlight {
+    display: none;
+  }
+
+  ion-select.ion-focusable{
+    --highlight-height: 0px !important;
+  }
+
   ion-label {
     width: auto;
     color: var(--ion-trova-gray-text);
@@ -55,6 +63,13 @@
     width: 100%;
     margin-top: 22vh;
   }
+  &-recurring-appointment-row{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    gap: 5px;
+
+  }
 }
 
 .info-popover {
@@ -89,4 +104,61 @@
     bottom: 2px;
     margin-right: 16px;
   }
+}
+.black-radio-icon {
+  color: black;
+  font-size: 24px;
+  margin: 0 !important;
+  margin-right: 10px !important;
+}
+
+.custom-radio-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  --padding-bottom: 0 !important;
+}
+
+.input-box {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  --background: #fff;
+  padding: 4px 8px;
+}
+
+.input-box-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.custom-box {
+  --background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 5px 10px 0px;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 8px;
+}
+
+.custom-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #000;
+  margin-bottom: 2px;
+}
+
+.custom-select,
+.custom-input {
+  font-size: 14px;
+  color: #555;
+  margin-top: 8px;
+}
+
+.suffix-label {
+  position: absolute;
+  bottom: 12px;
+  right: 15px;
+  z-index: 99;
 }

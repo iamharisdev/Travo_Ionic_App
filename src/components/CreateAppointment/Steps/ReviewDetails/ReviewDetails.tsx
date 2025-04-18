@@ -1,5 +1,10 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { IonButton, IonIcon, IonItem, IonLabel, IonPopover, IonText } from '@ionic/react';
+import { IonButton, IonIcon, IonItem, IonLabel, IonPopover, IonText,   IonSelect,
+  IonSelectOption,
+  IonInput,
+  IonGrid,
+  IonRow,
+  IonCol } from '@ionic/react';
 import { Patient } from '../../../../state/patientSlice';
 import { Services } from '../../../../shared/types/appointment.type';
 import { AppointmentDateTime } from '../../CreateAppointment';
@@ -14,6 +19,7 @@ import { useHistory } from 'react-router';
 import { APPOINTMENTS } from '../../../../shared/routes/routes';
 import { setDate } from '../../../../state/calendarSlice';
 
+import { radioButtonOn, radioButtonOff } from 'ionicons/icons';
 import './ReviewDetails.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -45,6 +51,14 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
     const { t } = useTranslation();
+  const [isChecked, setIsChecked] = useState(false);
+  const [repeatOption, setRepeatOption] = useState<string>();
+  const [endsAfter, setEndsAfter] = useState<number>();
+console.log("repeatOption : ", repeatOption)
+console.log("isChecked : ", isChecked)
+  const handleClick = () => {
+    setIsChecked(!isChecked);
+  };
 
   const openPopover = (e: any) => {
     popover.current!.event = e;
@@ -64,6 +78,19 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 
     return '';
   }, [selectedDateTime, provider?.practice?.displayTwentyFourHourTime]);
+
+  console.log("dateTime : ", dateTime)
+  console.log("selectedDateTime : ", selectedDateTime);
+
+  const selectedDayName = useMemo(() => {
+    if (selectedDateTime?.startTime) {
+      return dayjs(selectedDateTime.startTime).format('dddd');
+    }
+    return '';
+  }, [selectedDateTime?.startTime]);
+  
+  console.log("Selected Day Name:", selectedDayName);
+
 
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {
@@ -96,7 +123,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         const payload = {
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          payload: {
+          payload:isChecked && endsAfter && repeatOption ?  {
             patientServiceId: selectedService.id,
             patientId: selectedClient.id,
             patientEmail: selectedClient.email,
@@ -105,12 +132,29 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             startTime: startTime.toISOString(),
             endTime: endTimeByDuration.toISOString(),
             invoiceDataId,
+            count:endsAfter,
+            frequency:repeatOption,
+            recurring:isChecked
+          }:{
+            patientServiceId: selectedService.id,
+            patientId: selectedClient.id,
+            patientEmail: selectedClient.email,
+            patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
+            patientNumber: selectedClient.patientNumber,
+            startTime: startTime.toISOString(),
+            endTime: endTimeByDuration.toISOString(),
+            invoiceDataId,
+            recurring: false
           }
         };
 
+console.log("payload :",payload);
+
         const response: any = await dispatch(createAppointmentAction(payload));
 
-        if (response?.payload?.id && response.type === 'scheduling/createAppointment/fulfilled') {
+        const responsePayload=response?.payload?.id ? response?.payload?.id : response?.payload
+
+        if (responsePayload && response.type === 'scheduling/createAppointment/fulfilled') {
           await dispatch(getEventsAction({
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
@@ -195,6 +239,60 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
         <IonLabel position="stacked">{dateTime}</IonLabel>
       </IonItem>
+
+      <IonItem lines="none" detail={false} className="custom-radio-item" button onClick={handleClick}>
+      <IonIcon
+        slot="start"
+        icon={isChecked ? radioButtonOn : radioButtonOff}
+        className="black-radio-icon"
+      />
+      <IonLabel class='custom-radio-text'>Recurring appointment</IonLabel>
+    </IonItem>
+
+ {/* Conditional Input Section */}
+ {isChecked && (
+  <IonGrid>
+  <IonRow class={`${CSSPrefix}-recurring-appointment-row`} >
+    {/* Repeats on Select Box */}
+    <IonCol size="5.9" className="custom-box" >
+      {/* <IonItem className="custom-box" lines="none"> */}
+        <IonLabel className="custom-label" position="stacked">Repeats on</IonLabel>
+        <IonSelect
+          className="custom-select"
+          placeholder="Select"
+          interface="action-sheet"
+          value={repeatOption}
+          onIonChange={(e) => setRepeatOption(e.detail.value)}
+        >
+          <IonSelectOption value="Daily">Daily</IonSelectOption>
+          <IonSelectOption value="Weekly">Weekly on {selectedDayName}</IonSelectOption>
+          <IonSelectOption value="Biweekly">Every two weeks on {selectedDayName}</IonSelectOption>
+          <IonSelectOption value="Monthly">Monthly on the third {selectedDayName}</IonSelectOption>
+        </IonSelect>
+      {/* </IonItem> */}
+    </IonCol>
+
+    {/* Ends after input box */}
+    <IonCol size="5.9">
+      <IonItem className="custom-box" lines="none" detail={false}>
+        <IonLabel className="custom-label" position="stacked">Ends after</IonLabel>
+        <IonInput
+          className="custom-input"
+          type="number"
+          value={endsAfter}
+          placeholder='0'
+          onIonInput={(e: any) => setEndsAfter(e.target.value)}
+        />
+        <IonText className="suffix-label">occurrences</IonText>
+      </IonItem>
+    </IonCol>
+  </IonRow>
+</IonGrid>
+
+
+      )}
+
+
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
