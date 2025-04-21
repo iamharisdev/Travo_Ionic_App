@@ -54,7 +54,7 @@
     height: 18px;
     width: 18px;
     position: absolute;
-    left: 78vw;
+    left: 77vw;
     top: 26px;
     color: var(--ion-trova-black)
   }
@@ -70,6 +70,20 @@
     gap: 5px;
 
   }
+  ion-select::part(icon) {
+    position: absolute;
+    top: -2px;
+    right: 25px;
+    font-size: 20px;
+    color: var(--ion-trova-black);
+  }
+  ion-select::part(placeholder) {
+    font-size: 14px !important;
+  }
+  ion-select::part(text) {
+    font-size: 14px !important;
+    color: inherit;
+ }
 }
 
 .info-popover {
@@ -111,42 +125,12 @@
   margin: 0 !important;
   margin-right: 10px !important;
 }
-
-.custom-radio-item {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  --padding-bottom: 0 !important;
-}
-
-.input-box {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  --background: #fff;
-  padding: 4px 8px;
-}
-
-.input-box-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.custom-box {
-  --background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 5px 10px 0px;
-  --padding-start: 0;
-  --inner-padding-end: 0;
-  margin-bottom: 8px;
-}
-
-.custom-label {
-  font-weight: 600;
-  font-size: 14px;
-  color: #000;
-  margin-bottom: 2px;
+.custom-radio-item .custom-radio-text {
+  color: var(--ion-trova-medium-gray) !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
 }
 
 .custom-select,
@@ -156,9 +140,29 @@
   margin-top: 8px;
 }
 
-.suffix-label {
+.custom-ion-item {
+  --padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 10px !important;
+  --padding-top: 0px !important;
+  --padding-bottom: 0px !important;
+}
+.caretUpOutline{
+  color: var(--ion-trova-black);
+  height: 16px;
+  width: 16px;
   position: absolute;
-  bottom: 12px;
-  right: 15px;
+  right: 16px;
+  top: 35px;
+  z-index: 99;
+}
+.caretDownOutline{
+  color: var(--ion-trova-black);
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
   z-index: 99;
 }

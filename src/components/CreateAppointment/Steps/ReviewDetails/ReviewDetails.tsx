@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IonButton, IonIcon, IonItem, IonLabel, IonPopover, IonText,   IonSelect,
   IonSelectOption,
   IonInput,
@@ -9,7 +9,7 @@ import { Patient } from '../../../../state/patientSlice';
 import { Services } from '../../../../shared/types/appointment.type';
 import { AppointmentDateTime } from '../../CreateAppointment';
 import dayjs from 'dayjs';
-import { caretDownOutline, informationCircle } from 'ionicons/icons';
+import { caretDownOutline, caretUpOutline, informationCircle } from 'ionicons/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../state/store';
 import { setLoading } from '../../../../state/loadingSlice';
@@ -53,10 +53,22 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     const { t } = useTranslation();
   const [isChecked, setIsChecked] = useState(false);
   const [repeatOption, setRepeatOption] = useState<string>();
-  const [endsAfter, setEndsAfter] = useState<number>();
+  const [endsAfter, setEndsAfter] = useState<number>(0);
+
   const handleClick = () => {
     setIsChecked(!isChecked);
   };
+
+  const handleEndsAfterInput = (e: any) => {
+    setEndsAfter(e.target.value);
+  };
+
+    useEffect(() => {
+      if (endsAfter < 0) {
+        setEndsAfter(0);
+      }
+    }, [endsAfter]);
+
 
   const openPopover = (e: any) => {
     popover.current!.event = e;
@@ -94,6 +106,12 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 
   const createAppointmentsHandler = async () => {
     let redirect = false;
+    if (isChecked) {
+      if (!repeatOption || !endsAfter) {
+        presentToast("Please select a value for 'Repeats on'.", 1500, 'top', 'danger');
+        return;
+      }
+    }    
 
     try {
       dispatch(setLoading({ loading: true, message: `${t("schedule_appointment_creating_appointment")}` }));
@@ -240,40 +258,43 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     </IonItem>
 
     {isChecked && (
-        <IonGrid>
-        <IonRow class={`${CSSPrefix}-recurring-appointment-row`} >
-          <IonCol size="5.9" className="custom-box" >
-              <IonLabel className="custom-label" position="stacked">Repeats on</IonLabel>
-              <IonSelect
-                className="custom-select"
-                placeholder="Select"
-                interface="action-sheet"
-                value={repeatOption}
-                onIonChange={(e) => setRepeatOption(e.detail.value)}
-              >
-                <IonSelectOption value="Daily">Daily</IonSelectOption>
-                <IonSelectOption value="Weekly">Weekly on {selectedDayName}</IonSelectOption>
-                <IonSelectOption value="Biweekly">Every two weeks on {selectedDayName}</IonSelectOption>
-                <IonSelectOption value="Monthly">Monthly on the third {selectedDayName}</IonSelectOption>
-              </IonSelect>
-          </IonCol>
+                  <IonGrid>
+                    <IonRow class={`${CSSPrefix}-recurring-appointment-row`}>
+                      <IonCol size="5.7" className="custom-box">
+                        <IonItem className="custom-input custom-ion-item" lines="none">
+                          <IonLabel position="stacked" className="custom-label">Repeats on</IonLabel>
+                          <IonSelect
+                            className="custom-select custom-label"
+                            placeholder="Select"
+                            interface="action-sheet"
+                            value={repeatOption}
+                            onIonChange={(e) => setRepeatOption(e.detail.value)}
+                          >
+                            <IonSelectOption value="Daily">Daily</IonSelectOption>
+                            <IonSelectOption value="Weekly">Weekly on {selectedDayName}</IonSelectOption>
+                            <IonSelectOption value="Biweekly">Every two weeks on {selectedDayName}</IonSelectOption>
+                            <IonSelectOption value="Monthly">Monthly on the third {selectedDayName}</IonSelectOption>
+                          </IonSelect>
+                        </IonItem>
+                      </IonCol>
 
-          <IonCol size="5.9">
-            <IonItem className="custom-box" lines="none" detail={false}>
-              <IonLabel className="custom-label" position="stacked">Ends after</IonLabel>
-              <IonInput
-                className="custom-input"
-                type="number"
-                value={endsAfter}
-                placeholder='0'
-                onIonInput={(e: any) => setEndsAfter(e.target.value)}
-              />
-              <IonText className="suffix-label">occurrences</IonText>
-            </IonItem>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
-      )}
+                      <IonCol size="5.7" className="custom-box">
+                        <IonItem className="custom-input custom-ion-item" lines="none">
+                          <IonLabel position="stacked" className="custom-label">Ends after</IonLabel>
+                          <IonInput
+                            className="custom-input custom-label"
+                            type="number"
+                            value={endsAfter}
+                            placeholder="0"
+                            onIonInput={handleEndsAfterInput}
+                          />
+                          <IonIcon className='caretUpOutline' onClick={() => setEndsAfter(prev => Number(prev || 0) + 1)} icon={caretUpOutline}/>
+                          <IonIcon className='caretDownOutline'  onClick={() => setEndsAfter(prev => Math.max(0, Number(prev || 0) - 1))} icon={caretDownOutline}/>
+                        </IonItem>
+                      </IonCol>
+                    </IonRow>
+                  </IonGrid>
+       )}
 
       <IonItem
         lines="none"
