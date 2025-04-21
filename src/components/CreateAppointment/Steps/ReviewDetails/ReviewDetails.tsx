@@ -107,11 +107,16 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   const createAppointmentsHandler = async () => {
     let redirect = false;
     if (isChecked) {
-      if (!repeatOption || !endsAfter) {
-        presentToast("Please select a value for 'Repeats on'.", 1500, 'top', 'danger');
+      if (!repeatOption) {
+        presentToast("Please select a value for 'Repeats on'", 1500, 'top', 'danger');
         return;
       }
-    }    
+    
+      if (!endsAfter || endsAfter <= 0) {
+        presentToast("Please enter at least one value for 'Ends after' for recurring appointments", 1500, 'top', 'danger');
+        return;
+      }
+    }
 
     try {
       dispatch(setLoading({ loading: true, message: `${t("schedule_appointment_creating_appointment")}` }));
