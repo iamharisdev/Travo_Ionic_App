@@ -22,7 +22,8 @@ import { setDate } from '../../../../state/calendarSlice';
 import { radioButtonOn, radioButtonOff } from 'ionicons/icons';
 import './ReviewDetails.scss';
 import { useTranslation } from 'react-i18next';
-
+import 'dayjs/locale/pt';
+import 'dayjs/locale/en';
 const CSSPrefix = 'review-details';
 
 interface ReviewDetailsProps {
@@ -50,7 +51,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   const history = useHistory();
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
-    const { t } = useTranslation();
+    const { t, i18n} = useTranslation();
+    dayjs.locale(i18n.language);
   const [isChecked, setIsChecked] = useState(false);
   const [repeatOption, setRepeatOption] = useState<string>();
   const [endsAfter, setEndsAfter] = useState<number>(0);
@@ -91,10 +93,12 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 
   const selectedDayName = useMemo(() => {
     if (selectedDateTime?.startTime) {
-      return dayjs(selectedDateTime.startTime).format('dddd');
+      return dayjs(selectedDateTime.startTime)
+        .locale(i18n.language)
+        .format('dddd');
     }
     return '';
-  }, [selectedDateTime?.startTime]);
+  }, [selectedDateTime?.startTime, i18n.language]);
 
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {
@@ -108,12 +112,12 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     let redirect = false;
     if (isChecked) {
       if (!repeatOption) {
-        presentToast("Please select a value for 'Repeats on'", 1500, 'top', 'danger');
+        presentToast(`${t("recurring_appointment_please_select_value_for_Repeats_on")}`, 1500, 'top', 'danger');
         return;
       }
     
       if (!endsAfter || endsAfter <= 0) {
-        presentToast("Please enter at least one value for 'Ends after' for recurring appointments", 1500, 'top', 'danger');
+        presentToast(`${t("recurring_appointment_please_enter_at_least_one_value_for_ends_after")}`, 1500, 'top', 'danger');
         return;
       }
     }
@@ -259,7 +263,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         icon={isChecked ? radioButtonOn : radioButtonOff}
         className="black-radio-icon"
       />
-      <IonLabel class='custom-radio-text'>Recurring appointment</IonLabel>
+      <IonLabel class='custom-radio-text'>{t("recurring_appointment")}</IonLabel>
     </IonItem>
 
     {isChecked && (
@@ -267,25 +271,26 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
                     <IonRow class={`${CSSPrefix}-recurring-appointment-row`}>
                       <IonCol size="5.7" className="custom-box">
                         <IonItem className="custom-input custom-ion-item" lines="none">
-                          <IonLabel position="stacked" className="custom-label">Repeats on</IonLabel>
+                          <IonLabel position="stacked" className="custom-label">{t("recurring_appointment_repeats_on")}</IonLabel>
                           <IonSelect
                             className="custom-select custom-label"
-                            placeholder="Select"
+                            placeholder={t("recurring_appointment_repeats_select")}
                             interface="action-sheet"
+                            cancelText={t("log_out_cancel")} 
                             value={repeatOption}
                             onIonChange={(e) => setRepeatOption(e.detail.value)}
                           >
-                            <IonSelectOption value="Daily">Daily</IonSelectOption>
-                            <IonSelectOption value="Weekly">Weekly on {selectedDayName}</IonSelectOption>
-                            <IonSelectOption value="Biweekly">Every two weeks on {selectedDayName}</IonSelectOption>
-                            <IonSelectOption value="Monthly">Monthly on the third {selectedDayName}</IonSelectOption>
+                            <IonSelectOption value="Daily">{t("recurring_appointment_repeats_daily")}</IonSelectOption>
+                            <IonSelectOption value="Weekly">{t("recurring_appointment_weekly_on_day")} {selectedDayName}</IonSelectOption>
+                            <IonSelectOption value="Biweekly">{t("recurring_appointment_every_two_weeks_on_day")} {selectedDayName}</IonSelectOption>
+                            <IonSelectOption value="Monthly">{t("recurring_appointment_montly_on_the_third_day")} {selectedDayName}</IonSelectOption>
                           </IonSelect>
                         </IonItem>
                       </IonCol>
 
                       <IonCol size="5.7" className="custom-box">
                         <IonItem className="custom-input custom-ion-item" lines="none">
-                          <IonLabel position="stacked" className="custom-label">Ends after</IonLabel>
+                          <IonLabel position="stacked" className="custom-label">{t("recurring_appointment_ends_after")}</IonLabel>
                           <IonInput
                             className="custom-input custom-label"
                             type="number"
