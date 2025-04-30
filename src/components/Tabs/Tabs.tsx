@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
 import { Redirect, Route, useLocation } from "react-router-dom";
-import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR_DAY, CALENDAR_MONTH, CALENDAR_WEEK, DASHBOARD, MY_PROFILE, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS, CONFIGRATION, LANGUAGE } from "../../shared/routes/routes";
+import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR_DAY, CALENDAR_MONTH, CALENDAR_WEEK, DASHBOARD, MY_PROFILE, NOTIFICATIONS_DETAILS, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS, CONFIGRATION, LANGUAGE } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Profile from "../../pages/Profile/Profile";
 import MyProfile from "../../pages/MyProfile/MyProfile";
@@ -32,6 +32,7 @@ import "./Tabs.scss";
 import { useTranslation } from "react-i18next";
 import ConfigrationPage from "../../pages/Configration/Configration";
 import LanguagePage from "../../pages/Language/Language";
+import NotificationsPage from "../../pages/Notifications/NotificationsPage";
 
 const Tabs: React.FC = (): React.ReactElement => {
   const location = useLocation();
@@ -55,6 +56,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         || location.pathname === SUBSCRIPTION_DETAILS
         || location.pathname === CONFIGRATION
         || location.pathname === LANGUAGE
+        || location.pathname === NOTIFICATIONS_DETAILS
         || location.pathname.includes(APPOINTMENT_DETAILS)
         || location.pathname.includes(APPOINTMENT_DETAILS_EDIT)
         || location.pathname === APPOINTMENT_REQUESTS
@@ -122,6 +124,8 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={`${APPOINTMENT_DETAILS_EDIT}/:id`} component={AppointmentDetailsEdit} />
         <Route exact path={APPOINTMENT_REQUESTS} component={AppointmentRequests} />
         <Route exact path={APPOINTMENT_CANCEL} component={AppointmentCancel} />
+        <Route exact path={NOTIFICATIONS_DETAILS} component={NotificationsPage} />
+
       </IonRouterOutlet>
       <IonTabBar slot="bottom" defaultValue="appointments">
         <IonTabButton tab="calendar" href={CALENDAR_MONTH}>

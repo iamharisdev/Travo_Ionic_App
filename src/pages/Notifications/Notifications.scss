@@ -1,0 +1,66 @@
+.notifications {
+  ion-content {
+    --background: var(--ion-trova-page-background);
+    padding: 8px 16px;
+  }
+
+  &-content {
+    padding: 0 16px;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    font-size: 24px;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  &-mark-read {
+    font-size: 0.9rem;
+    color: #000;
+    cursor: pointer;
+    margin-left: auto;
+    padding-right: 8px;
+    text-decoration: underline;
+  }
+
+  &-list {
+    margin-top: 8px;
+    background: #f7f7f7;
+  }
+
+  &-item {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    padding: 12px 0;
+  }
+  &-message-label{
+    width: 100%;
+    display: flex !important;
+    flex-direction: column;
+  }
+  &-message {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #808285;
+    margin-bottom: 4px;
+    width: 100%;
+  }
+
+  &-date {
+    font-size: 0.85rem;
+    color: #8f9194;
+    width: 100%;
+  }
+
+  &-dot {
+    width: 16px;
+    height: 16px;
+    background-color: #1DBCBD;
+    border-radius: 50%;
+    position: absolute;
+    right: 16px;
+    top: 40px;
+  }
+}
