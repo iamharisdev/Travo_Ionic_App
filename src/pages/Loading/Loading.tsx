@@ -44,52 +44,63 @@ const Loading: React.FC = (): React.ReactElement => {
 
         setProgress((prevProgress) => prevProgress + 0.08);
         const profileResponse = await dispatch<any>(getMeAction());
-        await dispatch(getCountriesAction());
-        await dispatch(getPhoneCodesAction());
-        await dispatch(getCurrenciesAction());
+        if (profileResponse.payload?.providerPractices?.length > 0 && profileResponse.payload?.principal?.countryCode) {
+          const [providerPractice] = profileResponse.payload.providerPractices;
+          await dispatch(getEventsAction({
+            practiceId: providerPractice.practiceId,
+            providerId: providerPractice.providerId,
+            start: dayjs().subtract(3, 'months').toISOString(),
+            end: dayjs().add(1, 'year').endOf('year').toISOString(),
+            pageNumber: 0,
+            pageSize: 999,
+          }));
+          setProgress((prevProgress) => prevProgress + 0.08);
+        }
+        dispatch(getCountriesAction());
+        dispatch(getPhoneCodesAction());
+        dispatch(getCurrenciesAction());
 
         if (profileResponse.payload?.providerPractices?.length > 0 && profileResponse.payload?.principal?.countryCode) {
           const [providerPractice] = profileResponse.payload.providerPractices;
           if (providerPractice) {
-            setProgress((prevProgress) => prevProgress + 0.08);
-            await dispatch(getBusinessInformationAction(providerPractice.practiceId));
-            await dispatch(getPaymentMethodAction({
+            // await dispatch(getEventsAction({
+            //   practiceId: providerPractice.practiceId,
+            //   providerId: providerPractice.providerId,
+            //   start: dayjs().subtract(3, 'months').toISOString(),
+            //   end: dayjs().add(1, 'year').endOf('year').toISOString(),
+            //   pageNumber: 0,
+            //   pageSize: 999,
+            // }));
+            dispatch(getBusinessInformationAction(providerPractice.practiceId));
+            dispatch(getPaymentMethodAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId
             }));
             setProgress((prevProgress) => prevProgress + 0.08);
-            await dispatch(getProductDetailsAction({
+            dispatch(getProductDetailsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId
             }));
             setProgress((prevProgress) => prevProgress + 0.08);
-            await dispatch(getProductsDetailsAction({
+            dispatch(getProductsDetailsAction({
               practiceId: providerPractice.practiceId,
               countryCode: profileResponse.payload?.principal?.countryCode
             }));
             setProgress((prevProgress) => prevProgress + 0.08);
-            await dispatch(getEventsAction({
-              practiceId: providerPractice.practiceId,
-              providerId: providerPractice.providerId,
-              start: dayjs().subtract(3, 'months').toISOString(),
-              end: dayjs().add(1, 'year').endOf('year').toISOString(),
-              pageNumber: 0,
-              pageSize: 999,
-            }));
-            await dispatch(getMicrosoftEventsAction({
+            dispatch(getMicrosoftEventsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               start: dayjs().subtract(3, 'months').toISOString(),
               end: dayjs().add(1, 'year').endOf('year').toISOString(),
             }));
-            await dispatch(getGoogleEventsAction({
+            dispatch(getGoogleEventsAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               start: dayjs().subtract(3, 'months').toISOString(),
               end: dayjs().add(1, 'year').endOf('year').toISOString(),
             }));
             setProgress((prevProgress) => prevProgress + 0.08);
-            await dispatch(getServicesAction({
+            dispatch(getServicesAction({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               pageNumber: 0,
