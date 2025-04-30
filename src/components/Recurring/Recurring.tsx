@@ -2,6 +2,7 @@ import React from 'react';
 import { IonButton, IonContent, IonItem, IonList, IonModal, IonText } from "@ionic/react";
 
 import './Recurring.scss';
+import { useTranslation } from 'react-i18next';
 
 interface LogoutProps {
   isOpen: boolean;
@@ -11,15 +12,16 @@ interface LogoutProps {
 const CSSprefix = 'recurring';
 
 const Recurring: React.FC<LogoutProps> = ({ isOpen, close }) => {
+    const {t} = useTranslation();
   return (
     <IonModal className={CSSprefix} id="recurring-modal" isOpen={isOpen}>
       <IonContent>
         <IonList>
           <IonItem lines="none">
             <IonText className={`${CSSprefix}-title`}>
-              Reschedule appointment
+              {t("scheduling_reschedule_appointment")}
               <p className={`${CSSprefix}-description`}>
-                This is a recurring appointment. Please reschedule on the Trova web platform.
+                {t("recurring_appointment_recurring_appointment_message")}{t("recurring_appointment_reaschedule_on_web_platform")}
               </p>
             </IonText>
           </IonItem>
@@ -30,7 +32,7 @@ const Recurring: React.FC<LogoutProps> = ({ isOpen, close }) => {
               expand="block"
               onClick={close}
             >
-              close
+              {t("recurring_appointment_close")}
             </IonButton>
           </IonItem>
         </IonList>

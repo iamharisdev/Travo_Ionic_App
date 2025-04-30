@@ -20,12 +20,14 @@ import { useHistory } from "react-router";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./SubscriptionDetails.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'subscription-deatils';
 
 const SubscriptionDetails: React.FC = (): React.ReactElement => {
   const subscriptionDetailsRef = useRef();
   const history = useHistory();
+  const { t } = useTranslation();
   const { billing } = useSelector((state: RootState) => state);
   const productName = useMemo(() => billing.productDetails?.productName, [billing.productDetails]);
   const productDetail = useMemo(() => billing.productsDetails.find(({ name }) => name === productName), [productName, billing.productsDetails]);
@@ -45,7 +47,7 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title ion-margin-top`}>
-            Subscription details
+            {t("profile_settings_subscription_details")}
           </IonText>
         </IonItem>
         <IonList className="ion-no-padding">
@@ -56,14 +58,14 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
                 <IonCardTitle>{productName}</IonCardTitle>
                 <div className={`${CSSprefix}-subscription-wrapper`}>
                   <IonText className={`${CSSprefix}-subscription-price`}>{`${productDetail?.currencySymbol}${productDetail?.price}`}</IonText>
-                  <IonText slot="end" className={`${CSSprefix}-subscription-month`}>/ Monthly</IonText>
+                  <IonText slot="end" className={`${CSSprefix}-subscription-month`}>/ {t("profile_settings_subscription_Monthly")}</IonText>
                 </div>
               </IonItem>
             </IonCardHeader>
           </IonCard>
           <IonCard className={`${CSSprefix}-next-payment`}>
             <IonCardHeader>
-              <IonCardTitle>Next payment</IonCardTitle>
+              <IonCardTitle>{t("profile_settings_next_payment")}</IonCardTitle>
             </IonCardHeader>
             <IonCardContent>
               <IonItem lines="none" className="ion-no-padding">
@@ -80,10 +82,10 @@ const SubscriptionDetails: React.FC = (): React.ReactElement => {
               </IonItem>
               <IonItem lines="none" className="ion-no-padding">
                 <IonText className={`${CSSprefix}-next-payment-description`}>
-                  Only the account creator has the permission to change payment method on file. Please contact your account creator.
+                   {t("profile_settings_account_creator_permission_message")}
                   <br />
                   <br />
-                  Please Contact Support at hello@trova.health to cancel your Subscription.
+                   {t("profile_settings_contact_support_message")}
                 </IonText>
               </IonItem>
             </IonCardContent>

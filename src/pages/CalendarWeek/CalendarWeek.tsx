@@ -32,6 +32,7 @@ import DatePicker from "../../components/DatePicker/DatePicker";
 import { getDefaultDates } from "../../shared/utils/dates.util";
 
 import "./CalendarWeek.scss";
+import { useTranslation } from "react-i18next";
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -41,6 +42,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const { provider, scheduling: { events, microsoftEvents, googleEvents, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
+  const { t } = useTranslation();
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'week')
 
@@ -145,7 +147,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   useEffect(() => {
     if (location.pathname === CALENDAR_WEEK && !isCreateAppointmentOpen) {
       if (state.loading) {
-        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+        dispatch(setLoading({ loading: true, message: `${t("loading_appointments")}` }));
       }
 
       if (!state.loading) {

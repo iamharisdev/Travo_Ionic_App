@@ -7,6 +7,7 @@ import { RootState } from '../../../../state/store';
 import { caretDownOutline, informationCircle } from 'ionicons/icons';
 
 import './ReviewDetails.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'review-details';
 
@@ -36,6 +37,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   const {
     provider,
   } = useSelector((state: RootState) => state);
+  const {t} = useTranslation();
+  
 
   const dateTime = useMemo(() => {
     let format = 'MMMM D, hh:mm A';
@@ -56,40 +59,40 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     <div className={CSSPrefix}>
       <IonItem lines="none">
         <IonText className={`${CSSPrefix}-title`}>
-          Reschedule appointment
+        {t("scheduling_reschedule_appointment")}
         </IonText>
       </IonItem>
       <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
         <IonText>
-          Edit appointment details
+          {t("scheduling_edit_appointment_details")}
         </IonText>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
-        <IonLabel position="stacked">Client</IonLabel>
+        <IonLabel position="stacked">{t("scheduling_client")}</IonLabel>
         <IonLabel position="stacked">{patientName}</IonLabel>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
-        <IonLabel position="stacked">Service</IonLabel>
+        <IonLabel position="stacked">{t("scheduling_service")}</IonLabel>
         <IonLabel position="stacked">{patientServiceName}</IonLabel>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
-        <IonLabel position="stacked">Adjusted price</IonLabel>
+        <IonLabel position="stacked">{t("scheduling_adjusted_price")}</IonLabel>
         <IonLabel position="stacked">{`$${price.toFixed(2)}`}</IonLabel>
       </IonItem>
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
-        <IonLabel position="stacked">Location</IonLabel>
+        <IonLabel position="stacked">{t("scheduling_location")}</IonLabel>
         <IonLabel position="stacked">{location}</IonLabel>
       </IonItem>
       <IonItem
@@ -97,7 +100,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
         onClick={() => setStep(1)}
       >
-        <IonLabel position="stacked">Date and time</IonLabel>
+        <IonLabel position="stacked">{t("schedule_appointment_date_and_time")}</IonLabel>
         <IonLabel position="stacked">{dateTime}</IonLabel>
         <IonIcon className={`${CSSPrefix}-caret-down`} icon={caretDownOutline} slot="end" />
       </IonItem>
@@ -106,7 +109,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
         <IonLabel position="stacked">
-          Payment type
+          {t("scheduling_payment_type")}
           <IonIcon className={`${CSSPrefix}-info-icon`} icon={informationCircle} />
         </IonLabel>
         <IonLabel position="stacked">{paymentType}</IonLabel>
@@ -118,7 +121,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           disabled={disableSaveChanges}
           onClick={rescheduleHandler}
         >
-          Save changes
+          {t("scheduling_save_changes")}
         </IonButton>
       </div>
     </div>

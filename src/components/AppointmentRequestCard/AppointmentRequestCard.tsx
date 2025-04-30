@@ -11,6 +11,7 @@ import { useHistory } from 'react-router';
 import { APPOINTMENT_DETAILS } from '../../shared/routes/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
+import { useTranslation } from 'react-i18next';
 
 const CSSprefix = 'appointment-request-card';
 
@@ -18,7 +19,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
   const history = useHistory();
   const barColor = useMemo(() => getAppointmentColor(appointment?.color as CALENDAR_SLOTS), [appointment?.color]);
   const { provider } = useSelector((state: RootState) => state);
-
+  const { t } = useTranslation();
   const { startTime, endTime, day, month, date, duration, showButtons }:
     {
       startTime: string,
@@ -127,7 +128,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
               expand="block"
               onClick={() => acceptCB(appointment?.id || '')}
             >
-              Accept
+              {t("appointment_header_accept")}
             </IonButton>
           </IonCol>
           <IonCol>
@@ -138,7 +139,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment
               expand="block"
               onClick={() => declineCB(appointment?.id || '')}
             >
-              Decline
+              {t("appointment_header_decline")}
             </IonButton>
           </IonCol>
         </IonRow>

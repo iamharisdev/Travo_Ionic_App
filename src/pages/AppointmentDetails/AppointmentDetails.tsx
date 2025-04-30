@@ -30,6 +30,7 @@ import RescheduleAppointment from "../../components/RescheduleAppointment/Resche
 import Recurring from "../../components/Recurring/Recurring";
 
 import "./AppointmentDetails.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'appointment-details';
 
@@ -47,6 +48,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
   const [eventData, setEventData] = useState<EventData>();
   const [isRecurringOpen, setIsRecurringOpen] = useState(false);
+    const { t } = useTranslation();
 
   const event = useMemo(() => events?.events?.find(({ id, status, ...rest }) => {
     if (eventData?.type === AppointmentDetailTypeEnum.RESCHEDULE && id === eventData?.eventId) {
@@ -124,14 +126,14 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
   const { positiveLabel, negativeLabel }: { positiveLabel: string, negativeLabel: string } = useMemo(() => {
     if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
-      return { positiveLabel: 'Accept appointment', negativeLabel: 'Decline appointment' };
+      return { positiveLabel: `${t("appointment_request_accept_appointment")}`, negativeLabel: `${t("appointment_request_decline_appointment")}` };
     }
 
     if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
-      return { positiveLabel: 'Reschedule appointment', negativeLabel: 'Cancel appointment' };
+      return { positiveLabel: `${t("scheduling_reschedule_appointment")}`, negativeLabel: `${t("scheduling_cancel_appointment")}` };
     }
 
-    return { positiveLabel: 'Reschedule appointment', negativeLabel: 'Cancel appointment' };
+    return { positiveLabel: `${t("scheduling_reschedule_appointment")}`, negativeLabel: `${t("scheduling_cancel_appointment")}` };
   }, [location?.state?.type]);
 
   const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
@@ -196,7 +198,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
           if (response.meta.requestStatus === 'rejected') {
             presentToast(
-              '¡Error at confirm appointment!',
+              `!${t("toast_messages_error_confirm_appointment")}!`,
               1000,
               'top',
               'danger'
@@ -205,7 +207,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
           dispatch(setLoading({ loading: false, message: undefined }));
           presentToast(
-            '¡Appointment confimed!',
+            `${t("toast_messages_appointment_confirmed")}`,
             1000,
             'top',
             'success'
@@ -215,7 +217,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
       } catch (error) {
         dispatch(setLoading({ loading: false, message: undefined }));
         presentToast(
-          '¡Error at cancel appointment!',
+          `!${t("toast_messages_error_cancel_appointment")}!`,
           1000,
           'top',
           'danger'
@@ -322,7 +324,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                   href={event?.onlineMeetUrl}
                   target="_blank"
                 >
-                  Start
+                  {t("scheduling_start")}
                 </IonButton>
                 <div className={`${CSSprefix}-divider`} />
               </>

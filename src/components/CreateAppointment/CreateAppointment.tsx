@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import PaidInAdvance from './Steps/PaidInAdvance/PaidInAdvance';
 
 import './CreateAppointment.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'create-appointment';
 
@@ -28,11 +29,12 @@ const CreateAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, sel
   const [prevStep, setPrevStep] = useState<number>(-1);
   const contentRef = useRef<HTMLIonContentElement | null>(null);
   const [invoiceDataId, setInvoiceDataId] = useState<string>();
+  const {t} = useTranslation();
 
   const cancelOrBackText = useMemo(() => {
-    if (step === 1 || step === 2 || step === 3 || step === 4 || prevStep > -1) return 'Back';
+    if (step === 1 || step === 2 || step === 3 || step === 4 || prevStep > -1) return `${t("scheduling_back")}`;
 
-    return 'Cancel';
+    return `${t("log_out_cancel")}`;
   }, [step, prevStep]);
 
   const closeHandler = useCallback((close?: boolean) => {

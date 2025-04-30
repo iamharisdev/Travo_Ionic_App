@@ -20,3 +20,30 @@
   font-weight: 500;
   line-height: normal;
 }
+.main-notification{
+  padding-right: 15px;
+  position: relative !important;
+}
+.notifications-icon{
+  height: 24px;
+  width: 24px !important;
+}
+.notifications-badge-text{
+  font-size: 11px !important;
+}
+.notifications-badge-text-small{
+  font-size: 11px !important;
+}
+.notifications-badge{
+  height: 22px;
+  width: 22px;
+  position: absolute !important;
+  top: -10px;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.search-input{
+  text-align: left;
+}

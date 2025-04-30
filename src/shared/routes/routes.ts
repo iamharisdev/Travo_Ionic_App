@@ -22,3 +22,7 @@ export const PROFILE_INFORMATION = '/dashboard/profile/my-profile/profile-inform
 export const BUSINESS_INFORMATION = '/dashboard/profile/my-profile/business-information';
 export const BRANDING = '/dashboard/profile/my-profile/branding';
 export const SUBSCRIPTION_DETAILS = '/dashboard/profile/subscription-details';
+export const NOTIFICATIONS_DETAILS = '/dashboard/appointments/notifications';
+
+export const CONFIGRATION = '/dashboard/profile/configration';
+export const LANGUAGE = '/dashboard/profile/configration/language';

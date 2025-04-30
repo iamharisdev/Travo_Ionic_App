@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { caretForwardOutline, exitOutline } from "ionicons/icons";
-import { MY_PROFILE, SING_IN, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
+import {CONFIGRATION, MY_PROFILE, SING_IN, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 import Menu from "../../components/Menu/Menu";
 import { PROFILE_MENU_ID } from "../../shared/constants/menu";
@@ -23,6 +23,7 @@ import { removeStorageValue } from "../../storage/storage.util";
 import { STORAGE_TOKEN } from "../../constant/storage.constant";
 
 import "./Profile.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'profile';
 
@@ -30,6 +31,7 @@ const Profile: React.FC = (): React.ReactElement => {
   const profileRef = useRef();
   const history = useHistory();
   const dispatch = useDispatch();
+  const { t ,i18n} = useTranslation();
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: profileRef,
@@ -46,7 +48,7 @@ const Profile: React.FC = (): React.ReactElement => {
         <IonContent fullscreen={true} className={CSSprefix}>
           <IonItem className="ion-margin-vertical" lines="none">
             <IonText className={`${CSSprefix}-title`}>
-              Profile settings
+              {t("profile_settings")}
             </IonText>
           </IonItem>
           <IonItem
@@ -54,7 +56,7 @@ const Profile: React.FC = (): React.ReactElement => {
             lines="none"
             onClick={() => history.push(MY_PROFILE)}
           >
-            <IonText>My profile</IonText>
+            <IonText>{t("profile_settings_my_profile")}</IonText>
             <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
               <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
             </IonButton>
@@ -63,7 +65,16 @@ const Profile: React.FC = (): React.ReactElement => {
             lines="none"
             onClick={() => history.push(SUBSCRIPTION_DETAILS)}
           >
-            <IonText>Subscription details</IonText>
+            <IonText>{t("profile_settings_subscription_details")}</IonText>
+            <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
+              <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
+            </IonButton>
+          </IonItem>
+          <IonItem
+            lines="none"
+            onClick={() => history.push(CONFIGRATION)}
+          >
+            <IonText>{t("configuration")}</IonText>
             <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
               <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
             </IonButton>
@@ -72,7 +83,7 @@ const Profile: React.FC = (): React.ReactElement => {
             id="open-logout-modal"
             lines="none"
           >
-            <IonText color="danger">Log out</IonText>
+            <IonText color="danger"> {t("log_out")} </IonText>
             <IonButton fill="clear" size="small" className="ion-no-margin">
               <IonIcon slot="icon-only" color="danger" icon={exitOutline} size="medium" />
             </IonButton>
@@ -84,6 +95,11 @@ const Profile: React.FC = (): React.ReactElement => {
           cancel={() => null}
           logout={async () => {
             await removeStorageValue(STORAGE_TOKEN);
+            const systemLang = (navigator.language).split('-')[0];
+            const supportedLangs = ['en', 'pt'];
+            const selectedLang = supportedLangs.includes(systemLang) ? systemLang : "en";
+            i18n.changeLanguage(selectedLang);
+            localStorage.removeItem("language")
             dispatch(resetAll());
             history.push(SING_IN);
           }}

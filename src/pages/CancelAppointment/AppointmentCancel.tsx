@@ -25,6 +25,7 @@ import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
 
 import "./AppointmentCancel.scss";
 import { APPOINTMENT_REQUESTS, APPOINTMENTS } from "../../shared/routes/routes";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'appointment-cancel';
 
@@ -34,6 +35,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const history = useHistory();
+    const {t} = useTranslation();
 
   const initialValues = {
     notAcceptingNewClients: {
@@ -82,14 +84,14 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
   }
 
   const { title, description, buttonText }: { title: string, description: string, buttonText: string } = useMemo(() => {
-    let title = 'Cancel appointment';
-    let description = 'Select a reason to cancel the appointment';
-    let buttonText = 'Cancel appointment';
+    let title = `${t("scheduling_cancel_appointment")}`;
+    let description = `${t("cancel_appointment_reason_message")}`;
+    let buttonText = `${t("scheduling_cancel_appointment")}`;
 
     if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
-      title = 'Appointment request not accepted';
-      description = 'Select a reason to not accepting the request';
-      buttonText = 'Decline request';
+      title = `${t("appointment_request_not_accepted")}`;
+      description = `${t("appointment_request_reason_to_not_accepting_message")}`;
+      buttonText = `${t("appointment_request_decline_request")}`;
     }
 
     return { title, description, buttonText }
@@ -120,7 +122,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
 
           if (response.meta.requestStatus === 'rejected') {
             presentToast(
-              '¡Error at cancel appointment!',
+              `!${t("toast_messages_error_cancel_appointment")}!`,
               1000,
               'top',
               'danger'
@@ -141,7 +143,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
         formik.resetForm();
         dispatch(setLoading({ loading: false, message: undefined }));
         presentToast(
-          '¡Error at cancel appointment!',
+          `!${t("toast_messages_error_cancel_appointment")}!`,
           1000,
           'top',
           'danger'
@@ -185,7 +187,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
               checked={formik.values.notAcceptingNewClients.checked}
               onIonChange={(e) => checkItemHandler('notAcceptingNewClients')}
             >
-              Not accepting new clients
+              {t("cancel_appointment_not_accepting_new_clients")}
             </IonCheckbox>
           </IonItem>
           <IonItem lines="none">
@@ -194,7 +196,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
               checked={formik.values.notWithinScopeOfExpertise.checked}
               onIonChange={(e) => checkItemHandler('notWithinScopeOfExpertise')}
             >
-              Not within scope of expertise
+              {t("cancel_appointment_not_within_scope_of_expertise")}
             </IonCheckbox>
           </IonItem>
           <IonItem lines="none">
@@ -203,7 +205,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
               checked={formik.values.needReferral.checked}
               onIonChange={(e) => checkItemHandler('needReferral')}
             >
-              Need referral
+              {t("cancel_appointment_need_referral")}
             </IonCheckbox>
           </IonItem>
           <IonItem lines="none">
@@ -212,7 +214,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
               checked={formik.values.other.checked}
               onIonChange={(e) => checkItemHandler('other')}
             >
-              Other
+              {t("cancel_appointment_other")}
             </IonCheckbox>
           </IonItem>
           {formik.values.other.checked && (

@@ -15,6 +15,7 @@ import { setDate } from '../../state/calendarSlice';
 import PaidInAdvance from './Steps/PaidInAdvance/PaidInAdvance';
 
 import './RescheduleAppointment.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'reschedule-appointment';
 
@@ -30,6 +31,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const history = useHistory();
+      const { t } = useTranslation();
   const {
     provider,
   } = useSelector((state: RootState) => state)
@@ -55,10 +57,10 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
 
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {
-      return 'At session completion';
+      return `${t("scheduling_at_session_completion")}`;
     }
 
-    return 'In advance of session';
+    return `${t("schedule_appointment_in_advance_of_session")}`;
   }, [selectedService?.paymentType]);
 
   const disableSaveChanges = useMemo(() => {
@@ -74,7 +76,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
   const cancelOrBackText = useMemo(() => {
     if (step === 1 || step === 2 || step === 3) return 'Back';
 
-    return 'Cancel';
+    return `${t("log_out_cancel")}`;
   }, [step]);
 
   const closeHandler = useCallback((close?: boolean) => {
@@ -93,7 +95,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
     let redirect = false;
 
     try {
-      dispatch(setLoading({ loading: true, message: 'Rescheduling appointment' }));
+      dispatch(setLoading({ loading: true, message: `${t("loading_rescheduling_appointment")}` }));
 
       const [providerPractice] = provider.providerPractices;
       if (
@@ -130,7 +132,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
         if (response.payload) {
           dispatch(setLoading({ loading: false, message: '' }));
           presentToast(
-            'Reschedule success',
+            `${t("toast_messages_reschedule_success")}`,
             1000,
             'middle',
             'success'
@@ -155,7 +157,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
           dispatch(setLoading({ loading: false, message: '' }));
           closeHandler(true);
           presentToast(
-            'Error at reschedule appointment',
+            `${t("toast_messages_error_reschedule_appointment")}`,
             1000,
             'middle',
             'danger'
@@ -166,12 +168,12 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
       dispatch(setLoading({ loading: false, message: '' }));
       closeHandler();
       presentToast(
-        'Error at reschedule appointment',
+        `${t("toast_messages_error_reschedule_appointment")}`,
         1000,
         'top',
         'danger'
       );
-      console.error('error at reschedule appointment: ', error);
+      console.error(`${t("toast_messages_error_reschedule_appointment")} :`, error);
     } finally {
       if (redirect) {
         history.push(APPOINTMENTS);

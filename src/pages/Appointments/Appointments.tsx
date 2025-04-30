@@ -38,6 +38,7 @@ import { APPOINTMENTS } from "../../shared/routes/routes";
 import { setLoading } from "../../state/loadingSlice";
 
 import "./Appointments.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'appointments';
 
@@ -49,6 +50,7 @@ const Appointments: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
+  const { t } = useTranslation();
   const sortedEvents = useMemo(() => [...events?.events, ...microsoftEvents, ...googleEvents || []].sort(
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ).filter(({ status, endTime }) => (
@@ -114,7 +116,7 @@ const Appointments: React.FC = (): React.ReactElement => {
   useEffect(() => {
     if (location.pathname === APPOINTMENTS && !isCreateAppointmentOpen) {
       if (state.loading) {
-        dispatch(setLoading({ loading: true, message: 'Loading appointments' }));
+        dispatch(setLoading({ loading: true, message: `${t("loading_appointments")}` }));
       }
 
       if (!state.loading) {
@@ -129,7 +131,7 @@ const Appointments: React.FC = (): React.ReactElement => {
         <div className={`${CSSprefix}-no-appointments-container`}>
           <IonItem lines="none">
             <IonText className={`${CSSprefix}-no-appointments ion-text-center`}>
-              You have no scheduled appointments yet. To start adding them, please tap on the “+” floating button on the bottom of the screen.
+               {t("You_have_no_scheduled_appointments_yet")}
             </IonText>
           </IonItem>
         </div>
@@ -163,6 +165,8 @@ const Appointments: React.FC = (): React.ReactElement => {
           showDatePicker={true}
           datePickerText={dateText}
           datePickerCB={openDatePickerHandler}
+          // showNotifications
+          // showSearchOption
         />
         <IonContent fullscreen={true}>
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>

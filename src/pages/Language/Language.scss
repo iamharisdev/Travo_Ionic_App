@@ -1,0 +1,30 @@
+.subscription-deatils {
+  ion-content {
+    --background: var(--ion-trova-page-background);
+    padding: 8px 16px;
+  }
+
+  ion-radio {
+    --color-checked: #000;
+    --border-color: #000;
+    --color: #000;
+    width: 20px;
+    height: 20px;
+  }
+
+  ion-list {
+    background: transparent;
+    padding: 8px 16px;
+    align-items: center;
+    gap: 16px;
+    align-self: stretch;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+}
