@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact, useIonLoading } from '@ionic/react';
+import { IonApp, IonContent, IonRouterOutlet, IonTitle, IonToolbar, setupIonicReact, useIonLoading } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { FORGOT_PASSWORD, DASHBOARD, SING_IN, RESET_PASSWORD, VERIFY_EMAIL, PASSWORD_CHANGED_SUCCESSFULLY, LOADING } from './shared/routes/routes';
 import SignIn from './pages/SignIn/SignIn';
@@ -13,7 +13,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from './state/store';
 import { Device } from "@capacitor/device";
 import eruda from 'eruda';
-
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -37,12 +36,15 @@ import './global.scss';
 /* Big calendar */
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Loading from './pages/Loading/Loading';
-
+import { useTranslation } from 'react-i18next';
+import "./i18n"; // Ensure this is at the top
+ 
 setupIonicReact();
 
 const App: React.FC = () => {
   const { loading, message } = useSelector((state: RootState) => state.loading);
   const [present, dismiss] = useIonLoading();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const initHandler = async () => {
@@ -73,7 +75,6 @@ const App: React.FC = () => {
       dismiss();
     }
   }, [dismiss, loading, message, present]);
-
   return (
     <IonApp>
       <IonReactRouter>

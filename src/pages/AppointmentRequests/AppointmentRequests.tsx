@@ -28,6 +28,7 @@ import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 import { setDate } from "../../state/calendarSlice";
 
 import "./AppointmentRequests.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'appointment-requests';
 
@@ -42,6 +43,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
   ).filter(({ status }) => status === AppointmentStatusEnum.PENDING), [events?.events]);
   const [presentToast] = usePresentToast();
+      const { t } = useTranslation();
   const dateText = useMemo(() => {
     if (selectedDate) {
       return months[dayjs(selectedDate).month()];
@@ -103,7 +105,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
 
         if (response.meta.requestStatus === 'rejected') {
           presentToast(
-            '¡Error at confirm appointment!',
+            `!${t("toast_messages_error_confirm_appointment")}!`,
             1000,
             'top',
             'danger'
@@ -112,7 +114,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
 
         dispatch(setLoading({ loading: false, message: undefined }));
         presentToast(
-          '¡Appointment confimed!',
+         `!${t("toast_messages_appointment_confirmed")}!`,
           1000,
           'top',
           'success'
@@ -121,7 +123,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     } catch (error) {
       dispatch(setLoading({ loading: false, message: undefined }));
       presentToast(
-        '¡Error at cancel appointment!',
+        `!${t("toast_messages_error_cancel_appointment")}!`,
         1000,
         'top',
         'danger'
@@ -168,7 +170,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
         <div className={`${CSSprefix}-no-appointments-container`}>
           <IonItem lines="none">
             <IonText className={`${CSSprefix}-no-appointments ion-text-center`}>
-              You have no appointment request yet.
+            {t("blank_states_no_appointment_request_message")}
             </IonText>
           </IonItem>
         </div>

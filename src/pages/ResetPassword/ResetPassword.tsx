@@ -17,6 +17,7 @@ import UseSwipeGesture from '../../hooks/useSwipeGesture';
 import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
 
 import './ResetPassword.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSprefix = 'reset-password';
 
@@ -25,6 +26,7 @@ const ResetPassword: React.FC = (): React.ReactElement => {
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const history = useHistory();
   const resetPasswordRef = useRef();
+    const {t} = useTranslation();
 
   const disableButton = useMemo(
     () => password === '' || confirmPassword === '' || password !== confirmPassword,
@@ -50,7 +52,7 @@ const ResetPassword: React.FC = (): React.ReactElement => {
           </IonItem>
           <IonItem className='ion-no-padding' lines='none'>
             <IonText className={`${CSSprefix}-title`}>
-              Reset password
+            {t("forgot_password_reset_password")}
             </IonText>
           </IonItem>
           <IonItem className='ion-no-padding' lines='none'>
@@ -58,26 +60,26 @@ const ResetPassword: React.FC = (): React.ReactElement => {
               color='dark'
               className={`${CSSprefix}-description`}
             >
-              Create your new password. Please, use a minimum of 8 characters with at least one number and special character.
+              {t("forgot_password_create_new_password_message")}
             </IonText>
           </IonItem>
           <IonItem lines="none" className="custom-input ion-margin-bottom">
-            <IonLabel position="stacked" class="custom-input">Password</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("login_password")}</IonLabel>
             <IonInput
               class="custom"
               type="password"
-              placeholder="Enter password"
+              placeholder={t("forgot_password_enter_password")}
               onIonInput={(e) => setPassword(e.detail.value || '')}
             >
               <IonInputPasswordToggle slot="end" color="dark" />
             </IonInput>
           </IonItem>
           <IonItem lines="none" className="custom-input ion-margin-bottom">
-            <IonLabel position="stacked" class="custom-input">Confirm password</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("forgot_password_confirm_password")}</IonLabel>
             <IonInput
               class="custom"
               type="password"
-              placeholder="Re-enter password"
+              placeholder={t("forgot_password_re_enter_password")}
               onIonInput={(e) => setConfirmPassword(e.detail.value || '')}
             >
               <IonInputPasswordToggle slot="end" color="dark" />
@@ -90,14 +92,14 @@ const ResetPassword: React.FC = (): React.ReactElement => {
             expand='block'
             onClick={() => history.push(PASSWORD_CHANGED_SUCCESSFULLY)}
           >
-            Reset password
+            {t("forgot_password_reset_password")}
           </IonButton>
           <IonButton
             href={SING_IN}
             className={`${CSSprefix}-back-to-sign-in`}
             fill='clear'
           >
-            Back to Sign in
+            {t("forgot_password_back_to_sign_in")}
           </IonButton>
         </div>
       </IonContent>

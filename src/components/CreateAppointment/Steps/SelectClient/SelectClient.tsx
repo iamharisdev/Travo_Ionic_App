@@ -7,6 +7,7 @@ import { setLoading } from '../../../../state/loadingSlice';
 import { Patient, searchPatientAction } from '../../../../state/patientSlice';
 
 import './SelectClient.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'select-client';
 
@@ -19,10 +20,11 @@ const SelectClient: React.FC<SelectedClientProps> = ({ isOpen, setSelectedClient
   const [clientToSearch, setClientToSearch] = useState<string | null | undefined>('');
   const dispatch = useDispatch<AppDispatch>();
   const { provider, patient } = useSelector((state: RootState) => state);
+    const { t } = useTranslation();
 
   const getSearchClient = async () => {
     try {
-      dispatch(setLoading({ loading: true, message: 'Searching client' }));
+      dispatch(setLoading({ loading: true, message: `${t("Searching_client_loading")}` }));
 
       const [providerPractice] = provider.providerPractices;
       if (providerPractice && typeof clientToSearch === 'string') {
@@ -46,7 +48,7 @@ const SelectClient: React.FC<SelectedClientProps> = ({ isOpen, setSelectedClient
         <div className={`${CSSPrefix}-no-clients-container`}>
           <IonItem lines="none">
             <IonText className={`${CSSPrefix}-no-clients ion-text-center`}>
-              You have no registered clients yet. To start adding them, please tap on the “add client” floating button on the bottom of the screen.
+            {t("blank_states_no_registered_clients_message")}
             </IonText>
           </IonItem>
         </div>
@@ -102,12 +104,12 @@ const SelectClient: React.FC<SelectedClientProps> = ({ isOpen, setSelectedClient
     <div className={CSSPrefix}>
       <IonItem lines="none">
         <IonText className={`${CSSPrefix}-title`}>
-          Schedule appointment
+          {t("schedule_appointment")}
         </IonText>
       </IonItem>
       <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
         <IonText>
-          Select client
+          {t("schedule_appointment_select_client")}
         </IonText>
       </IonItem>
       <IonItem lines="none" className="ion-margin-top">
@@ -115,7 +117,7 @@ const SelectClient: React.FC<SelectedClientProps> = ({ isOpen, setSelectedClient
           className={`${CSSPrefix}-search-input`}
           class="custom"
           type="text"
-          placeholder="Search client"
+          placeholder={t("schedule_appointment_search_client")}
           value={clientToSearch}
           enterkeyhint="search"
           onIonInput={(e) => setClientToSearch(e.detail.value)}

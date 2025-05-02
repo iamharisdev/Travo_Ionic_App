@@ -16,6 +16,7 @@ import UseSwipeGesture from '../../hooks/useSwipeGesture';
 import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
 
 import './VerifyEmail.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSprefix = 'verify-email';
 
@@ -23,6 +24,7 @@ const VerifyEmail: React.FC = (): React.ReactElement => {
   const [code, setCode] = useState<string>('');
   const history = useHistory();
   const verifyEmailRef = useRef();
+  const {t} = useTranslation();
 
   const disableButton = useMemo(
     () => code === '',
@@ -48,7 +50,7 @@ const VerifyEmail: React.FC = (): React.ReactElement => {
           </IonItem>
           <IonItem className='ion-no-padding' lines='none'>
             <IonText className={`${CSSprefix}-title`}>
-              Verify email
+            {t("forgot_password_verify_email")}
             </IonText>
           </IonItem>
           <IonItem className='ion-no-padding' lines='none'>
@@ -56,17 +58,17 @@ const VerifyEmail: React.FC = (): React.ReactElement => {
               color='dark'
               className={`${CSSprefix}-description`}
             >
-              For your security, we sent a 6-digit code to your email address. Please enter that code here.
+              {t("forgot_password_verification_code_message")}
             </IonText>
           </IonItem>
           <IonItem lines='none' className='custom-input ion-margin-bottom'>
             <IonLabel position='stacked' class='custom-input'>
-              Verification code
+            {t("forgot_password_verification_code")}
             </IonLabel>
             <IonInput
               class='custom'
               type='number'
-              placeholder='Enter your 6 digit code'
+              placeholder={t("forgot_password_enter_your_6_digit_code")}
               onIonInput={(e) => setCode(e.detail.value || '')}
             />
           </IonItem>
@@ -77,14 +79,14 @@ const VerifyEmail: React.FC = (): React.ReactElement => {
             expand='block'
             onClick={() => history.push(RESET_PASSWORD)}
           >
-            Submit
+            {t("forgot_password_submit")}
           </IonButton>
           <IonButton
             href={SING_IN}
             className={`${CSSprefix}-back-to-sign-in`}
             fill='clear'
           >
-            Back to Sign in
+            {t("forgot_password_back_to_sign_in")}
           </IonButton>
         </div>
       </IonContent>

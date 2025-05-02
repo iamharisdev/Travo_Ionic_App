@@ -7,6 +7,7 @@ import { AppointmentDateTime } from '../../RescheduleAppointment';
 import './SelectDateTime.scss';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state/store';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'select-date-time-reschedule';
 
@@ -26,6 +27,7 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
   } = useSelector((state: RootState) => state);
   const [currentSelectedDate, setCurrenSelectedDate] = useState<Date>();
   const [currentSelectedDateTime, setCurrenSelectedDateTime] = useState<AppointmentDateTime>();
+    const { t } = useTranslation();
 
   const hourValues = useMemo(() => {
     if (provider?.practice?.displayTwentyFourHourTime) {
@@ -59,12 +61,12 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
     <div className={CSSPrefix}>
       <IonItem lines="none">
         <IonText className={`${CSSPrefix}-title`}>
-          Schedule appointment
+          {t("schedule_appointment")}
         </IonText>
       </IonItem>
       <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
         <IonText>
-          Select date and time
+          {t("schedule_appointment_select_date_and_time")}
         </IonText>
       </IonItem>
       <div className={`${CSSPrefix}-date-picker-container`}>
@@ -117,7 +119,7 @@ const SelectDateTime: React.FC<SelectDateTimeProps> = ({
           disabled={!currentSelectedDate && !currentSelectedDateTime}
           onClick={onNextHandler}
         >
-          Next
+          {t("schedule_appointment_next")}
         </IonButton>
       </div>
     </div>

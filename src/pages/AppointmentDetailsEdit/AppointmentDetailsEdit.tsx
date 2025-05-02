@@ -28,6 +28,7 @@ import usePresentToast from "../../hooks/usePresentToast";
 import dayjs from "dayjs";
 
 import "./AppointmentDetailsEdit.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'appointment-details-edit';
 
@@ -37,6 +38,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
+        const {t} = useTranslation();
   const initialValues = useMemo(() => ({
     patientName: location?.state?.patientName || '',
     patientServiceName: location?.state?.patientServiceName || '',
@@ -105,7 +107,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
 
         if (response.meta.requestStatus === 'rejected') {
           presentToast(
-            '¡Error at edit appointment location!',
+            `${t("toast_messages_error_edit_appointment")}`,
             1000,
             'top',
             'danger'
@@ -129,12 +131,12 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
         <IonGrid className="ion-padding">
           <IonRow>
             <IonText className={`${CSSprefix}-title ion-margin-top`}>
-              Edit appointment
+            {t("scheduling_edit_appointment")}
             </IonText>
           </IonRow>
           <IonRow>
             <IonText className={`${CSSprefix}-description`}>
-              Edit appointment details
+            {t("scheduling_edit_appointment_details")}
             </IonText>
           </IonRow>
         </IonGrid>
@@ -144,7 +146,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             className={`custom-input ion-margin-vertical`}
           >
             <IonLabel position="stacked" className={`${CSSprefix}-label-disabled`} class="custom-input">
-              Client
+              {t("scheduling_client")}
             </IonLabel>
             <IonInput
               disabled
@@ -158,7 +160,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             className={`custom-input ion-margin-vertical`}
           >
             <IonLabel position="stacked" className={`${CSSprefix}-label-disabled`} class="custom-input">
-              Service
+              {t("scheduling_service")}
             </IonLabel>
             <IonSelect
               disabled
@@ -179,7 +181,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             className={`custom-input ion-margin-vertical`}
           >
             <IonLabel position="stacked" className={`${CSSprefix}-label-disabled`} class="custom-input">
-              Adjusted price
+              {t("scheduling_adjusted_price")}
             </IonLabel>
             <IonInput
               disabled
@@ -192,7 +194,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             lines="none"
             className={`custom-input ion-margin-vertical`}
           >
-            <IonLabel position="stacked" class="custom-input">Location</IonLabel>
+            <IonLabel position="stacked" class="custom-input">{t("scheduling_location")}</IonLabel>
             <IonSelect
               name="location"
               toggleIcon={caretDownOutline}
@@ -201,8 +203,8 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
               value={formik.values.location}
               onIonChange={(e) => formik.setFieldValue('location', e.detail.value)}
             >
-              <IonSelectOption value="Online">Online</IonSelectOption>
-              <IonSelectOption value="In Person">In Person</IonSelectOption>
+              <IonSelectOption value="Online">{t("scheduling_online")}</IonSelectOption>
+              <IonSelectOption value="In Person">{t("scheduling_in_person")}</IonSelectOption>
             </IonSelect>
           </IonItem>
           <IonItem
@@ -210,7 +212,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             className={`custom-input ion-margin-vertical`}
           >
             <IonLabel position="stacked" className={`${CSSprefix}-label-disabled`} class="custom-input">
-              Payment type
+              {t("scheduling_payment_type")}
               <IonIcon className={`${CSSprefix}-info-icon`} icon={informationCircle} />
             </IonLabel>
             <IonInput
@@ -227,7 +229,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             disabled={!formik.dirty}
             onClick={() => formik.submitForm()}
           >
-            Save changes
+            {t("scheduling_save_changes")}
           </IonButton>
         </IonList>
       </IonContent>

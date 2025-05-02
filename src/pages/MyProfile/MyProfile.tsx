@@ -17,12 +17,14 @@ import UseSwipeGesture from "../../hooks/useSwipeGesture";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
 
 import "./MyProfile.scss";
+import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'my-profile';
 
 const MyProfile: React.FC = (): React.ReactElement => {
   const myProfileRef = useRef();
   const history = useHistory();
+  const { t } = useTranslation();
   const { provider } = useSelector((state: RootState) => state);
   const isAdmin = useMemo(() => {
     if (provider.providerPractices.length > 0) {
@@ -44,7 +46,7 @@ const MyProfile: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title ion-margin-top`}>
-            My profile
+          {t("profile_settings_my_profile")}
           </IonText>
         </IonItem>
         <IonItem
@@ -53,7 +55,7 @@ const MyProfile: React.FC = (): React.ReactElement => {
           onClick={() => history.push(PROFILE_INFORMATION)}
         >
           <IonText>
-            My profile information
+            {t("profile_settings_my_profile_information")}
           </IonText>
           <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
             <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
@@ -67,7 +69,7 @@ const MyProfile: React.FC = (): React.ReactElement => {
               onClick={() => history.push(BUSINESS_INFORMATION)}
             >
               <IonText>
-                Business information
+                {t("profile_settings_business_information")}
               </IonText>
               <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
                 <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />
@@ -79,7 +81,7 @@ const MyProfile: React.FC = (): React.ReactElement => {
               onClick={() => history.push(BRANDING)}
             >
               <IonText>
-                Branding
+                {t("profile_settings_branding")}
               </IonText>
               <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">
                 <IonIcon slot="icon-only" color="dark" icon={caretForwardOutline} size="small" />

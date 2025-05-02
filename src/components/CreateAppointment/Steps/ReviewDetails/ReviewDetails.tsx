@@ -15,6 +15,7 @@ import { APPOINTMENTS } from '../../../../shared/routes/routes';
 import { setDate } from '../../../../state/calendarSlice';
 
 import './ReviewDetails.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSPrefix = 'review-details';
 
@@ -43,6 +44,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   const history = useHistory();
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+    const { t } = useTranslation();
 
   const openPopover = (e: any) => {
     popover.current!.event = e;
@@ -65,17 +67,17 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {
-      return 'At session completion';
+      return `${t("scheduling_at_session_completion")}`;
     }
 
-    return 'In advance of session';
+    return `${t("schedule_appointment_in_advance_of_session")}`;
   }, [selectedService?.paymentType]);
 
   const createAppointmentsHandler = async () => {
     let redirect = false;
 
     try {
-      dispatch(setLoading({ loading: true, message: 'Creating appointment' }));
+      dispatch(setLoading({ loading: true, message: `${t("schedule_appointment_creating_appointment")}` }));
 
       const [providerPractice] = provider.providerPractices;
       if (
@@ -127,7 +129,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         if (!response.payload) {
           closeHandler(true);
           presentToast(
-            'Error at create appointment',
+            `${t("toast_messages_error_create_appointment")}`,
             1000,
             'middle',
             'danger'
@@ -139,12 +141,12 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       dispatch(setLoading({ loading: false, message: '' }));
       closeHandler();
       presentToast(
-        'Error at create appointment',
+        `${t("toast_messages_error_create_appointment")}`,
         1000,
         'top',
         'danger'
       );
-      console.error('error at create appointment: ', error);
+      console.error(`${t("toast_messages_error_create_appointment")} :`, error);
     } finally {
       if (redirect) {
         history.push(APPOINTMENTS);
@@ -156,12 +158,12 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     <div className={CSSPrefix}>
       <IonItem lines="none">
         <IonText className={`${CSSPrefix}-title`}>
-          Schedule appointment
+          {t("schedule_appointment")}
         </IonText>
       </IonItem>
       <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
         <IonText>
-          Review appointment details
+          {t("schedule_appointment_review_appointment_details")}
         </IonText>
       </IonItem>
       <IonItem
@@ -170,7 +172,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         onClick={() => goToStep && goToStep(0)}
       >
         <IonLabel position="stacked">
-          Client
+          {t("scheduling_client")}
         </IonLabel>
         <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
         <IonLabel position="stacked">{`${selectedClient?.firstName} ${selectedClient?.lastName}`}</IonLabel>
@@ -180,7 +182,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
         onClick={() => goToStep && goToStep(1)}
       >
-        <IonLabel position="stacked">Service</IonLabel>
+        <IonLabel position="stacked">{t("scheduling_service")}</IonLabel>
         <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
         <IonLabel position="stacked">{selectedService?.name}</IonLabel>
       </IonItem>
@@ -189,7 +191,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
         onClick={() => goToStep && goToStep(2)}
       >
-        <IonLabel position="stacked">Date and time</IonLabel>
+        <IonLabel position="stacked">{t("schedule_appointment_date_and_time")}</IonLabel>
         <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
         <IonLabel position="stacked">{dateTime}</IonLabel>
       </IonItem>
@@ -198,7 +200,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
         <IonLabel position="stacked">
-          Payment type
+        {t("scheduling_payment_type")}
           <IonIcon
             className={`${CSSPrefix}-info-icon`}
             icon={informationCircle}
@@ -213,7 +215,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         expand="block"
         onClick={async () => createAppointmentsHandler()}
       >
-        Schedule Appointment
+        {t("schedule_appointment")}
       </IonButton>
       <IonPopover
         className="info-popover"
@@ -228,7 +230,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
             icon={informationCircle}
             onClick={openPopover}
           />
-          Payment type is set by the service
+          {t("toast_messages_payment_type_message")}
         </div>
       </IonPopover>
     </div>

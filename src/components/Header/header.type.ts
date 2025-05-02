@@ -4,6 +4,9 @@ export interface HeaderProps {
   collapse?: 'condense' | 'fade';
   showBack?: boolean;
   showEdit?: boolean;
+  showSave?: boolean;
+  selectedLang?: string;
+  newLang?: string;
   showMenu?: boolean;
   menuId?: string;
   showCancel?: boolean;
@@ -11,7 +14,10 @@ export interface HeaderProps {
   showDatePicker?: boolean;
   datePickerText?: string;
   leftLabel?: string;
+  showNotifications?:boolean;
+  showSearchOption?:boolean;
   editCB?: () => void;
   cancelCB?: () => void;
   datePickerCB?: (e: any) => void;
+  saveCB?: () => void;
 }
