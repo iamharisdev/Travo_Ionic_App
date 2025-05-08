@@ -18,7 +18,7 @@ import { AppDispatch, RootState } from "../../state/store";
 import dayjs from "dayjs";
 import { useHistory, useLocation } from "react-router";
 import { months, weekday } from "../../shared/constants/dates";
-import { callOutline, copyOutline, mailOutline, personCircleOutline, pricetagOutline, timerOutline, videocamOutline } from "ionicons/icons";
+import { callOutline, copyOutline, mailOutline, personCircleOutline, pricetagOutline, returnDownBackOutline, returnUpForwardOutline, timerOutline, videocamOutline } from "ionicons/icons";
 import { getAppointmentColor } from "../../shared/utils/appointments.util";
 import { AppointmentDetailTypeEnum, AppointmentStatusEnum, CALENDAR_SLOTS } from "../../shared/types/appointment.type";
 import { Clipboard } from "@capacitor/clipboard";
@@ -28,9 +28,14 @@ import { setLoading } from "../../state/loadingSlice";
 import { confirmAppointmentAction } from "../../state/schedulingSlice";
 import RescheduleAppointment from "../../components/RescheduleAppointment/RescheduleAppointment";
 import Recurring from "../../components/Recurring/Recurring";
-
+import {
+  returnDownForwardOutline,
+  returnUpBackOutline,
+  pencilOutline
+} from 'ionicons/icons';
 import "./AppointmentDetails.scss";
 import { useTranslation } from "react-i18next";
+import RecurringAppointmentModal from "../../components/RescheduleAppointment/Steps/RecurringAppointmentModal/RecurringAppointmentModal";
 
 const CSSprefix = 'appointment-details';
 
@@ -278,6 +283,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                 {`${event?.location}, ${duration}`}
               </IonText>
             </IonItem>
+            {event.frequency &&  <RecurringAppointmentModal recurringFrequency={event.frequency} event={event} recurringCount={event.count || 0 } startTime={event.startTime} practiceId={event.practiceId} providerId={event.providerId}/>}
             <IonItem lines="none">
               <IonIcon icon={pricetagOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-details`}>
@@ -316,6 +322,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                 />
               </IonItem>
             )}
+
             {location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE && isOnline && (
               <>
                 <IonButton
@@ -358,6 +365,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
       />
       <Recurring
         isOpen={isRecurringOpen}
+        appointment={event}
         close={() => setIsRecurringOpen(false)}
       />
     </IonPage>

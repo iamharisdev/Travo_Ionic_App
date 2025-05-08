@@ -1,0 +1,132 @@
+ion-modal#edit-recurring-modal {
+  --height: 347px;
+  --width: 302px;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+ion-modal#recurring-modal::part(backdrop) {
+  opacity: 1;
+}
+
+.edit-recurring {
+  ion-list {
+    background: var(--ion-trova-white);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0;
+  }
+
+  .ios ion-list {
+    padding-bottom: 24px;
+  }
+
+  .md ion-list {
+    padding-bottom: 20px;
+  }
+
+  &-title {
+    color: var(--ion-trova-gray-text);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin: auto;
+  }
+
+  &-description {
+    color: var(--ion-trova-input-placeholder);
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: 14px auto 20px auto;
+  }
+  &-input{
+    background: var(--ion-trova-white, #FFF);
+    border: 1px solid #D1D3D4;
+    border-radius: 5px;
+  }
+  ion-select::part(icon) {
+    position: absolute;
+    top: 0px;
+    right: 12px;
+    font-size: 20px;
+    color: var(--ion-trova-black);
+  }
+  ion-select::part(placeholder) {
+    font-size: 14px !important;
+  }
+  ion-select::part(text) {
+    font-size: 14px !important;
+    color: inherit;
+ }
+ 
+  &-buttons {
+    margin-top: 14px;
+
+    ion-button {
+      margin: auto;
+      width: 100%;
+      height: 48px;
+    }
+  }
+  &-left-button{
+    margin-right: 10px !important;
+  }
+  &-right-button{
+    margin-left: 10px !important;
+  }
+  &-select-input-field{
+    margin-bottom: 10px;
+  }
+  &-lables{
+    font-size: small !important;
+    margin-top: -10px !important;
+    z-index: 99 !important;
+  }
+}
+
+
+
+.custom-select,
+.custom-input {
+  font-size: 14px;
+  color: #555;
+  margin-top: -7px;
+  margin-bottom: -10px;
+}
+
+.custom-ion-item {
+  --padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 10px !important;
+  --padding-top: 0px !important;
+  --padding-bottom: 0px !important;
+}
+.caretUpOutline{
+  color: var(--ion-trova-black);
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  right: 16px;
+  top: 28px;
+  z-index: 99;
+}
+.caretDownOutline{
+  color: var(--ion-trova-black);
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  bottom: 0px;
+  right: 16px;
+  z-index: 99;
+}

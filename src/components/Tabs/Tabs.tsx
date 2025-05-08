@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
 import { Redirect, Route, useLocation } from "react-router-dom";
-import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR_DAY, CALENDAR_MONTH, CALENDAR_WEEK, DASHBOARD, MY_PROFILE, NOTIFICATIONS_DETAILS, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS, CONFIGRATION, LANGUAGE } from "../../shared/routes/routes";
+import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR_DAY, CALENDAR_MONTH, CALENDAR_WEEK, DASHBOARD, MY_PROFILE, NOTIFICATIONS_DETAILS, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS, CONFIGURATION, LANGUAGE } from "../../shared/routes/routes";
 import Appointments from "../../pages/Appointments/Appointments";
 import Profile from "../../pages/Profile/Profile";
 import MyProfile from "../../pages/MyProfile/MyProfile";
@@ -54,7 +54,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         || location.pathname === BUSINESS_INFORMATION
         || location.pathname === BRANDING
         || location.pathname === SUBSCRIPTION_DETAILS
-        || location.pathname === CONFIGRATION
+        || location.pathname === CONFIGURATION
         || location.pathname === LANGUAGE
         || location.pathname === NOTIFICATIONS_DETAILS
         || location.pathname.includes(APPOINTMENT_DETAILS)
@@ -118,7 +118,7 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={BUSINESS_INFORMATION} component={BusinessInformation} />
         <Route exact path={BRANDING} component={Branding} />
         <Route exact path={SUBSCRIPTION_DETAILS} component={SubscriptionDetails} />
-        <Route exact path={CONFIGRATION} component={ConfigrationPage} />
+        <Route exact path={CONFIGURATION} component={ConfigrationPage} />
         <Route exact path={LANGUAGE} component={LanguagePage} />
         <Route exact path={`${APPOINTMENT_DETAILS}/:id`} component={AppointmentDetails} />
         <Route exact path={`${APPOINTMENT_DETAILS_EDIT}/:id`} component={AppointmentDetailsEdit} />

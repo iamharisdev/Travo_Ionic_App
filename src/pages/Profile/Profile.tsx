@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import { caretForwardOutline, exitOutline } from "ionicons/icons";
-import {CONFIGRATION, MY_PROFILE, SING_IN, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
+import {CONFIGURATION, MY_PROFILE, SING_IN, SUBSCRIPTION_DETAILS } from "../../shared/routes/routes";
 import { useHistory } from "react-router";
 import Menu from "../../components/Menu/Menu";
 import { PROFILE_MENU_ID } from "../../shared/constants/menu";
@@ -72,7 +72,7 @@ const Profile: React.FC = (): React.ReactElement => {
           </IonItem>
           <IonItem
             lines="none"
-            onClick={() => history.push(CONFIGRATION)}
+            onClick={() => history.push(CONFIGURATION)}
           >
             <IonText>{t("configuration")}</IonText>
             <IonButton slot="end" fill="clear" size="small" className="ion-no-margin">

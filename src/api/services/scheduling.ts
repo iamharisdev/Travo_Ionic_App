@@ -21,6 +21,10 @@ export interface CreateAppointmentPayload {
   endTime: string;
   invoiceDataId?: string;
   recurring:boolean;
+  count?:number;
+  frequency?:string;
+  recurringUpdate?:boolean;
+  id:string;
 }
 
 export interface RescheduleAppointmentPayload {
@@ -143,6 +147,12 @@ export const createAppointment = async (
   providerId: string,
   payload: CreateAppointmentPayload,
 ) => {
+  if (payload?.count && payload.frequency && payload.recurringUpdate) {
+    return await schedulingApiInstance.put<{ id: string }>(
+      `practices/${practiceId}/providers/${providerId}/appointments/${payload.id}/edit/recurring`,
+      payload
+    );
+  }
   if (payload?.recurring) {
     return await schedulingApiInstance.post<{ id: string }>(
       `/practices/${practiceId}/providers/${providerId}/appointments/recurring`,
