@@ -28,15 +28,17 @@ export interface CreateAppointmentPayload {
 }
 
 export interface RescheduleAppointmentPayload {
-  invoiceDataId: string;
-  patientEmail: string;
-  patientId: string;
-  patientName: string;
-  patientNumber: string;
+  frequency?: string;
+  count?: number;
+  recurring: boolean;
+  futureAppointments: string[];
+  ignoreOthers: boolean;
   patientServiceId: string;
   startTime: string;
   endTime: string;
-  price: number | null | undefined;
+  price: number;
+  location: string;
+  invoiceDataId: string;
 }
 
 export const getEvents = async (
@@ -172,6 +174,6 @@ export const rescheduleAppointment = async (
   appointmentId: string,
   payload: RescheduleAppointmentPayload
 ) => await schedulingApiInstance.put<void>(
-  `/practices/${practiceId}/providers/${providerId}/appointments/${appointmentId}/reschedule`,
+  `/practices/${practiceId}/providers/${providerId}/appointments/${appointmentId}/reschedule/recurring`,
   payload
 );

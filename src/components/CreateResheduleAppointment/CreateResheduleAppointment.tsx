@@ -20,7 +20,7 @@ export interface AppointmentDateTime {
   endTime: string;
 }
 
-const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, selectedSlot, currentDate, setIsOpen, currentStep, appointment }) => {
+const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, selectedSlot, currentDate, setIsOpen, currentStep, appointment, selected }) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
   const [selectedService, setSelectedService] = useState<Services>();
   const [selectedPrevService, setSelectedPrevService] = useState<Services>();
@@ -182,6 +182,7 @@ const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, is
         selectedService={appointment?.patientServiceName ? { name: appointment.patientServiceName, id: '', duration: 0, paymentType: 'At Completion' } as Services : undefined}
         selectedDateTime={selectedDateTime}
         invoiceDataId={appointment?.invoiceDataId}
+        selected={selected}
         closeHandler={closeHandler}
         goToStep={(step) => setStep((prevState) => {
           setPrevStep(prevState);

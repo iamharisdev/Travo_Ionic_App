@@ -76,6 +76,7 @@ const Recurring: React.FC<LogoutProps> = ({ isOpen, close, appointment }) => {
     <CreateResheduleAppointment
           isOpen={rescheduleOpen}
           currentDate={selectedDate}
+          selected={selected}
           setIsOpen={setRescheduleOpen}
           currentStep={2}
           appointment={appointment}

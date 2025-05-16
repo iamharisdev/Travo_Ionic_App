@@ -12,11 +12,12 @@ import { caretDownOutline, caretUpOutline, informationCircle } from 'ionicons/ic
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../state/store';
 import { setLoading } from '../../../../state/loadingSlice';
-import { createAppointmentAction, getEventsAction } from '../../../../state/schedulingSlice';
+import { getEventsAction, rescheduleAppointmentAction } from '../../../../state/schedulingSlice';
 import usePresentToast from '../../../../hooks/usePresentToast';
 import { useHistory } from 'react-router';
 import { APPOINTMENTS } from '../../../../shared/routes/routes';
 import { setDate } from '../../../../state/calendarSlice';
+import { useParams } from 'react-router-dom';
 
 import { radioButtonOn, radioButtonOff } from 'ionicons/icons';
 import './ReviewDetails.scss';
@@ -33,6 +34,7 @@ interface ReviewDetailsProps {
   invoiceDataId?: string;
   closeHandler: (close?: boolean) => void;
   goToStep?: (step: number) => void;
+  selected: string
 }
 
 const ReviewDetails: React.FC<ReviewDetailsProps> = ({
@@ -42,7 +44,9 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   invoiceDataId,
   closeHandler,
   goToStep,
+  selected
 }) => {
+  const { id : appointmentId } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const {
@@ -123,51 +127,52 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     }
 
     try {
-      dispatch(setLoading({ loading: true, message: `${t("schedule_appointment_creating_appointment")}` }));
+      // dispatch(setLoading({ loading: true, message: `${t("schedule_appointment_creating_appointment")}` }));
 
       const [providerPractice] = provider.providerPractices;
       if (
-        providerPractice &&
-        selectedService?.id &&
-        selectedClient?.id &&
-        selectedClient?.email &&
-        selectedClient?.firstName &&
-        selectedClient?.lastName &&
-        selectedClient?.patientNumber &&
-        selectedDateTime?.startTime &&
-        selectedDateTime?.endTime
+        providerPractice 
+        // selectedService?.id &&
+        // selectedClient?.id &&
+        // selectedClient?.email &&
+        // selectedClient?.firstName &&
+        // selectedClient?.lastName &&
+        // selectedClient?.patientNumber &&
+        // selectedDateTime?.startTime &&
+        // selectedDateTime?.endTime
       ) {
-        const startTime = dayjs(selectedDateTime.startTime);
+        const startTime = dayjs(selectedDateTime?.startTime);
         const endTimeByDuration = startTime.add(selectedService?.duration || 0, 'minutes');
-        const payload = {
-          practiceId: providerPractice.practiceId,
-          providerId: providerPractice.providerId,
-          payload:isChecked && endsAfter && repeatOption ?  {
-            patientServiceId: selectedService.id,
-            patientId: selectedClient.id,
-            patientEmail: selectedClient.email,
-            patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
-            patientNumber: selectedClient.patientNumber,
+        const practiceId = providerPractice.practiceId
+        const providerId = providerPractice.providerId
+        const response: any = await dispatch(rescheduleAppointmentAction({
+          practiceId,
+          providerId,
+          appointmentId,
+          payload: selected === 'thisAndFollowing' ? {
+            frequency: repeatOption || 'Monthly',
+            count: endsAfter || 1,
+            recurring: true,
+            futureAppointments: [],
+            ignoreOthers: true,
+            patientServiceId: selectedService?.id || '',
             startTime: startTime.toISOString(),
             endTime: endTimeByDuration.toISOString(),
-            invoiceDataId,
-            count:endsAfter,
-            frequency:repeatOption,
-            recurring:isChecked
-          }:{
-            patientServiceId: selectedService.id,
-            patientId: selectedClient.id,
-            patientEmail: selectedClient.email,
-            patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
-            patientNumber: selectedClient.patientNumber,
+            price: selectedService?.price || 0,
+            location: 'Online',
+            invoiceDataId: invoiceDataId || ''
+          } : {
+            recurring: true,
+            futureAppointments: [],
+            ignoreOthers: true,
+            patientServiceId: selectedService?.id || '',
             startTime: startTime.toISOString(),
             endTime: endTimeByDuration.toISOString(),
-            invoiceDataId,
-            recurring: false
+            price: selectedService?.price || 0,
+            location: 'Online',
+            invoiceDataId: invoiceDataId || ''
           }
-        };
-
-        const response: any = await dispatch(createAppointmentAction(payload));
+        }));
 
         const responsePayload=response?.payload?.id ? response?.payload?.id : response?.payload
 
@@ -198,6 +203,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           dispatch(setLoading({ loading: false, message: '' }));
         }
       }
+      console.log("here");
+      
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
       closeHandler();
@@ -257,6 +264,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         <IonLabel position="stacked">{dateTime}</IonLabel>
       </IonItem>
 
+      {selected === 'thisAndFollowing' && (
       <IonItem lines="none" detail={false} className="custom-radio-item" button onClick={handleClick}>
       <IonIcon
         slot="start"
@@ -265,8 +273,9 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       />
       <IonLabel class='custom-radio-text'>{t("recurring_appointment")}</IonLabel>
     </IonItem>
+      )}
 
-    {isChecked && (
+    {isChecked && selected === 'thisAndFollowing' && (
                   <IonGrid>
                     <IonRow class={`${CSSPrefix}-recurring-appointment-row`}>
                       <IonCol size="5.7" className="custom-box">
@@ -326,7 +335,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         expand="block"
         onClick={async () => createAppointmentsHandler()}
       >
-        {t("schedule_appointment")}
+        {t("scheduling_reschedule_appointment")}
       </IonButton>
       <IonPopover
         className="info-popover"
