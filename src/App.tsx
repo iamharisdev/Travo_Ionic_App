@@ -10,9 +10,10 @@ import VerifyEmail from './pages/VerifyEmail/VerifyEmail';
 import ResetPassword from './pages/ResetPassword/ResetPassword';
 import PasswordSuccess from './pages/PasswordSuccess/PasswordSuccess';
 import { useSelector } from 'react-redux';
-import { RootState } from './state/store';
+import { RootState, persistor } from './state/store';
 import { Device } from "@capacitor/device";
 import eruda from 'eruda';
+import { PersistGate } from 'redux-persist/integration/react';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -75,37 +76,40 @@ const App: React.FC = () => {
       dismiss();
     }
   }, [dismiss, loading, message, present]);
+
   return (
-    <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet defaultValue={SING_IN}>
-          <Route path={SING_IN}>
-            <SignIn />
-          </Route>
-          <Route path={LOADING}>
-            <Loading />
-          </Route>
-          <Route path={FORGOT_PASSWORD}>
-            <ForgotPassword />
-          </Route>
-          <Route path={VERIFY_EMAIL}>
-            <VerifyEmail />
-          </Route>
-          <Route path={RESET_PASSWORD}>
-            <ResetPassword />
-          </Route>
-          <Route path={PASSWORD_CHANGED_SUCCESSFULLY}>
-            <PasswordSuccess />
-          </Route>
-          <Route path={DASHBOARD}>
-            <Tabs />
-          </Route>
-          <Route exact path="/">
-            <Redirect to={SING_IN} />
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </IonApp>
+    <PersistGate persistor={persistor}>
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet defaultValue={SING_IN}>
+            <Route path={SING_IN}>
+              <SignIn />
+            </Route>
+            <Route path={LOADING}>
+              <Loading />
+            </Route>
+            <Route path={FORGOT_PASSWORD}>
+              <ForgotPassword />
+            </Route>
+            <Route path={VERIFY_EMAIL}>
+              <VerifyEmail />
+            </Route>
+            <Route path={RESET_PASSWORD}>
+              <ResetPassword />
+            </Route>
+            <Route path={PASSWORD_CHANGED_SUCCESSFULLY}>
+              <PasswordSuccess />
+            </Route>
+            <Route path={DASHBOARD}>
+              <Tabs />
+            </Route>
+            <Route exact path="/">
+              <Redirect to={SING_IN} />
+            </Route>
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </IonApp>
+    </PersistGate>
   );
 };
 

@@ -205,6 +205,7 @@
     "configuration_portuguese": "Português",
     "configuration_save": "Salvar",
     "loading_appointments": "Carregando compromissos",
+    "loading_appointment_requests": "Carregando solicitações de agendamento",
     "loading_rescheduling_appointment":"Reagendamento de consulta"
 
   }

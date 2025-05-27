@@ -205,5 +205,6 @@
     "configuration_portuguese": "Portuguese",
     "configuration_save": "Save",
     "loading_appointments": "Loading appointments",
+    "loading_appointment_requests": "Loading Appointment Requests",
     "loading_rescheduling_appointment":"Rescheduling appointment"
 }
