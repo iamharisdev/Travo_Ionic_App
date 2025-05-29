@@ -40,7 +40,7 @@ interface EventData {
   type?: AppointmentDetailTypeEnum;
 }
 
-interface PatientData {
+interface PatientContactInfo {
   mobileNumber: string;
   mobileNumberPrefix: string;
   email: string;
@@ -55,7 +55,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
   const [eventData, setEventData] = useState<EventData>();
   const [isRecurringOpen, setIsRecurringOpen] = useState(false);
-  const [patientData, setPatientData] = useState<PatientData | null>(null);
+  const [patientContactInfo, setPatientContactInfo] = useState<PatientContactInfo | null>(null);
   const { t } = useTranslation();
 
   const event = useMemo(() => events?.events?.find(({ id, status, ...rest }) => {
@@ -249,20 +249,20 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   }, []);
 
   useEffect(() => {
-    const fetchPatientData = async () => {
+    const fetchPatientContactInfo = async () => {
       if (event?.patientId) {
         try {
-          const response = await patientApiInstance.get<PatientData>(
+          const response = await patientApiInstance.get<PatientContactInfo>(
             `/practices/${practiceId}/patients/${event.patientId}`
           );
-          setPatientData(response.data);
+          setPatientContactInfo(response.data);
         } catch (error) {
           console.error('Error fetching patient data:', error);
         }
       }
     };
 
-    fetchPatientData();
+    fetchPatientContactInfo();
   }, [event?.patientId]);
 
   console.log('event', event);
@@ -314,16 +314,16 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
             <IonItem lines="none">
               <IonIcon icon={callOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-link`}>
-                <a style={{ textDecoration: 'none' }} href={`tel:${patientData?.mobileNumberPrefix} ${patientData?.mobileNumber}`}>
-                  {`${patientData?.mobileNumberPrefix} ${patientData?.mobileNumber}`}
+                <a style={{ textDecoration: 'none' }} href={`tel:${patientContactInfo?.mobileNumberPrefix} ${patientContactInfo?.mobileNumber}`}>
+                  {`${patientContactInfo?.mobileNumberPrefix} ${patientContactInfo?.mobileNumber}`}
                 </a>
               </IonText>
             </IonItem>
             <IonItem lines="none">
               <IonIcon icon={mailOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-link`}>
-                <a style={{ textDecoration: 'none' }} href={`mailto:${patientData?.email}`}>
-                  {`${patientData?.email}`}
+                <a style={{ textDecoration: 'none' }} href={`mailto:${patientContactInfo?.email}`}>
+                  {`${patientContactInfo?.email}`}
                 </a>
               </IonText>
             </IonItem>
