@@ -38,6 +38,7 @@ import { getDefaultDates } from "../../shared/utils/dates.util";
 import "./CalendarMonth.scss";
 import { useTranslation } from "react-i18next";
 import { getMeAction } from "../../state/providerSlice";
+import usePresentToast from "../../hooks/usePresentToast";
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -69,6 +70,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       allDay: event?.allDay
     })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
   }, [events.events, microsoftEvents, googleEvents, state.loading, selectedDates]);
+  const [presentToast] = usePresentToast();
 
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
@@ -127,18 +129,18 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           pageNumber: 0,
           pageSize: 999,
         }));
-        // await dispatch(getMicrosoftEventsAction({
-        //   practiceId: providerPractice.practiceId,
-        //   providerId: providerPractice.providerId,
-        //   start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-        //   end: dayjs(selectedDates[1]).endOf('day').toISOString(),
-        // }));
-        // await dispatch(getGoogleEventsAction({
-        //   practiceId: providerPractice.practiceId,
-        //   providerId: providerPractice.providerId,
-        //   start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-        //   end: dayjs(selectedDates[1]).endOf('day').toISOString(),
-        // }));
+        await dispatch(getMicrosoftEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
+          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+        }));
+        await dispatch(getGoogleEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
+          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+        }));
       }
     } catch (error) {
       console.error('error at load appointments by date: ', error);
@@ -176,6 +178,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       event.detail.complete();
     }).catch((error) => {
       console.error('Error refreshing appointments:', error);
+      presentToast(
+        `!${t("toast_messages_error_something_went_wrong")}!`,
+        1000,
+        'top',
+        'danger'
+      );
       event.detail.complete();
     });
   }

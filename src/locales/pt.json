@@ -177,6 +177,7 @@
     "toast_messages_error_upload_practice_logo": "Erro ao carregar o logotipo da prática",
     "toast_messages_error_update_business_information": "Erro na atualização de informações comerciais",
     "toast_messages_error_update_practice": "Erro na prática de atualização",
+    "toast_messages_error_something_went_wrong": "Algo deu errado. Tente novamente.",
     "toast_messages_payment_type_message": "O tipo de pagamento é definido pelo serviço",
     "log_out_are_you_sure_want_to_log_out": "Tem certeza de que deseja sair?",
     "log_out_cancel": "Cancelar",

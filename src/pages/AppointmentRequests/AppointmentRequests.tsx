@@ -222,7 +222,12 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
       }
     } catch (error) {
       dispatch(setLoading({ loading: false, message: `` }));
-
+      presentToast(
+        `!${t("toast_messages_error_something_went_wrong")}!`,
+        1000,
+        'top',
+        'danger'
+      );
       console.error('error at load appointments by date: ', error);
     }
   }
