@@ -205,6 +205,10 @@
     "configuration_portuguese": "Português",
     "configuration_save": "Salvar",
     "loading_appointments": "Carregando compromissos",
-    "loading_rescheduling_appointment":"Reagendamento de consulta"
+    "loading_rescheduling_appointment":"Reagendamento de consulta",
+    "select_country": "Selecione o país",
+  "please_select_your_country": "Selecione seu país na lista",
+  "country": "País",
+  "continue": "Continuar"
 
   }

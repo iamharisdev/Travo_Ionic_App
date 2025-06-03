@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonContent, IonRouterOutlet, IonTitle, IonToolbar, setupIonicReact, useIonLoading } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { FORGOT_PASSWORD, DASHBOARD, SING_IN, RESET_PASSWORD, VERIFY_EMAIL, PASSWORD_CHANGED_SUCCESSFULLY, LOADING } from './shared/routes/routes';
+import { FORGOT_PASSWORD, DASHBOARD, SING_IN, RESET_PASSWORD, VERIFY_EMAIL, PASSWORD_CHANGED_SUCCESSFULLY, LOADING, COUNTRY_PICKER } from './shared/routes/routes';
 import SignIn from './pages/SignIn/SignIn';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Tabs from './components/Tabs/Tabs';
 import VerifyEmail from './pages/VerifyEmail/VerifyEmail';
 import ResetPassword from './pages/ResetPassword/ResetPassword';
 import PasswordSuccess from './pages/PasswordSuccess/PasswordSuccess';
+
 import { useSelector } from 'react-redux';
 import { RootState } from './state/store';
 import { Device } from "@capacitor/device";
@@ -38,6 +39,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Loading from './pages/Loading/Loading';
 import { useTranslation } from 'react-i18next';
 import "./i18n"; // Ensure this is at the top
+import CountryPickerScreen from './pages/CountryPicker/CountryPicker';
+
  
 setupIonicReact();
 
@@ -78,7 +81,10 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
-        <IonRouterOutlet defaultValue={SING_IN}>
+        <IonRouterOutlet defaultValue={COUNTRY_PICKER}>
+        <Route path={COUNTRY_PICKER}>
+            <CountryPickerScreen />
+          </Route>
           <Route path={SING_IN}>
             <SignIn />
           </Route>
@@ -101,7 +107,8 @@ const App: React.FC = () => {
             <Tabs />
           </Route>
           <Route exact path="/">
-            <Redirect to={SING_IN} />
+            <Redirect to={COUNTRY_PICKER} />
+            {/* <Redirect to={SING_IN} /> */}
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>
