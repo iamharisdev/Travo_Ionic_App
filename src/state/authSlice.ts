@@ -1,10 +1,13 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { jwtDecode } from 'jwt-decode';
-import { signIn } from '../api/services/auth';
-import { setStorageValue } from '../storage/storage.util';
-import { STORAGE_TOKEN } from '../constant/storage.constant';
-import { resetAll } from './common.actions';
-import { StatusState } from '../shared/types/state.type';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { jwtDecode } from "jwt-decode";
+import { signIn } from "../api/services/auth";
+import { setStorageValue } from "../storage/storage.util";
+import { STORAGE_TOKEN } from "../constant/storage.constant";
+import { resetAll } from "./common.actions";
+import { StatusState } from "../shared/types/state.type";
+import { ENV_CONFIGS } from "../config/envConfig";
+
+type EnvSubKey = keyof typeof ENV_CONFIGS.default; // 'dev' | 'prod' | 'qa' (etc.)
 
 export interface AuthProvider {
   sub: string;
@@ -21,6 +24,8 @@ export interface AuthState {
   message: string;
   provider: AuthProvider | null;
   state: StatusState;
+  currentEnv: typeof ENV_CONFIGS.default.dev; // shape of the env config (one env object)
+  envMode: EnvSubKey;
 }
 
 interface SignInCredentials {
@@ -29,26 +34,28 @@ interface SignInCredentials {
 }
 
 const providerInitialState: AuthProvider = {
-  sub: '',
-  firstName: '',
-  lastName: '',
-  accountId: '',
+  sub: "",
+  firstName: "",
+  lastName: "",
+  accountId: "",
   superAdmin: false,
   exp: 0,
-}
+};
 
 const initialState: AuthState = {
   success: false,
-  token: '',
-  message: '',
+  token: "",
+  message: "",
   provider: providerInitialState,
   state: {
     success: false,
-  }
+  },
+  envMode: "dev",
+  currentEnv: ENV_CONFIGS.default.dev,
 };
 
 export const signInAction = createAsyncThunk(
-  'auth/sign-in',
+  "auth/sign-in",
   async ({ email, password }: SignInCredentials): Promise<AuthState> => {
     try {
       const response = await signIn(email, password);
@@ -60,22 +67,20 @@ export const signInAction = createAsyncThunk(
         token: response.data.token,
         message: response.data.message,
         provider,
-        state: { success: true }
+        state: { success: true },
       };
 
-      await Promise.all([
-        setStorageValue(STORAGE_TOKEN, response.data.token),
-      ]);
+      await Promise.all([setStorageValue(STORAGE_TOKEN, response.data.token)]);
 
       return payload;
     } catch (error: any) {
-      console.error('[sign-in]: ', error);
+      console.error("[sign-in]: ", error);
       const payload = {
         success: false,
-        token: '',
+        token: "",
         message: error.response.statusText,
         provider: null,
-        state: { success: false }
+        state: { success: false },
       };
 
       return payload;
@@ -84,7 +89,7 @@ export const signInAction = createAsyncThunk(
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     reloadAuth: (state, action: PayloadAction<{ token: string }>) => {
@@ -92,32 +97,53 @@ const authSlice = createSlice({
 
       state.success = true;
       state.token = action.payload.token;
-      state.message = 'auth reloaded';
+      state.message = "auth reloaded";
       state.provider = provider;
       state.state = { success: true };
-    }
+    },
+    setEnvByCountry(
+      state,
+      action: PayloadAction<{ countryCode: string; mode: EnvSubKey }>
+    ) {
+
+      
+      const { countryCode, mode } = action.payload;
+      const region = countryCode.toLowerCase() === "br" ? "brazil" : "default";
+
+      state.envMode = mode;
+      
+
+      // Safely get env config, fallback to default dev if missing
+      const envConfig = ENV_CONFIGS[region]?.[mode] || ENV_CONFIGS.default.dev;
+      console.log(envConfig)
+
+      state.currentEnv = envConfig;
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(signInAction.pending, () => console.log('pending sign-in user'))
-      .addCase(signInAction.fulfilled, (state, action: PayloadAction<AuthState>) => {
-        state.success = action.payload.success;
-        state.token = action.payload.token;
-        state.message = action.payload.message;
-        state.provider = action.payload.provider;
-        state.state = { success: true };
-      })
+      .addCase(signInAction.pending, () => console.log("pending sign-in user"))
+      .addCase(
+        signInAction.fulfilled,
+        (state, action: PayloadAction<AuthState>) => {
+          state.success = action.payload.success;
+          state.token = action.payload.token;
+          state.message = action.payload.message;
+          state.provider = action.payload.provider;
+          state.state = { success: true };
+        }
+      )
       .addCase(resetAll, () => initialState)
       .addCase(signInAction.rejected, (state) => {
         state.success = false;
-        state.token = '';
-        state.message = 'Request rejected';
+        state.token = "";
+        state.message = "Request rejected";
         state.provider = null;
         state.state = { success: false };
       });
-  }
+  },
 });
 
-export const { reloadAuth } = authSlice.actions;
+export const { reloadAuth ,setEnvByCountry} = authSlice.actions;
 
 export default authSlice.reducer;

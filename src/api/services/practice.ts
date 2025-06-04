@@ -1,6 +1,8 @@
 import { BusinessInformation, Country, Currencies, PhoneCode } from "../../state/practiceSlice";
 import { practiceApiInstance } from "../axios.instance";
 
+
+
 export const getBusinessInformation = async (practiceId: string) => {
   return await practiceApiInstance.get<BusinessInformation>(`/practices/${practiceId}`);
 }
@@ -10,7 +12,7 @@ export const updateBusinessInformation = async (practiceId: string, businessInfo
 }
 
 export const getCountries = async () => {
-  return await practiceApiInstance.get<Array<Country>>('/global-data/countries');
+  return await practiceApiInstance.get<Array<Country>>('anonymous/global-data/countries');
 }
 
 export const getPhoneCodes = async () => {

@@ -26,6 +26,7 @@ import { isNative } from "../../shared/utils/native.util";
 
 import "./SignIn.scss";
 import { useTranslation } from "react-i18next";
+import { setCountryFlag } from "../../state/persistSlice";
 
 const CSSprefix = 'sign-in';
 
@@ -171,7 +172,8 @@ const Login: React.FC = (): React.ReactElement => {
                 color="primary"
                 disabled={!formik.dirty}
                 expand="block"
-                onClick={() => formik.submitForm()}
+                // onClick={() => formik.submitForm()}
+               onClick={()=>dispatch(setCountryFlag(null))}
               >
                 {t("login_sign_in")}
               </IonButton>
