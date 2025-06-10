@@ -1,13 +1,13 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { resetAll } from "./common.actions";
-import { StatusState } from "../shared/types/state.type";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { resetAll } from './common.actions';
+import { StatusState } from '../shared/types/state.type';
 import {
   getBusinessInformation,
   getCountries,
   getCurrencies,
   getPhoneCodes,
   updateBusinessInformation,
-} from "../api/services/practice";
+} from '../api/services/practice';
 
 export interface BusinessInformation {
   id: string;
@@ -32,7 +32,7 @@ export interface Country {
   code: string;
 }
 export interface NewModalCountry {
-  [key: string]: string|undefined;
+  [key: string]: string | undefined;
 }
 
 export interface PhoneCode {
@@ -72,21 +72,21 @@ const initialState: ProviderState = {
 };
 
 export const getBusinessInformationAction = createAsyncThunk(
-  "practice/getBusinessInformation",
+  'practice/getBusinessInformation',
   async (practiceId: string): Promise<BusinessInformation | null> => {
     try {
       const response = await getBusinessInformation(practiceId);
 
       return response.data;
     } catch (error: any) {
-      console.error("[getBusinessInformation]: ", error);
+      console.error('[getBusinessInformation]: ', error);
       return null;
     }
   }
 );
 
 export const updateBusinessInformationAction = createAsyncThunk(
-  "practice/updateBusinessInformation",
+  'practice/updateBusinessInformation',
   async ({
     practiceId,
     businessInformation,
@@ -96,15 +96,12 @@ export const updateBusinessInformationAction = createAsyncThunk(
 
       return businessInformation;
     } catch (error: any) {
-      console.error("[updateBusinessInformation]: ", error);
+      console.error('[updateBusinessInformation]: ', error);
 
       return null;
     }
   }
 );
-
-
-
 
 export const getCountriesAction = createAsyncThunk(
   'practice/getCountries',
@@ -121,52 +118,49 @@ export const getCountriesAction = createAsyncThunk(
 );
 
 export const getPhoneCodesAction = createAsyncThunk(
-  "practice/getPhoneCodes",
+  'practice/getPhoneCodes',
   async (): Promise<Array<PhoneCode>> => {
     try {
       const response = await getPhoneCodes();
 
       return response.data;
     } catch (error: any) {
-      console.error("[getPhoneCodes]: ", error);
+      console.error('[getPhoneCodes]: ', error);
       return [];
     }
   }
 );
 
 export const getCurrenciesAction = createAsyncThunk(
-  "practice/getCurrencies",
+  'practice/getCurrencies',
   async (): Promise<Array<Currencies>> => {
     try {
       const response = await getCurrencies();
 
       return response.data;
     } catch (error: any) {
-      console.error("[getCurrencies]: ", error);
+      console.error('[getCurrencies]: ', error);
       return [];
     }
   }
 );
 
 const practiceSlice = createSlice({
-  name: "practice",
+  name: 'practice',
   initialState,
   reducers: {
-    updateBrandingInformationAction: (
-      state,
-      action: PayloadAction<{ logoUrl: string | null }>
-    ) => {
+    updateBrandingInformationAction: (state, action: PayloadAction<{ logoUrl: string | null }>) => {
       if (state.businessInformation) {
         state.businessInformation.logoUrl = action.payload.logoUrl;
         state.state = { success: true };
       }
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       .addCase(resetAll, () => initialState)
       .addCase(getBusinessInformationAction.pending, () =>
-        console.log("pending get business information")
+        console.log('pending get business information')
       )
       .addCase(
         getBusinessInformationAction.fulfilled,
@@ -176,16 +170,16 @@ const practiceSlice = createSlice({
             ...state.state,
             success: true,
             error: null,
-            message: "",
+            message: '',
           };
         }
       )
-      .addCase(getBusinessInformationAction.rejected, (state) => {
+      .addCase(getBusinessInformationAction.rejected, state => {
         state.businessInformation = null;
         state.state = { ...state.state, success: false };
       })
       .addCase(updateBusinessInformationAction.pending, () =>
-        console.log("pending update business information")
+        console.log('pending update business information')
       )
       .addCase(
         updateBusinessInformationAction.fulfilled,
@@ -195,85 +189,70 @@ const practiceSlice = createSlice({
             ...state.state,
             success: true,
             error: null,
-            message: "",
+            message: '',
           };
         }
       )
-      .addCase(updateBusinessInformationAction.rejected, (state) => {
+      .addCase(updateBusinessInformationAction.rejected, state => {
         state.businessInformation = state.businessInformation;
         state.state = {
           ...state.state,
           success: false,
-          message: "error at update business information state",
+          message: 'error at update business information state',
         };
       })
-      .addCase(getCountriesAction.pending, () =>
-        console.log("pending get countries")
-      )
-      .addCase(
-        getCountriesAction.fulfilled,
-        (state, action: PayloadAction<Country>) => {
-          state.countries = action.payload;
-          state.state = {
-            ...state.state,
-            success: true,
-            error: null,
-            message: "",
-          };
-        }
-      )
-      .addCase(getCountriesAction.rejected, (state) => {
-        state.businessInformation = state.businessInformation;
+      .addCase(getCountriesAction.pending, () => console.log('pending get countries'))
+      .addCase(getCountriesAction.fulfilled, (state, action: PayloadAction<Country>) => {
+        state.countries = action.payload;
         state.state = {
           ...state.state,
-          success: false,
-          message: "error at get countries state",
+          success: true,
+          error: null,
+          message: '',
         };
       })
-      .addCase(getPhoneCodesAction.pending, () =>
-        console.log("pending get phone codes")
-      )
-      .addCase(
-        getPhoneCodesAction.fulfilled,
-        (state, action: PayloadAction<Array<PhoneCode>>) => {
-          state.phoneCodes = action.payload;
-          state.state = {
-            ...state.state,
-            success: true,
-            error: null,
-            message: "",
-          };
-        }
-      )
-      .addCase(getPhoneCodesAction.rejected, (state) => {
+      .addCase(getCountriesAction.rejected, state => {
         state.businessInformation = state.businessInformation;
         state.state = {
           ...state.state,
           success: false,
-          message: "error at get phone codes state",
+          message: 'error at get countries state',
         };
       })
-      .addCase(getCurrenciesAction.pending, () =>
-        console.log("pending get currencies")
-      )
-      .addCase(
-        getCurrenciesAction.fulfilled,
-        (state, action: PayloadAction<Array<Currencies>>) => {
-          state.currencies = action.payload;
-          state.state = {
-            ...state.state,
-            success: true,
-            error: null,
-            message: "",
-          };
-        }
-      )
-      .addCase(getCurrenciesAction.rejected, (state) => {
+      .addCase(getPhoneCodesAction.pending, () => console.log('pending get phone codes'))
+      .addCase(getPhoneCodesAction.fulfilled, (state, action: PayloadAction<Array<PhoneCode>>) => {
+        state.phoneCodes = action.payload;
+        state.state = {
+          ...state.state,
+          success: true,
+          error: null,
+          message: '',
+        };
+      })
+      .addCase(getPhoneCodesAction.rejected, state => {
         state.businessInformation = state.businessInformation;
         state.state = {
           ...state.state,
           success: false,
-          message: "error at get currencies state",
+          message: 'error at get phone codes state',
+        };
+      })
+      .addCase(getCurrenciesAction.pending, () => console.log('pending get currencies'))
+      .addCase(getCurrenciesAction.fulfilled, (state, action: PayloadAction<Array<Currencies>>) => {
+        state.currencies = action.payload;
+        state.state = {
+          ...state.state,
+          success: true,
+          error: null,
+          message: '',
+        };
+      })
+      .addCase(getCurrenciesAction.rejected, state => {
+        state.businessInformation = state.businessInformation;
+        state.state = {
+          ...state.state,
+          success: false,
+          message: 'error at get currencies state',
         };
       });
   },

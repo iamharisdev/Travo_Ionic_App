@@ -10,33 +10,30 @@ import {
   IonSpinner,
   IonText,
   useIonViewWillEnter,
-} from "@ionic/react";
-import React, { useEffect, useState } from "react";
-import TrovaLogo from "/assets/TrovaLogo.png";
-import "./CountryPicker.scss";
-import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../state/store";
-import { getCountriesAction, NewModalCountry } from "../../state/practiceSlice";
-import { setCountryFlag, setEnvByCountry } from "../../state/persistSlice";
-import { useHistory } from "react-router";
-import { BUILD_MOOD } from "../../config/envConfig";
-import { SING_IN } from "../../shared/routes/routes";
-import { getCountriesForRegionAction } from "../../state/providerSlice";
+} from '@ionic/react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
+import { BUILD_MOOD } from '../../config/envConfig';
+import { SING_IN } from '../../shared/routes/routes';
+import { setCountryFlag, setEnvByCountry } from '../../state/persistSlice';
+import { getCountriesForRegionAction } from '../../state/providerSlice';
+import { AppDispatch } from '../../state/store';
+import './CountryPicker.scss';
+import TrovaLogo from '/assets/TrovaLogo.png';
 
-const CSSprefix = "country-picker";
+const CSSprefix = 'country-picker';
 
 const CountryPickerScreen: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
 
-  const { isCountry } = useSelector((state) => state.white);
+  const { isCountry } = useSelector(state => state.white);
 
-  const [showingAnimation, setShowingAnimation] = useState<
-    undefined | boolean
-  >();
+  const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
   const [countries, setCountries] = useState<any>();
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
 
@@ -53,15 +50,13 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
   };
 
   useIonViewWillEnter(() => {
-    setSelectedCountry("");
+    setSelectedCountry('');
   }, []);
 
   const getFlagEmoji = (countryCode: any) => {
     return countryCode
       .toUpperCase()
-      .replace(/./g, (char: any) =>
-        String.fromCodePoint(127397 + char.charCodeAt(0))
-      );
+      .replace(/./g, (char: any) => String.fromCodePoint(127397 + char.charCodeAt(0)));
   };
 
   return (
@@ -69,41 +64,26 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
       <IonContent fullscreen>
         <div
           className={`${
-            showingAnimation === true
-              ? "transition-container"
-              : `${CSSprefix}-main-container`
+            showingAnimation === true ? 'transition-container' : `${CSSprefix}-main-container`
           } ion-padding`}
         >
           <IonItem
             lines="none"
             slot="start"
-            id={showingAnimation ? "float" : ""}
-            className={
-              showingAnimation
-                ? "transition-logo-item"
-                : `${CSSprefix}-logo-item`
-            }
+            id={showingAnimation ? 'float' : ''}
+            className={showingAnimation ? 'transition-logo-item' : `${CSSprefix}-logo-item`}
           >
-            <IonImg
-              className={`${CSSprefix}-logo`}
-              src={TrovaLogo}
-              alt="Trova Logo"
-            />
+            <IonImg className={`${CSSprefix}-logo`} src={TrovaLogo} alt="Trova Logo" />
           </IonItem>
 
           {showingAnimation === false && (
             <>
               <IonItem lines="none" className="ion-no-padding">
-                <IonText className={`${CSSprefix}-sign-in`}>
-                  {t("select_country")}
-                </IonText>
+                <IonText className={`${CSSprefix}-sign-in`}>{t('select_country')}</IonText>
               </IonItem>
-              <IonItem
-                lines="none"
-                className="ion-no-padding ion-margin-bottom"
-              >
+              <IonItem lines="none" className="ion-no-padding ion-margin-bottom">
                 <IonText color="dark" className={`${CSSprefix}-welcome`}>
-                  {t("please_select_your_country")}
+                  {t('please_select_your_country')}
                 </IonText>
               </IonItem>
 
@@ -112,7 +92,7 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                 className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}
               >
                 <IonLabel position="stacked" class="custom-input">
-                  {t("country")}
+                  {t('country')}
                 </IonLabel>
                 {loading ? (
                   <IonSpinner name="dots" />
@@ -120,8 +100,8 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                   <IonSelect
                     interface="popover"
                     value={selectedCountry}
-                    placeholder={t("select_country")}
-                    onIonChange={(e) => {
+                    placeholder={t('select_country')}
+                    onIonChange={e => {
                       setSelectedCountry(e.detail.value);
                       dispatch(setCountryFlag(e.detail.value));
                     }}
@@ -151,7 +131,7 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                   history.push(SING_IN);
                 }}
               >
-                {t("continue")}
+                {t('continue')}
               </IonButton>
             </>
           )}

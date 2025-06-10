@@ -1,10 +1,10 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { jwtDecode } from "jwt-decode";
-import { signIn } from "../api/services/auth";
-import { setStorageValue } from "../storage/storage.util";
-import { STORAGE_TOKEN } from "../constant/storage.constant";
-import { resetAll } from "./common.actions";
-import { StatusState } from "../shared/types/state.type";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { jwtDecode } from 'jwt-decode';
+import { signIn } from '../api/services/auth';
+import { setStorageValue } from '../storage/storage.util';
+import { STORAGE_TOKEN } from '../constant/storage.constant';
+import { resetAll } from './common.actions';
+import { StatusState } from '../shared/types/state.type';
 
 export interface AuthProvider {
   sub: string;
@@ -21,7 +21,6 @@ export interface AuthState {
   message: string;
   provider: AuthProvider | null;
   state: StatusState;
-
 }
 
 interface SignInCredentials {
@@ -30,32 +29,31 @@ interface SignInCredentials {
 }
 
 const providerInitialState: AuthProvider = {
-  sub: "",
-  firstName: "",
-  lastName: "",
-  accountId: "",
+  sub: '',
+  firstName: '',
+  lastName: '',
+  accountId: '',
   superAdmin: false,
   exp: 0,
 };
 
 const initialState: AuthState = {
   success: false,
-  token: "",
-  message: "",
+  token: '',
+  message: '',
   provider: providerInitialState,
   state: {
     success: false,
   },
-
 };
 
 export const signInAction = createAsyncThunk(
-  "auth/sign-in",
+  'auth/sign-in',
   async ({ email, password }: SignInCredentials): Promise<AuthState> => {
     try {
       const response = await signIn(email, password);
 
-      console.log("Sign in api response:=>  ",response)
+      console.log('Sign in api response:=>  ', response);
 
       const provider = jwtDecode(response.data.token) as AuthProvider;
 
@@ -71,10 +69,10 @@ export const signInAction = createAsyncThunk(
 
       return payload;
     } catch (error: any) {
-      console.error("[sign-in]: ", error);
+      console.error('[sign-in]: ', error);
       const payload = {
         success: false,
-        token: "",
+        token: '',
         message: error.response.statusText,
         provider: null,
         state: { success: false },
@@ -86,7 +84,7 @@ export const signInAction = createAsyncThunk(
 );
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     reloadAuth: (state, action: PayloadAction<{ token: string }>) => {
@@ -94,30 +92,26 @@ const authSlice = createSlice({
 
       state.success = true;
       state.token = action.payload.token;
-      state.message = "auth reloaded";
+      state.message = 'auth reloaded';
       state.provider = provider;
       state.state = { success: true };
     },
-
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(signInAction.pending, () => console.log("pending sign-in user"))
-      .addCase(
-        signInAction.fulfilled,
-        (state, action: PayloadAction<AuthState>) => {
-          state.success = action.payload.success;
-          state.token = action.payload.token;
-          state.message = action.payload.message;
-          state.provider = action.payload.provider;
-          state.state = { success: true };
-        }
-      )
+      .addCase(signInAction.pending, () => console.log('pending sign-in user'))
+      .addCase(signInAction.fulfilled, (state, action: PayloadAction<AuthState>) => {
+        state.success = action.payload.success;
+        state.token = action.payload.token;
+        state.message = action.payload.message;
+        state.provider = action.payload.provider;
+        state.state = { success: true };
+      })
       .addCase(resetAll, () => initialState)
-      .addCase(signInAction.rejected, (state) => {
+      .addCase(signInAction.rejected, state => {
         state.success = false;
-        state.token = "";
-        state.message = "Request rejected";
+        state.token = '';
+        state.message = 'Request rejected';
         state.provider = null;
         state.state = { success: false };
       });

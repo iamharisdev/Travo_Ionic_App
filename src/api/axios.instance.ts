@@ -14,12 +14,13 @@ export const setStoreInstance = (store: any) => {
 // Helper function to set auth header and base URL
 const setAuthHeadersAndBaseUrl = async (config: any, apiName: string) => {
   if (!storeInstance) {
-    throw new Error('Store instance is not set. Please call setStoreInstance(store) before making API calls.');
+    throw new Error(
+      'Store instance is not set. Please call setStoreInstance(store) before making API calls.'
+    );
   }
   const state = storeInstance.getState();
   const env = state.white?.currentEnv || {};
   const token = await getStorageValue(STORAGE_TOKEN);
-  
 
   const baseURLs = {
     idApi: env.idApiBaseUrl || 'https://qaid.trovahealth.app/',
@@ -53,43 +54,42 @@ export const patientApiInstance = axios.create();
 
 // Interceptors
 idApiInstance.interceptors.request.use(
-  (config) => setAuthHeadersAndBaseUrl(config, 'idApi'),
-  (error) => Promise.reject(error)
+  config => setAuthHeadersAndBaseUrl(config, 'idApi'),
+  error => Promise.reject(error)
 );
 
-
 providerApiInstance.interceptors.request.use(
-  (config) => setAuthHeadersAndBaseUrl(config, 'providerApi'),
-  (error) => Promise.reject(error)
+  config => setAuthHeadersAndBaseUrl(config, 'providerApi'),
+  error => Promise.reject(error)
 );
 
 practiceApiInstance.interceptors.request.use(
-  (config) => setAuthHeadersAndBaseUrl(config, 'practiceApi'),
-  (error) => Promise.reject(error)
+  config => setAuthHeadersAndBaseUrl(config, 'practiceApi'),
+  error => Promise.reject(error)
 );
 // ✅ Add this below it
 practiceApiInstance.interceptors.response.use(
-  (response) => {
-    console.log(`[Axios Response] ${response.config.url}`,response);
+  response => {
+    console.log(`[Axios Response] ${response.config.url}`, response);
     return response;
   },
-  (error) => {
+  error => {
     console.error(`[Axios Error] ${error.config?.url}`, error.response || error.message);
     return Promise.reject(error);
   }
 );
 
 billingApiInstance.interceptors.request.use(
-  (config) => setAuthHeadersAndBaseUrl(config, 'billingApi'),
-  (error) => Promise.reject(error)
+  config => setAuthHeadersAndBaseUrl(config, 'billingApi'),
+  error => Promise.reject(error)
 );
 
 schedulingApiInstance.interceptors.request.use(
-  (config) => setAuthHeadersAndBaseUrl(config, 'schedulingApi'),
-  (error) => Promise.reject(error)
+  config => setAuthHeadersAndBaseUrl(config, 'schedulingApi'),
+  error => Promise.reject(error)
 );
 
 patientApiInstance.interceptors.request.use(
-  (config) => setAuthHeadersAndBaseUrl(config, 'patientApi'),
-  (error) => Promise.reject(error)
+  config => setAuthHeadersAndBaseUrl(config, 'patientApi'),
+  error => Promise.reject(error)
 );
