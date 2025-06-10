@@ -4,6 +4,8 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 // For native: use the line below instead of the one above
 // import createCapacitorStorage from 'redux-persist-capacitor-storage';
+// Native storage (optional)
+// const storage = createCapacitorStorage();
 
 import authReducer from './authSlice';
 import loadingReducer from './loadingSlice';
@@ -15,8 +17,7 @@ import calendarReducer from './calendarSlice';
 import patientReducer from './patientSlice';
 import  whiteReducer from './persistSlice';
 
-// Native storage (optional)
-// const storage = createCapacitorStorage();
+
 
 const rootReducer = combineReducers({
   auth: authReducer,
