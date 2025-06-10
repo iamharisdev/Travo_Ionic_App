@@ -5,9 +5,6 @@ import { setStorageValue } from "../storage/storage.util";
 import { STORAGE_TOKEN } from "../constant/storage.constant";
 import { resetAll } from "./common.actions";
 import { StatusState } from "../shared/types/state.type";
-import { ENV_CONFIGS } from "../config/envConfig";
-
-type EnvSubKey = keyof typeof ENV_CONFIGS.default; // 'dev' | 'prod' | 'qa' (etc.)
 
 export interface AuthProvider {
   sub: string;
@@ -24,8 +21,7 @@ export interface AuthState {
   message: string;
   provider: AuthProvider | null;
   state: StatusState;
-  currentEnv: typeof ENV_CONFIGS.default.dev; // shape of the env config (one env object)
-  envMode: EnvSubKey;
+
 }
 
 interface SignInCredentials {
@@ -50,8 +46,7 @@ const initialState: AuthState = {
   state: {
     success: false,
   },
-  envMode: "dev",
-  currentEnv: ENV_CONFIGS.default.dev,
+
 };
 
 export const signInAction = createAsyncThunk(
@@ -59,6 +54,8 @@ export const signInAction = createAsyncThunk(
   async ({ email, password }: SignInCredentials): Promise<AuthState> => {
     try {
       const response = await signIn(email, password);
+
+      console.log("Sign in api response:=>  ",response)
 
       const provider = jwtDecode(response.data.token) as AuthProvider;
 
@@ -101,24 +98,7 @@ const authSlice = createSlice({
       state.provider = provider;
       state.state = { success: true };
     },
-    setEnvByCountry(
-      state,
-      action: PayloadAction<{ countryCode: string; mode: EnvSubKey }>
-    ) {
 
-      
-      const { countryCode, mode } = action.payload;
-      const region = countryCode.toLowerCase() === "br" ? "brazil" : "default";
-
-      state.envMode = mode;
-      
-
-      // Safely get env config, fallback to default dev if missing
-      const envConfig = ENV_CONFIGS[region]?.[mode] || ENV_CONFIGS.default.dev;
-      console.log(envConfig)
-
-      state.currentEnv = envConfig;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -144,6 +124,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { reloadAuth ,setEnvByCountry} = authSlice.actions;
+export const { reloadAuth } = authSlice.actions;
 
 export default authSlice.reducer;

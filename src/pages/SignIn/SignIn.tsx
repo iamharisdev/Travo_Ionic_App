@@ -12,10 +12,10 @@ import {
 } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 import TrovaLogo from "/assets/TrovaLogo.png";
-import { SING_IN, LOADING } from "../../shared/routes/routes";
+import { SING_IN, LOADING, COUNTRY_PICKER } from "../../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../state/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state/store";
 import { AuthState, signInAction } from "../../state/authSlice";
 import { setLoading } from "../../state/loadingSlice";
 import usePresentToast from "../../hooks/usePresentToast";
@@ -28,16 +28,19 @@ import "./SignIn.scss";
 import { useTranslation } from "react-i18next";
 import { setCountryFlag } from "../../state/persistSlice";
 
-const CSSprefix = 'sign-in';
+const CSSprefix = "sign-in";
 
 const Login: React.FC = (): React.ReactElement => {
-  const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
+  const [showingAnimation, setShowingAnimation] = useState<
+    undefined | boolean
+  >();
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const { checkSessionHandler } = useBiometrics();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
+  const { currentEnv } = useSelector((state: RootState) => state.white);
 
   useEffect(() => {
     if (location.pathname === SING_IN) {
@@ -52,8 +55,8 @@ const Login: React.FC = (): React.ReactElement => {
 
   const formik = useFormik({
     initialValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
     validationSchema: signInSchema,
     enableReinitialize: true,
@@ -66,17 +69,30 @@ const Login: React.FC = (): React.ReactElement => {
             password: values.password,
           })
         );
-        if (response.meta.requestStatus === 'fulfilled' && (response.payload as AuthState).success) {
+        if (
+          response.meta.requestStatus === "fulfilled" &&
+          (response.payload as AuthState).success
+        ) {
           dispatch(setLoading({ loading: false }));
           history.push(LOADING);
         } else {
           dispatch(setLoading({ loading: false }));
-          presentToast(`${t("login_username/password_error")}`, 3000, 'middle', 'danger');
+          presentToast(
+            `${t("login_username/password_error")}`,
+            3000,
+            "middle",
+            "danger"
+          );
         }
 
-        if (response.meta.requestStatus === 'rejected') {
+        if (response.meta.requestStatus === "rejected") {
           dispatch(setLoading({ loading: false }));
-          presentToast(`${t("login_username/password_error")}`, 3000, 'middle', 'danger');
+          presentToast(
+            `${t("login_username/password_error")}`,
+            3000,
+            "middle",
+            "danger"
+          );
         }
       } catch (error) {
         formik.resetForm();
@@ -84,8 +100,8 @@ const Login: React.FC = (): React.ReactElement => {
         presentToast(
           `${t("login_username/password_error")}`,
           3000,
-          'middle',
-          'danger'
+          "middle",
+          "danger"
         );
       }
     },
@@ -97,18 +113,28 @@ const Login: React.FC = (): React.ReactElement => {
       if (location.pathname === SING_IN && isNative) {
         checkSessionHandler();
       }
-    })
+    });
   }, []);
 
   return (
     <IonPage>
       <IonContent fullscreen>
-        <div className={`${showingAnimation === true ? 'transition-container' : `${CSSprefix}-main-container`} ion-padding`}>
+        <div
+          className={`${
+            showingAnimation === true
+              ? "transition-container"
+              : `${CSSprefix}-main-container`
+          } ion-padding`}
+        >
           <IonItem
             lines="none"
             slot="start"
-            id={showingAnimation ? 'float' : ''}
-            className={showingAnimation ? 'transition-logo-item' : `${CSSprefix}-logo-item`}
+            id={showingAnimation ? "float" : ""}
+            className={
+              showingAnimation
+                ? "transition-logo-item"
+                : `${CSSprefix}-logo-item`
+            }
           >
             <IonImg
               className={`${CSSprefix}-logo`}
@@ -123,44 +149,62 @@ const Login: React.FC = (): React.ReactElement => {
                   {t("login_sign_in")}
                 </IonText>
               </IonItem>
-              <IonItem lines="none" className="ion-no-padding ion-margin-bottom">
-                <IonText
-                  color="dark"
-                  className={`${CSSprefix}-welcome`}
-                >
+              <IonItem
+                lines="none"
+                className="ion-no-padding ion-margin-bottom"
+              >
+                <IonText color="dark" className={`${CSSprefix}-welcome`}>
                   {t("login_welcome_message")}
                 </IonText>
               </IonItem>
-              <IonItem lines="none" className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}>
-                <IonLabel position="stacked" class="custom-input">{t("login_email_address")}</IonLabel>
+              <IonItem
+                lines="none"
+                className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}
+              >
+                <IonLabel position="stacked" class="custom-input">
+                  {t("login_email_address")}
+                </IonLabel>
                 <IonInput
-                  className={`${formik.errors?.email && 'ion-invalid'} ${formik.touched?.email && 'ion-touched'}`}
+                  className={`${formik.errors?.email && "ion-invalid"} ${
+                    formik.touched?.email && "ion-touched"
+                  }`}
                   name="email"
                   class="custom"
                   type="email"
                   placeholder={t("login_enter_email_address")}
                   errorText={formik.errors?.email}
                   value={formik.values.email}
-                  onIonInput={(e) => formik.setFieldValue('email', e.detail.value || '')}
+                  onIonInput={(e) =>
+                    formik.setFieldValue("email", e.detail.value || "")
+                  }
                 />
               </IonItem>
-              <IonItem lines="none" className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}>
-                <IonLabel position="stacked" class="custom-input">{t("login_password")}</IonLabel>
+              <IonItem
+                lines="none"
+                className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}
+              >
+                <IonLabel position="stacked" class="custom-input">
+                  {t("login_password")}
+                </IonLabel>
                 <IonInput
-                  className={`${formik.errors?.password && 'ion-invalid'} ${formik.touched?.password && 'ion-touched'}`}
+                  className={`${formik.errors?.password && "ion-invalid"} ${
+                    formik.touched?.password && "ion-touched"
+                  }`}
                   name="password"
                   class="custom"
                   type="password"
                   placeholder={t("login_enter_your_password")}
                   errorText={formik.errors?.password}
                   value={formik.values.password}
-                  onIonInput={(e) => formik.setFieldValue('password', e.detail.value || '')}
+                  onIonInput={(e) =>
+                    formik.setFieldValue("password", e.detail.value || "")
+                  }
                 >
                   <IonInputPasswordToggle slot="end" color="dark" />
                 </IonInput>
               </IonItem>
               <IonButton
-                href={process.env.REACT_APP_FORGOT_PASSWORD_URL}
+                href={currentEnv?.forgotPasswordUrl}
                 className={`${CSSprefix}-forgot-password`}
                 fill="clear"
                 target="blank_state"
@@ -172,8 +216,11 @@ const Login: React.FC = (): React.ReactElement => {
                 color="primary"
                 disabled={!formik.dirty}
                 expand="block"
-                // onClick={() => formik.submitForm()}
-               onClick={()=>dispatch(setCountryFlag(null))}
+                onClick={() => formik.submitForm()}
+                //      onClick={()=>{
+                //       dispatch(setCountryFlag(null))
+                //  history.replace(COUNTRY_PICKER)
+                // }}
               >
                 {t("login_sign_in")}
               </IonButton>

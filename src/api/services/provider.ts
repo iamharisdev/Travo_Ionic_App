@@ -1,3 +1,4 @@
+import { NewModalCountry } from "../../state/practiceSlice";
 import { MeInterface, Practice } from "../../state/providerSlice";
 import { providerApiInstance } from "../axios.instance";
 
@@ -19,3 +20,8 @@ export const uploadProfilePicture = async (providerId: string, file: File) => {
 
   return await providerApiInstance.post<{ data: string }>(`/providers/${providerId}/upload-profile-picture`, formData);
 }
+
+
+export const getCountriesForRegion = async () => {
+  return await providerApiInstance.get<NewModalCountry>("lookups/en");
+};

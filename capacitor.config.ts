@@ -1,5 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli';
-import { KeyboardResize, KeyboardStyle } from '@capacitor/keyboard';
+import { KeyboardResize} from '@capacitor/keyboard';
 
 const config: CapacitorConfig = {
   appId: 'trovahealth.provider',
@@ -13,6 +13,9 @@ const config: CapacitorConfig = {
     //   `${process.env.REACT_APP_PRACTICE_API_URL}`,
     //   `${process.env.REACT_APP_BILLING_API_URL}`,
     //   `${process.env.REACT_APP_SCHEDULING_API_URL}`,
+    //   'https://id.trovahealth.app/',
+    //   'https://providerapi.trovahealth.app/api/v1/',
+    //   'https://practiceapi.trovahealth.app/api/v1/'
     // ],
     androidScheme: 'http',
     iosScheme: 'https',

@@ -17,12 +17,12 @@ import "./CountryPicker.scss";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../state/store";
-import { getCountriesAction } from "../../state/practiceSlice";
-import { setCountryFlag } from "../../state/persistSlice";
+import { getCountriesAction, NewModalCountry } from "../../state/practiceSlice";
+import { setCountryFlag, setEnvByCountry } from "../../state/persistSlice";
 import { useHistory } from "react-router";
 import { BUILD_MOOD } from "../../config/envConfig";
-import { setEnvByCountry } from "../../state/authSlice";
 import { SING_IN } from "../../shared/routes/routes";
+import { getCountriesForRegionAction } from "../../state/providerSlice";
 
 const CSSprefix = "country-picker";
 
@@ -31,15 +31,11 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { isCountry } = useSelector((state) => state.white);
-  const { currentEnv } = useSelector((state) => state.auth);
-
 
   const [showingAnimation, setShowingAnimation] = useState<
     undefined | boolean
   >();
-  const [countries, setCountries] = useState<{ code: string; name: string }[]>(
-    []
-  );
+  const [countries, setCountries] = useState<any>();
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
@@ -48,29 +44,25 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
     setShowingAnimation(true);
     setTimeout(() => setShowingAnimation(false), 1800);
     setLoading(false);
-  
     getCountries();
   }, []);
 
   const getCountries = async () => {
-    let res = await dispatch(getCountriesAction());
-
-   setCountries(res?.payload);
+    let res = await dispatch(getCountriesForRegionAction());
+    setCountries(res?.payload);
   };
 
   useIonViewWillEnter(() => {
     setSelectedCountry("");
   }, []);
 
-  const getFlagEmoji = (countryCode: string): string => {
+  const getFlagEmoji = (countryCode: any) => {
     return countryCode
       .toUpperCase()
-      .replace(/./g, (char) =>
+      .replace(/./g, (char: any) =>
         String.fromCodePoint(127397 + char.charCodeAt(0))
       );
   };
-
-  const contri=[{name:'Brazil',code:'br'},{name:'Pakistan',code:'pk'},{name:'Afganistan',code:'af'}]
 
   return (
     <IonPage>
@@ -134,9 +126,9 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                       dispatch(setCountryFlag(e.detail.value));
                     }}
                   >
-                    {countries?.map((country) => (
-                      <IonSelectOption key={country.code} value={country.code}>
-                        {getFlagEmoji(country.code)} {country.name}
+                    {Object.entries(countries).map(([code, name]) => (
+                      <IonSelectOption key={code} value={code}>
+                        {getFlagEmoji(code)} {name}
                       </IonSelectOption>
                     ))}
                   </IonSelect>
@@ -154,9 +146,8 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                       countryCode: selectedCountry,
                       mode: BUILD_MOOD,
                     })
-                   
                   );
-                
+
                   history.push(SING_IN);
                 }}
               >

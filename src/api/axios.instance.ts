@@ -17,9 +17,9 @@ const setAuthHeadersAndBaseUrl = async (config: any, apiName: string) => {
     throw new Error('Store instance is not set. Please call setStoreInstance(store) before making API calls.');
   }
   const state = storeInstance.getState();
-  const env = state.auth?.currentEnv || {};
+  const env = state.white?.currentEnv || {};
   const token = await getStorageValue(STORAGE_TOKEN);
-  console.log("ENV:=>  ",env)
+  
 
   const baseURLs = {
     idApi: env.idApiBaseUrl || 'https://qaid.trovahealth.app/',
@@ -47,7 +47,6 @@ const setAuthHeadersAndBaseUrl = async (config: any, apiName: string) => {
 export const idApiInstance = axios.create();
 export const providerApiInstance = axios.create();
 export const practiceApiInstance = axios.create();
-
 export const billingApiInstance = axios.create();
 export const schedulingApiInstance = axios.create();
 export const patientApiInstance = axios.create();
@@ -57,6 +56,7 @@ idApiInstance.interceptors.request.use(
   (config) => setAuthHeadersAndBaseUrl(config, 'idApi'),
   (error) => Promise.reject(error)
 );
+
 
 providerApiInstance.interceptors.request.use(
   (config) => setAuthHeadersAndBaseUrl(config, 'providerApi'),
@@ -70,7 +70,7 @@ practiceApiInstance.interceptors.request.use(
 // ✅ Add this below it
 practiceApiInstance.interceptors.response.use(
   (response) => {
-    console.log(`[Axios Response] ${response.config.url}`, response);
+    console.log(`[Axios Response] ${response.config.url}`,response);
     return response;
   },
   (error) => {

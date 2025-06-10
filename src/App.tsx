@@ -62,8 +62,8 @@ setupIonicReact();
 
 const App: React.FC = () => {
   const { loading, message } = useSelector((state: RootState) => state.loading);
-  const { isCountry } = useSelector((state: RootState) => state.white);
-  const { currentEnv } = useSelector((state: RootState) => state.auth);
+  const { isCountry,currentEnv } = useSelector((state: RootState) => state.white);
+  
   
 
 
@@ -73,10 +73,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const initHandler = async () => {
       const info = await Device.getInfo();
-
       if (
         (info.platform === "ios" || info.platform === "android") &&
-        process.env?.REACT_APP_SHOW_ERUDA === "true"
+       currentEnv?.showEruda === true
       ) {
         const el = document.createElement("div");
         document.body.appendChild(el);

@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { resetAll } from './common.actions';
-import { getMe, getPractice, updatePractice } from '../api/services/provider';
+import { getCountriesForRegion, getMe, getPractice, updatePractice } from '../api/services/provider';
 import { StatusState } from '../shared/types/state.type';
+import { NewModalCountry } from './practiceSlice';
 
 interface GetProfile {
   practiceId: string;
@@ -52,6 +53,7 @@ export interface MeInterface {
   principal: Principal | null;
   providerPractices: Array<ProviderPractices>;
   practice: Practice | null;
+  countries:NewModalCountry;
 }
 
 export interface ProviderState extends MeInterface {
@@ -62,10 +64,29 @@ const initialState: ProviderState = {
   principal: null,
   providerPractices: [],
   practice: null,
+  countries:{},
   state: {
     success: false,
   }
 }
+
+
+export const getCountriesForRegionAction = createAsyncThunk(
+  "practice/getCountriesForRegion",
+  async (): Promise<NewModalCountry> => {
+    try {
+      const response = await getCountriesForRegion();
+
+      // Ensure countries is an object (not a string!)
+      const countries: NewModalCountry = response?.data?.countries;
+
+      return countries;
+    } catch (error: any) {
+      console.error("[getCountries]: ", error);
+      return {}; // return an empty object on error
+    }
+  }
+);
 
 export const getMeAction = createAsyncThunk(
   'provider/getMe',
@@ -153,6 +174,23 @@ const providerSlice = createSlice({
         state.practice = null;
         state.state = { ...state.state, success: false }
       })
+        .addCase(getCountriesForRegionAction.pending, () =>
+              console.log("pending get countries")
+            )
+            .addCase(
+              getCountriesForRegionAction.fulfilled,
+              (state, action: PayloadAction<NewModalCountry>) => {
+                state.countries = action.payload;
+              }
+            )
+            .addCase(getCountriesForRegionAction.rejected, (state) => {
+            
+              state.state = {
+                ...state.state,
+                success: false,
+                message: "error at get countries state",
+              };
+            })
       .addCase(updatePracticeAction.pending, () => console.log('pending update practice'))
       .addCase(updatePracticeAction.fulfilled, (state, action: PayloadAction<Practice | null>) => {
         state.practice = action.payload;

@@ -18,6 +18,8 @@ import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { getStorageValue } from "../../storage/storage.util";
 import { STORAGE_TOKEN } from "../../constant/storage.constant";
+import { useSelector } from "react-redux";
+import { RootState } from "../../state/store";
 
 const CSSprefix = 'subscription-deatils';
 
@@ -25,6 +27,10 @@ const LanguagePage: React.FC = (): React.ReactElement => {
   const subscriptionDetailsRef = useRef(null);
   const history = useHistory();
   const { t, i18n } = useTranslation();
+
+  const { currentEnv } = useSelector((state: RootState) => state.white);
+ 
+
   const [selectedLang, setSelectedLang] = useState<string>(localStorage.getItem("language") || "en");
   const [newLang, setNewLang] = useState<string>(localStorage.getItem("language") || "en");
 
@@ -43,7 +49,7 @@ const LanguagePage: React.FC = (): React.ReactElement => {
     i18n.changeLanguage(newLang);
     const token = await getStorageValue(STORAGE_TOKEN);
     try {
-      await axios.get(`${process.env.REACT_APP_LOOKUP_API_URL}/${newLang}`, {
+      await axios.get(`${currentEnv.providerApiBaseUrl}lookups/${newLang}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
