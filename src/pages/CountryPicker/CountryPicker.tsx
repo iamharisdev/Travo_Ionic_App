@@ -104,13 +104,15 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                       dispatch(setCountryFlag(e.detail.value));
                     }}
                   >
-                    {countries
-                      ? Object.entries(countries).map(([code, name]) => (
-                          <IonSelectOption key={code} value={code}>
-                            {getFlagEmoji(code)} {name}
-                          </IonSelectOption>
-                        ))
-                      : null}
+                    {Object.keys(countries).length > 0 ? (
+                      Object.entries(countries).map(([code, name]) => (
+                        <IonSelectOption key={code} value={code}>
+                          {getFlagEmoji(code)} {name}
+                        </IonSelectOption>
+                      ))
+                    ) : (
+                      <IonSpinner name="dots" />
+                    )}
                   </IonSelect>
                 )}
               </IonItem>
