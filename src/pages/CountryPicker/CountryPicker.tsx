@@ -29,8 +29,6 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
 
-  const { isCountry } = useSelector(state => state.white);
-
   const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
   const [countries, setCountries] = useState<any>();
   const [selectedCountry, setSelectedCountry] = useState<string>('');
@@ -106,11 +104,13 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                       dispatch(setCountryFlag(e.detail.value));
                     }}
                   >
-                    {Object.entries(countries).map(([code, name]) => (
-                      <IonSelectOption key={code} value={code}>
-                        {getFlagEmoji(code)} {name}
-                      </IonSelectOption>
-                    ))}
+                    {countries
+                      ? Object.entries(countries).map(([code, name]) => (
+                          <IonSelectOption key={code} value={code}>
+                            {getFlagEmoji(code)} {name}
+                          </IonSelectOption>
+                        ))
+                      : null}
                   </IonSelect>
                 )}
               </IonItem>

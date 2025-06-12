@@ -32,7 +32,7 @@ export interface Country {
   code: string;
 }
 export interface NewModalCountry {
-  [key: string]: string | undefined;
+  [key: string]: string;
 }
 
 export interface PhoneCode {
@@ -55,7 +55,7 @@ interface UpdatebusinessInformation {
 
 export interface ProviderState {
   businessInformation: BusinessInformation | null;
-  countries: Country;
+  countries: Array<Country>;
   phoneCodes: Array<PhoneCode>;
   currencies: Array<Currencies>;
   state: StatusState;
@@ -63,7 +63,7 @@ export interface ProviderState {
 
 const initialState: ProviderState = {
   businessInformation: null,
-  countries: {},
+  countries: [],
   phoneCodes: [],
   currencies: [],
   state: {
@@ -202,7 +202,7 @@ const practiceSlice = createSlice({
         };
       })
       .addCase(getCountriesAction.pending, () => console.log('pending get countries'))
-      .addCase(getCountriesAction.fulfilled, (state, action: PayloadAction<Country>) => {
+      .addCase(getCountriesAction.fulfilled, (state, action: PayloadAction<Country[]>) => {
         state.countries = action.payload;
         state.state = {
           ...state.state,

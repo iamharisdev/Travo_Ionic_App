@@ -73,11 +73,6 @@ const Scheduling: React.FC<SchedulingProps> = ({
         }}
       >
         <NylasDatePicker
-          configSettings={{
-            scheduler: {
-              // hide_additional_guests: true,
-            }
-          }}
           onDateSelected={(date: CustomEvent<Date>) => onDateSelected && onDateSelected(date)}
         />
         <NylasTimeslotPicker className="time-slot-picker" />

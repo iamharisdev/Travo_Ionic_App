@@ -4,11 +4,7 @@
 	"webDir": "dist",
 	"server": {
 		"allowNavigation": [
-			"undefined",
-			"undefined",
-			"undefined",
-			"undefined",
-			"undefined"
+			"*"
 		],
 		"androidScheme": "http",
 		"iosScheme": "https"

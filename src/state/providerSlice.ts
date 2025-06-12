@@ -81,13 +81,16 @@ export const getCountriesForRegionAction = createAsyncThunk(
     try {
       const response = await getCountriesForRegion();
 
-      // Ensure countries is an object (not a string!)
-      const countries: NewModalCountry = response?.data?.countries;
+
+      const countriesRaw = response?.data?.countries;
+      const countries: NewModalCountry = typeof countriesRaw === 'string'
+        ? JSON.parse(countriesRaw)
+        : countriesRaw;
 
       return countries;
     } catch (error: any) {
       console.error('[getCountries]: ', error);
-      return {}; // return an empty object on error
+      return {}; 
     }
   }
 );
@@ -106,6 +109,7 @@ export const getMeAction = createAsyncThunk('provider/getMe', async (): Promise<
       principal: response.data.principal,
       providerPractices: response.data.providerPractices,
       practice,
+      countries:{},
       state: {
         success: true,
       },
@@ -139,7 +143,7 @@ export const getPracticeAction = createAsyncThunk(
 
 export const updatePracticeAction = createAsyncThunk(
   'provider/updatePractice',
-  async ({ practiceId, providerId, practice }: UpdatePractice): Promise<Practice | null> => {
+  async ({ practiceId, providerId, practice }: any): Promise<Practice | null> => {
     try {
       await updatePractice(practiceId, providerId, practice);
 

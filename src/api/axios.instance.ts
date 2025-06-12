@@ -5,6 +5,7 @@ import { getStorageValue } from '../storage/storage.util';
 import { STORAGE_TOKEN } from '../constant/storage.constant';
 
 let storeInstance: any = null; // Will hold the store reference
+type ApiName = 'idApi' | 'providerApi' | 'practiceApi' | 'billingApi' | 'schedulingApi' | 'patientApi';
 
 // Export this function so main.tsx can inject the store instance
 export const setStoreInstance = (store: any) => {
@@ -12,7 +13,7 @@ export const setStoreInstance = (store: any) => {
 };
 
 // Helper function to set auth header and base URL
-const setAuthHeadersAndBaseUrl = async (config: any, apiName: string) => {
+const setAuthHeadersAndBaseUrl = async (config: any, apiName:ApiName) => {
   if (!storeInstance) {
     throw new Error(
       'Store instance is not set. Please call setStoreInstance(store) before making API calls.'

@@ -93,6 +93,7 @@ const App: React.FC = () => {
   }, [dismiss, loading, message, present]);
 
   const hasCountry = (country: string | null) => {
+    console.log(country !== null && country !== 'null' && country !== '');
     return country !== null && country !== 'null' && country !== '';
   };
   return (
