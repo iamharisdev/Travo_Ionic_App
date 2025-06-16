@@ -1,30 +1,45 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { IonButton, IonIcon, IonItem, IonLabel, IonPopover, IonText,   IonSelect,
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonPopover,
+  IonText,
+  IonSelect,
   IonSelectOption,
   IonInput,
   IonGrid,
   IonRow,
-  IonCol } from '@ionic/react';
-import { Patient } from '../../../../state/patientSlice';
-import { Services } from '../../../../shared/types/appointment.type';
-import { AppointmentDateTime } from '../../CreateAppointment';
-import dayjs from 'dayjs';
-import { caretDownOutline, caretUpOutline, informationCircle } from 'ionicons/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../state/store';
-import { setLoading } from '../../../../state/loadingSlice';
-import { createAppointmentAction, getEventsAction } from '../../../../state/schedulingSlice';
-import usePresentToast from '../../../../hooks/usePresentToast';
-import { useHistory } from 'react-router';
-import { APPOINTMENTS } from '../../../../shared/routes/routes';
-import { setDate } from '../../../../state/calendarSlice';
+  IonCol,
+} from "@ionic/react";
+import { Patient } from "../../../../state/patientSlice";
+import { Services } from "../../../../shared/types/appointment.type";
+import { AppointmentDateTime } from "../../CreateAppointment";
+import dayjs from "dayjs";
+import {
+  caretDownOutline,
+  caretUpOutline,
+  informationCircle,
+} from "ionicons/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../../state/store";
+import { setLoading } from "../../../../state/loadingSlice";
+import {
+  createAppointmentAction,
+  getEventsAction,
+} from "../../../../state/schedulingSlice";
+import usePresentToast from "../../../../hooks/usePresentToast";
+import { useHistory } from "react-router";
+import { APPOINTMENTS } from "../../../../shared/routes/routes";
+import { setDate } from "../../../../state/calendarSlice";
 
-import { radioButtonOn, radioButtonOff } from 'ionicons/icons';
-import './ReviewDetails.scss';
-import { useTranslation } from 'react-i18next';
-import 'dayjs/locale/pt';
-import 'dayjs/locale/en';
-const CSSPrefix = 'review-details';
+import { radioButtonOn, radioButtonOff } from "ionicons/icons";
+import "./ReviewDetails.scss";
+import { useTranslation } from "react-i18next";
+import "dayjs/locale/pt";
+import "dayjs/locale/en";
+const CSSPrefix = "review-details";
 
 interface ReviewDetailsProps {
   selectedClient?: Patient;
@@ -45,14 +60,12 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
-  const {
-    provider,
-  } = useSelector((state: RootState) => state);
+  const { provider } = useSelector((state: RootState) => state);
   const history = useHistory();
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
-    const { t, i18n} = useTranslation();
-    dayjs.locale(i18n.language);
+  const { t, i18n } = useTranslation();
+  dayjs.locale(i18n.language);
   const [isChecked, setIsChecked] = useState(false);
   const [repeatOption, setRepeatOption] = useState<string>();
   const [endsAfter, setEndsAfter] = useState<number>(0);
@@ -65,12 +78,11 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     setEndsAfter(e.target.value);
   };
 
-    useEffect(() => {
-      if (endsAfter < 0) {
-        setEndsAfter(0);
-      }
-    }, [endsAfter]);
-
+  useEffect(() => {
+    if (endsAfter < 0) {
+      setEndsAfter(0);
+    }
+  }, [endsAfter]);
 
   const openPopover = (e: any) => {
     popover.current!.event = e;
@@ -78,30 +90,30 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   };
 
   const dateTime = useMemo(() => {
-    let format = 'MMMM D, hh:mm A';
+    let format = "MMMM D, hh:mm A";
 
     if (provider?.practice?.displayTwentyFourHourTime) {
-      format = 'MMMM D, HH:mm';
+      format = "MMMM D, HH:mm";
     }
 
     if (selectedDateTime) {
       return dayjs(selectedDateTime.startTime).format(format);
     }
 
-    return '';
+    return "";
   }, [selectedDateTime, provider?.practice?.displayTwentyFourHourTime]);
 
   const selectedDayName = useMemo(() => {
     if (selectedDateTime?.startTime) {
       return dayjs(selectedDateTime.startTime)
         .locale(i18n.language)
-        .format('dddd');
+        .format("dddd");
     }
-    return '';
+    return "";
   }, [selectedDateTime?.startTime, i18n.language]);
 
   const paymentType = useMemo(() => {
-    if (selectedService?.paymentType === 'At Completion') {
+    if (selectedService?.paymentType === "At Completion") {
       return `${t("scheduling_at_session_completion")}`;
     }
 
@@ -112,18 +124,35 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     let redirect = false;
     if (isChecked) {
       if (!repeatOption) {
-        presentToast(`${t("recurring_appointment_please_select_value_for_Repeats_on")}`, 1500, 'top', 'danger');
+        presentToast(
+          `${t("recurring_appointment_please_select_value_for_Repeats_on")}`,
+          1500,
+          "top",
+          "danger"
+        );
         return;
       }
-    
+
       if (!endsAfter || endsAfter <= 0) {
-        presentToast(`${t("recurring_appointment_please_enter_at_least_one_value_for_ends_after")}`, 1500, 'top', 'danger');
+        presentToast(
+          `${t(
+            "recurring_appointment_please_enter_at_least_one_value_for_ends_after"
+          )}`,
+          1500,
+          "top",
+          "danger"
+        );
         return;
       }
     }
 
     try {
-      dispatch(setLoading({ loading: true, message: `${t("schedule_appointment_creating_appointment")}` }));
+      dispatch(
+        setLoading({
+          loading: true,
+          message: `${t("schedule_appointment_creating_appointment")}`,
+        })
+      );
 
       const [providerPractice] = provider.providerPractices;
       if (
@@ -138,51 +167,72 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         selectedDateTime?.endTime
       ) {
         const startTime = dayjs(selectedDateTime.startTime);
-        const endTimeByDuration = startTime.add(selectedService?.duration || 0, 'minutes');
+        const endTimeByDuration = startTime.add(
+          selectedService?.duration || 0,
+          "minutes"
+        );
         const payload = {
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          payload:isChecked && endsAfter && repeatOption ?  {
-            patientServiceId: selectedService.id,
-            patientId: selectedClient.id,
-            patientEmail: selectedClient.email,
-            patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
-            patientNumber: selectedClient.patientNumber,
-            startTime: startTime.toISOString(),
-            endTime: endTimeByDuration.toISOString(),
-            invoiceDataId,
-            count:endsAfter,
-            frequency:repeatOption,
-            recurring:isChecked
-          }:{
-            patientServiceId: selectedService.id,
-            patientId: selectedClient.id,
-            patientEmail: selectedClient.email,
-            patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
-            patientNumber: selectedClient.patientNumber,
-            startTime: startTime.toISOString(),
-            endTime: endTimeByDuration.toISOString(),
-            invoiceDataId,
-            recurring: false
-          }
+          payload:
+            isChecked && endsAfter && repeatOption
+              ? {
+                  patientServiceId: selectedService.id,
+                  patientId: selectedClient.id,
+                  patientEmail: selectedClient.email,
+                  patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
+                  patientNumber: selectedClient.patientNumber,
+                  startTime: startTime.toISOString(),
+                  endTime: endTimeByDuration.toISOString(),
+                  invoiceDataId,
+                  count: endsAfter,
+                  frequency: repeatOption,
+                  recurring: isChecked,
+                }
+              : {
+                  patientServiceId: selectedService.id,
+                  patientId: selectedClient.id,
+                  patientEmail: selectedClient.email,
+                  patientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
+                  patientNumber: selectedClient.patientNumber,
+                  startTime: startTime.toISOString(),
+                  endTime: endTimeByDuration.toISOString(),
+                  invoiceDataId,
+                  recurring: false,
+                },
         };
 
         const response: any = await dispatch(createAppointmentAction(payload));
 
-        const responsePayload=response?.payload?.id ? response?.payload?.id : response?.payload
+        const responsePayload = response?.payload?.id
+          ? response?.payload?.id
+          : response?.payload;
 
-        if (responsePayload && response.type === 'scheduling/createAppointment/fulfilled') {
-          await dispatch(getEventsAction({
-            practiceId: providerPractice.practiceId,
-            providerId: providerPractice.providerId,
-            start: dayjs(selectedDateTime?.startTime).startOf('day').toISOString(),
-            end: dayjs(selectedDateTime?.startTime).endOf('day').toISOString(),
-            pageNumber: 0,
-            pageSize: 999,
-          }));
+        if (
+          responsePayload &&
+          response.type === "scheduling/createAppointment/fulfilled"
+        ) {
+          await dispatch(
+            getEventsAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
+              start: dayjs(selectedDateTime?.startTime)
+                .startOf("day")
+                .toISOString(),
+              end: dayjs(selectedDateTime?.startTime)
+                .endOf("day")
+                .toISOString(),
+              pageNumber: 0,
+              pageSize: 999,
+            })
+          );
 
-          dispatch(setDate(dayjs(selectedDateTime?.startTime).startOf('day').toISOString()));
-          dispatch(setLoading({ loading: false, message: '' }));
+          dispatch(
+            setDate(
+              dayjs(selectedDateTime?.startTime).startOf("day").toISOString()
+            )
+          );
+          dispatch(setLoading({ loading: false, message: "" }));
           redirect = true;
           closeHandler(true);
         }
@@ -192,20 +242,20 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           presentToast(
             `${t("toast_messages_error_create_appointment")}`,
             1000,
-            'middle',
-            'danger'
+            "middle",
+            "danger"
           );
-          dispatch(setLoading({ loading: false, message: '' }));
+          dispatch(setLoading({ loading: false, message: "" }));
         }
       }
     } catch (error) {
-      dispatch(setLoading({ loading: false, message: '' }));
+      dispatch(setLoading({ loading: false, message: "" }));
       closeHandler();
       presentToast(
         `${t("toast_messages_error_create_appointment")}`,
         1000,
-        'top',
-        'danger'
+        "top",
+        "danger"
       );
       console.error(`${t("toast_messages_error_create_appointment")} :`, error);
     } finally {
@@ -213,7 +263,30 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         history.push(APPOINTMENTS);
       }
     }
-  }
+  };
+
+  const duration = useMemo(() => {
+    let parsedDuration = "";
+
+    if (selectedService?.duration) {
+      const minutes = selectedService.duration;
+      const hours = Math.floor(minutes / 60);
+
+      if (minutes > 60) {
+        parsedDuration = `${hours} hours`;
+      }
+
+      if (minutes === 60) {
+        parsedDuration = `${hours} hour`;
+      }
+
+      if (minutes < 60) {
+        parsedDuration = `${minutes} min`;
+      }
+    }
+
+    return parsedDuration;
+  }, [selectedService?.duration]);
 
   return (
     <div className={CSSPrefix}>
@@ -232,10 +305,11 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
         onClick={() => goToStep && goToStep(0)}
       >
-        <IonLabel position="stacked">
-          {t("scheduling_client")}
-        </IonLabel>
-        <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
+        <IonLabel position="stacked">{t("scheduling_client")}</IonLabel>
+        <IonIcon
+          className={`${CSSPrefix}-at-the-very-right`}
+          icon={caretDownOutline}
+        />
         <IonLabel position="stacked">{`${selectedClient?.firstName} ${selectedClient?.lastName}`}</IonLabel>
       </IonItem>
       <IonItem
@@ -244,74 +318,116 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         onClick={() => goToStep && goToStep(1)}
       >
         <IonLabel position="stacked">{t("scheduling_service")}</IonLabel>
-        <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
-        <IonLabel position="stacked">{selectedService?.name}</IonLabel>
+        <IonIcon
+          className={`${CSSPrefix}-at-the-very-right`}
+          icon={caretDownOutline}
+        />
+        <IonLabel position="stacked">
+          {`${selectedService?.name} (${selectedService?.location}, ${duration})`}
+        </IonLabel>
       </IonItem>
       <IonItem
         lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+        className={`custom-input  ion-padding-horizontal`}
         onClick={() => goToStep && goToStep(2)}
       >
-        <IonLabel position="stacked">{t("schedule_appointment_date_and_time")}</IonLabel>
-        <IonIcon className={`${CSSPrefix}-at-the-very-right`} icon={caretDownOutline} />
+        <IonLabel position="stacked">
+          {t("schedule_appointment_date_and_time")}
+        </IonLabel>
+        <IonIcon
+          className={`${CSSPrefix}-at-the-very-right`}
+          icon={caretDownOutline}
+        />
         <IonLabel position="stacked">{dateTime}</IonLabel>
       </IonItem>
 
-      <IonItem lines="none" detail={false} className="custom-radio-item" button onClick={handleClick}>
-      <IonIcon
-        slot="start"
-        icon={isChecked ? radioButtonOn : radioButtonOff}
-        className="black-radio-icon"
-      />
-      <IonLabel class='custom-radio-text'>{t("recurring_appointment")}</IonLabel>
-    </IonItem>
+      <IonItem
+        lines="none"
+        detail={false}
+        className="custom-radio-item"
+        button
+        onClick={handleClick}
+      >
+        <IonIcon
+          slot="start"
+          icon={isChecked ? radioButtonOn : radioButtonOff}
+          className="black-radio-icon"
+        />
+        <IonLabel class="custom-radio-text">
+          {t("recurring_appointment")}
+        </IonLabel>
+      </IonItem>
 
-    {isChecked && (
-                  <IonGrid>
-                    <IonRow class={`${CSSPrefix}-recurring-appointment-row`}>
-                      <IonCol size="5.7" className="custom-box">
-                        <IonItem className="custom-input custom-ion-item" lines="none">
-                          <IonLabel position="stacked" className="custom-label">{t("recurring_appointment_repeats_on")}</IonLabel>
-                          <IonSelect
-                            className="custom-select custom-label"
-                            placeholder={t("recurring_appointment_repeats_select")}
-                            interface="action-sheet"
-                            cancelText={t("log_out_cancel")} 
-                            value={repeatOption}
-                            onIonChange={(e) => setRepeatOption(e.detail.value)}
-                          >
-                            <IonSelectOption value="Daily">{t("recurring_appointment_repeats_daily")}</IonSelectOption>
-                            <IonSelectOption value="Weekly">{t("recurring_appointment_weekly_on_day")} {selectedDayName}</IonSelectOption>
-                            <IonSelectOption value="Biweekly">{t("recurring_appointment_every_two_weeks_on_day")} {selectedDayName}</IonSelectOption>
-                            <IonSelectOption value="Monthly">{t("recurring_appointment_montly_on_the_third_day")} {selectedDayName}</IonSelectOption>
-                          </IonSelect>
-                        </IonItem>
-                      </IonCol>
+      {isChecked && (
+        <IonGrid>
+          <IonRow class={`${CSSPrefix}-recurring-appointment-row`}>
+            <IonCol size="5.7" className="custom-box">
+              <IonItem className="custom-input custom-ion-item" lines="none">
+                <IonLabel position="stacked" className="custom-label">
+                  {t("recurring_appointment_repeats_on")}
+                </IonLabel>
+                <IonSelect
+                  className="custom-select custom-label"
+                  placeholder={t("recurring_appointment_repeats_select")}
+                  interface="action-sheet"
+                  cancelText={t("log_out_cancel")}
+                  value={repeatOption}
+                  onIonChange={(e) => setRepeatOption(e.detail.value)}
+                >
+                  <IonSelectOption value="Daily">
+                    {t("recurring_appointment_repeats_daily")}
+                  </IonSelectOption>
+                  <IonSelectOption value="Weekly">
+                    {t("recurring_appointment_weekly_on_day")} {selectedDayName}
+                  </IonSelectOption>
+                  <IonSelectOption value="Biweekly">
+                    {t("recurring_appointment_every_two_weeks_on_day")}{" "}
+                    {selectedDayName}
+                  </IonSelectOption>
+                  <IonSelectOption value="Monthly">
+                    {t("recurring_appointment_montly_on_the_third_day")}{" "}
+                    {selectedDayName}
+                  </IonSelectOption>
+                </IonSelect>
+              </IonItem>
+            </IonCol>
 
-                      <IonCol size="5.7" className="custom-box">
-                        <IonItem className="custom-input custom-ion-item" lines="none">
-                          <IonLabel position="stacked" className="custom-label">{t("recurring_appointment_ends_after")}</IonLabel>
-                          <IonInput
-                            className="custom-input custom-label"
-                            type="number"
-                            value={endsAfter}
-                            placeholder="0"
-                            onIonInput={handleEndsAfterInput}
-                          />
-                          <IonIcon className='caretUpOutline' onClick={() => setEndsAfter(prev => Number(prev || 0) + 1)} icon={caretUpOutline}/>
-                          <IonIcon className='caretDownOutline'  onClick={() => setEndsAfter(prev => Math.max(0, Number(prev || 0) - 1))} icon={caretDownOutline}/>
-                        </IonItem>
-                      </IonCol>
-                    </IonRow>
-                  </IonGrid>
-       )}
+            <IonCol size="5.7" className="custom-box">
+              <IonItem className="custom-input custom-ion-item" lines="none">
+                <IonLabel position="stacked" className="custom-label">
+                  {t("recurring_appointment_ends_after")}
+                </IonLabel>
+                <IonInput
+                  className="custom-input custom-label"
+                  type="number"
+                  value={endsAfter}
+                  placeholder="0"
+                  onIonInput={handleEndsAfterInput}
+                />
+                <IonIcon
+                  className="caretUpOutline"
+                  onClick={() => setEndsAfter((prev) => Number(prev || 0) + 1)}
+                  icon={caretUpOutline}
+                />
+                <IonIcon
+                  className="caretDownOutline"
+                  onClick={() =>
+                    setEndsAfter((prev) => Math.max(0, Number(prev || 0) - 1))
+                  }
+                  icon={caretDownOutline}
+                />
+              </IonItem>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+      )}
 
       <IonItem
         lines="none"
         className={`custom-input ion-margin-vertical ion-padding-horizontal`}
       >
         <IonLabel position="stacked">
-        {t("scheduling_payment_type")}
+          {t("scheduling_payment_type")}
           <IonIcon
             className={`${CSSPrefix}-info-icon`}
             icon={informationCircle}
@@ -346,6 +462,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       </IonPopover>
     </div>
   );
-}
+};
 
 export default ReviewDetails;

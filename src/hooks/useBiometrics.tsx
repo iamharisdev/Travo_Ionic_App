@@ -1,4 +1,10 @@
-import { AndroidBiometryStrength, BiometricAuth, BiometryError, BiometryErrorType, CheckBiometryResult } from "@aparajita/capacitor-biometric-auth"
+import {
+  AndroidBiometryStrength,
+  BiometricAuth,
+  BiometryError,
+  BiometryErrorType,
+  CheckBiometryResult,
+} from "@aparajita/capacitor-biometric-auth";
 import { useCallback } from "react";
 import { getStorageValue, removeStorageValue } from "../storage/storage.util";
 import { STORAGE_TOKEN } from "../constant/storage.constant";
@@ -6,6 +12,7 @@ import { LOADING, SING_IN } from "../shared/routes/routes";
 import { useHistory, useLocation } from "react-router";
 import { useDispatch } from "react-redux";
 import { resetAll } from "../state/common.actions";
+import { useTranslation } from "react-i18next";
 
 interface UseBiometrics {
   checkSessionHandler: () => Promise<void>;
@@ -16,16 +23,17 @@ const useBiometrics = (): UseBiometrics => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   async function authenticate(): Promise<boolean> {
     try {
       await BiometricAuth.authenticate({
-        reason: 'Please authenticate',
-        cancelTitle: 'Cancel',
+        reason: t("biometric_reason"),
+        cancelTitle: t("biometric_cancel_title"),
         allowDeviceCredential: true,
-        iosFallbackTitle: 'Use passcode',
-        androidTitle: 'Biometric login',
-        androidSubtitle: 'Log in using biometric authentication',
+        iosFallbackTitle: t("biometric_iosFallbackTitle"),
+        androidTitle: t("biometric_android_title"),
+        androidSubtitle: t("biometric_android_subtitle"),
         androidConfirmationRequired: false,
         androidBiometryStrength: AndroidBiometryStrength.weak,
       });
@@ -36,7 +44,7 @@ const useBiometrics = (): UseBiometrics => {
       if (error instanceof BiometryError) {
         if (error.code !== BiometryErrorType.userCancel) {
           // Display the error.
-          console.error('[biometrics-authenticate]: ', error.message);
+          console.error("[biometrics-authenticate]: ", error.message);
           return false;
         }
       }
@@ -51,7 +59,7 @@ const useBiometrics = (): UseBiometrics => {
 
       return isAvailable;
     } catch (error) {
-      console.error('[biometrics-checkBiometry]: ', error);
+      console.error("[biometrics-checkBiometry]: ", error);
 
       return false;
     }
@@ -83,7 +91,7 @@ const useBiometrics = (): UseBiometrics => {
         }
       }
     } catch (error) {
-      console.log('[checkSessionHandler]: ', error);
+      console.log("[checkSessionHandler]: ", error);
     }
   }, [location.pathname]);
 
@@ -102,13 +110,13 @@ const useBiometrics = (): UseBiometrics => {
   }
 
   async function onResumeCheck(): Promise<void> {
-    await updateBiometryInfo(await BiometricAuth.checkBiometry())
+    await updateBiometryInfo(await BiometricAuth.checkBiometry());
   }
 
   return {
     checkSessionHandler,
     onResumeCheck,
   };
-}
+};
 
 export default useBiometrics;

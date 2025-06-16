@@ -11,3 +11,27 @@
     line-height: normal;
   }
 }
+
+.custom-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px; // adjust as needed
+  border-bottom: 1px solid #eee;
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+}
+
+.custom-text {
+  font-size: 16px;
+  color: #333;
+}
+
+.custom-icon {
+  font-size: 18px;
+  color: var(--ion-color-dark);
+}

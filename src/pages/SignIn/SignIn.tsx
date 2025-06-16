@@ -37,6 +37,7 @@ const Login: React.FC = (): React.ReactElement => {
   const [presentToast] = usePresentToast();
   const { checkSessionHandler } = useBiometrics();
   const {t} = useTranslation();
+  const validationSchema = signInSchema(t);
 
   useEffect(() => {
     if (location.pathname === SING_IN) {
@@ -54,7 +55,7 @@ const Login: React.FC = (): React.ReactElement => {
       email: '',
       password: '',
     },
-    validationSchema: signInSchema,
+    validationSchema: validationSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
       try {

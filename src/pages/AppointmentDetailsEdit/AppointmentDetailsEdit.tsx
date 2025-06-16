@@ -32,6 +32,7 @@ import { useTranslation } from "react-i18next";
 
 const CSSprefix = 'appointment-details-edit';
 
+
 const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { services }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const location = useLocation<AppointmentDetailsEditState>();

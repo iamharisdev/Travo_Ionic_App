@@ -47,13 +47,17 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   ).filter(({ status }) => status === AppointmentStatusEnum.PENDING), [events?.events]);
   const [presentToast] = usePresentToast();
       const { t } = useTranslation();
-  const dateText = useMemo(() => {
-    if (selectedDate) {
-      return months[dayjs(selectedDate).month()];
-    }
+      const dateText = useMemo(() => {
+        const lang = localStorage.getItem("language") || "en";
+        dayjs.locale(lang); // Ensure the locale is set before formatting
+      
+        if (selectedDate) {
+          return dayjs(selectedDate).format("MMMM");
+        }
+      
+        return '';
+      }, [selectedDate]);
 
-    return '';
-  }, [selectedDate]);
   const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
     let practiceId = '';
     let providerId = '';

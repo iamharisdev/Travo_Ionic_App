@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonFab,
@@ -12,35 +11,37 @@ import {
   RefresherEventDetail,
   useIonViewWillEnter,
 } from "@ionic/react";
-import Header from "../../components/Header/Header";
-import Menu from "../../components/Menu/Menu";
-import { CALENDAR_MONTH_MENU_ID } from "../../shared/constants/menu";
-import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../state/store";
-import EventCard from "../../components/EventCard/EventCard";
-import { months } from "../../shared/constants/dates";
-import { setLoading } from "../../state/loadingSlice";
-import { getEventsAction, getGoogleEventsAction, getMicrosoftEventsAction } from "../../state/schedulingSlice";
-import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
-import { setNextMonth, setPrevMonth, setDates, setDate } from "../../state/calendarSlice";
-import UseSwipeGesture from "../../hooks/useSwipeGesture";
-import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
-import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
+import 'dayjs/locale/en';
+import 'dayjs/locale/pt'; // Portuguese
 import { addOutline } from "ionicons/icons";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useLocation } from "react-router";
+import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
+import DatePicker from "../../components/DatePicker/DatePicker";
+import EventCard from "../../components/EventCard/EventCard";
+import Header from "../../components/Header/Header";
+import HeaderCalendar from "../../components/HeaderCalendar/HeaderCalendar";
+import Menu from "../../components/Menu/Menu";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { months } from "../../shared/constants/dates";
+import { CALENDAR_MONTH_MENU_ID } from "../../shared/constants/menu";
 import { CALENDAR_DAY, CALENDAR_MONTH } from "../../shared/routes/routes";
 import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
-import { useHistory, useLocation } from "react-router";
-import DatePicker from "../../components/DatePicker/DatePicker";
 import { getDefaultDates } from "../../shared/utils/dates.util";
+import { setDate, setDates, setNextMonth, setPrevMonth } from "../../state/calendarSlice";
+import { setLoading } from "../../state/loadingSlice";
+import { getEventsAction, getGoogleEventsAction, getMicrosoftEventsAction } from "../../state/schedulingSlice";
+import { AppDispatch, RootState } from "../../state/store";
 
-import "./CalendarMonth.scss";
 import { useTranslation } from "react-i18next";
-import { getMeAction } from "../../state/providerSlice";
 import usePresentToast from "../../hooks/usePresentToast";
+import "./CalendarMonth.scss";
 
-const localizer = dayjsLocalizer(dayjs);
+
+
 
 const CSSprefix = 'calendar-month';
 
@@ -48,6 +49,26 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events, microsoftEvents, googleEvents, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
   const { t } = useTranslation();
+  const history = useHistory();
+  const lang = localStorage.getItem("language") || "en";
+
+
+  const setDayjsLocale = () => {
+    dayjs.locale(lang); // Set global Day.js locale
+    return dayjsLocalizer(dayjs); // Recreate localizer
+  };
+
+  const dateText = useMemo(() => {
+    const lang = localStorage.getItem("language") || "en";
+    dayjs.locale(lang); // Ensure the locale is set before formatting
+  
+    return dayjs(selectedDates[0]).format("MMMM");
+  }, [selectedDates]);
+  
+
+  const localizer = useMemo(() => setDayjsLocale(), [lang]);
+
+
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'month');
 
@@ -73,10 +94,11 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const [presentToast] = usePresentToast();
 
   const dispatch = useDispatch<AppDispatch>();
-  const history = useHistory();
+
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const dateText = useMemo(() => months[dayjs(selectedDates[0]).month()], [selectedDates]);
+
+
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
   const location = useLocation<{ prevPath?: string }>();

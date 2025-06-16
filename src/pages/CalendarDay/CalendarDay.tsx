@@ -96,10 +96,13 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => {
+    const lang = localStorage.getItem("language") || "en";
+    dayjs.locale(lang); // Ensure the locale is set before formatting
+  
     if (selectedDate) {
-      return months[dayjs(selectedDate).month()];
+      return dayjs(selectedDate).format("MMMM");
     }
-
+  
     return '';
   }, [selectedDate]);
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
