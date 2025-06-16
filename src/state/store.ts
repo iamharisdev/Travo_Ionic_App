@@ -1,12 +1,14 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { persistReducer, persistStore } from 'redux-persist';
+
 // For web only (uses localStorage)
-import storage from 'redux-persist/lib/storage';
+
 // For native: use the line below instead of the one above
 // import createCapacitorStorage from 'redux-persist-capacitor-storage';
 // Native storage (optional)
 // const storage = createCapacitorStorage();
 
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import authReducer from './authSlice';
 import loadingReducer from './loadingSlice';
 import providerReducer from './providerSlice';
@@ -16,7 +18,6 @@ import schedulingReducer from './schedulingSlice';
 import calendarReducer from './calendarSlice';
 import patientReducer from './patientSlice';
 import  whiteReducer from './persistSlice';
-
 
 
 const rootReducer = combineReducers({
@@ -44,7 +45,9 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // required for redux-persist
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
     }),
 });
 

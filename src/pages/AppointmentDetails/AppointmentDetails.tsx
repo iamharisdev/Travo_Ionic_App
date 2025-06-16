@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import {
   IonButton,
   IonCol,
@@ -43,6 +43,7 @@ import { setLoading } from "../../state/loadingSlice";
 import { confirmAppointmentAction } from "../../state/schedulingSlice";
 import RescheduleAppointment from "../../components/RescheduleAppointment/RescheduleAppointment";
 import Recurring from "../../components/Recurring/Recurring";
+import { patientApiInstance } from "../../api/axios.instance";
 
 import "./AppointmentDetails.scss";
 import { useTranslation } from "react-i18next";
@@ -52,6 +53,12 @@ const CSSprefix = "appointment-details";
 interface EventData {
   eventId?: string;
   type?: AppointmentDetailTypeEnum;
+}
+
+interface PatientContactInfo {
+  mobileNumber: string;
+  mobileNumberPrefix: string;
+  email: string;
 }
 
 const AppointmentDetails: React.FC = (): React.ReactElement => {
@@ -66,6 +73,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
   const [eventData, setEventData] = useState<EventData>();
   const [isRecurringOpen, setIsRecurringOpen] = useState(false);
+  const [patientContactInfo, setPatientContactInfo] = useState<PatientContactInfo | null>(null);
   const { t } = useTranslation();
 
   const event = useMemo(
@@ -319,6 +327,25 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchPatientContactInfo = async () => {
+      if (event?.patientId) {
+        try {
+          const response = await patientApiInstance.get<PatientContactInfo>(
+            `/practices/${practiceId}/patients/${event.patientId}`
+          );
+          setPatientContactInfo(response.data);
+        } catch (error) {
+          console.error('Error fetching patient data:', error);
+        }
+      }
+    };
+
+    fetchPatientContactInfo();
+  }, [event?.patientId]);
+
+  console.log('event', event);
+
   return (
     <IonPage className={CSSprefix}>
       <Header
@@ -392,11 +419,8 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                 style={{ color: "var(--ion-trova-medium-gray)" }}
               />
               <IonText className={`${CSSprefix}-link`}>
-                <a
-                  style={{ textDecoration: "none" }}
-                  href={`tel:${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}
-                >
-                  {`${provider.practice?.phoneNumberPrefix} ${provider.practice?.phoneNumber}`}
+                <a style={{ textDecoration: 'none' }} href={`tel:${patientContactInfo?.mobileNumberPrefix} ${patientContactInfo?.mobileNumber}`}>
+                  {`${patientContactInfo?.mobileNumberPrefix} ${patientContactInfo?.mobileNumber}`}
                 </a>
               </IonText>
             </IonItem>
@@ -406,11 +430,8 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                 style={{ color: "var(--ion-trova-medium-gray)" }}
               />
               <IonText className={`${CSSprefix}-link`}>
-                <a
-                  style={{ textDecoration: "none" }}
-                  href={`mailto:${provider.practice?.userName}`}
-                >
-                  {`${provider.practice?.userName}`}
+                <a style={{ textDecoration: 'none' }} href={`mailto:${patientContactInfo?.email}`}>
+                  {`${patientContactInfo?.email}`}
                 </a>
               </IonText>
             </IonItem>

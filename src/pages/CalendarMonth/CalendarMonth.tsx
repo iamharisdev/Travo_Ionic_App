@@ -6,7 +6,10 @@ import {
   IonIcon,
   IonPage,
   IonPopover,
+  IonRefresher,
+  IonRefresherContent,
   IonText,
+  RefresherEventDetail,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
@@ -34,6 +37,8 @@ import { getDefaultDates } from "../../shared/utils/dates.util";
 
 import "./CalendarMonth.scss";
 import { useTranslation } from "react-i18next";
+import { getMeAction } from "../../state/providerSlice";
+import usePresentToast from "../../hooks/usePresentToast";
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -65,6 +70,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       allDay: event?.allDay
     })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
   }, [events.events, microsoftEvents, googleEvents, state.loading, selectedDates]);
+  const [presentToast] = usePresentToast();
 
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
@@ -112,13 +118,14 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
   const getAppointmentsHandler = async () => {
     try {
-      const [providerPractice] = provider.providerPractices;
+      const [providerPractice] = provider?.providerPractices;
+      console.log('getAppointmentsHandler',providerPractice);
       if (providerPractice) {
         await dispatch(getEventsAction({
           practiceId: providerPractice.practiceId,
           providerId: providerPractice.providerId,
-          start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-          end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+          start: dayjs().subtract(3, 'months').toISOString(),
+          end: dayjs().add(1, 'year').endOf('year').toISOString(),
           pageNumber: 0,
           pageSize: 999,
         }));
@@ -159,18 +166,32 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
+
   useIonViewWillEnter(() => {
     const start = dayjs().startOf('month').format('YYYY-MM-DD');
     const end = dayjs().endOf('month').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
     setSelectedSlot(undefined);
   }, []);
-
+  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+    getAppointmentsHandler().then(() => {
+      event.detail.complete();
+    }).catch((error) => {
+      console.error('Error refreshing appointments:', error);
+      presentToast(
+        `!${t("toast_messages_error_something_went_wrong")}!`,
+        1000,
+        'top',
+        'danger'
+      );
+      event.detail.complete();
+    });
+  }
   return (
     <>
       <Menu menuId={CALENDAR_MONTH_MENU_ID} contentId="calendar-month-content" />
       <IonPage ref={calendarMonthRef} className={CSSprefix} id="calendar-month-content">
-        <SwipeHandler parentRef={calendarMonthRef} />
+        {/* <SwipeHandler parentRef={calendarMonthRef} /> */}
         <Header
           showMenu
           menuId={CALENDAR_MONTH_MENU_ID}
@@ -179,6 +200,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent
+              pullingIcon="chevron-down-circle-outline"
+              refreshingSpinner="circles"
+            ></IonRefresherContent>
+          </IonRefresher>
           <Calendar
             defaultDate={selectedDates[0]}
             date={selectedDates[0]}
