@@ -1,11 +1,14 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
   IonItem,
   IonList,
   IonPage,
   IonPopover,
+  IonRefresher,
+  IonRefresherContent,
   IonText,
+  RefresherEventDetail,
 } from "@ionic/react";
 import Header from "../../components/Header/Header";
 import Menu from "../../components/Menu/Menu";
@@ -13,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import dayjs from "dayjs";
 import DatePicker from "../../components/DatePicker/DatePicker";
-import { confirmAppointmentAction } from "../../state/schedulingSlice";
+import { confirmAppointmentAction, getEventsAction } from "../../state/schedulingSlice";
 import { setLoading } from "../../state/loadingSlice";
 import { months } from "../../shared/constants/dates";
 import { APPOINTMENT_REQUESTS_MENU_ID } from "../../shared/constants/menu";
@@ -202,7 +205,40 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     onSwipedLeft: async () => closeMenuHandler(APPOINTMENT_REQUESTS_MENU_ID),
     onSwipedRight: async () => openMenuHandler(APPOINTMENT_REQUESTS_MENU_ID),
   });
-
+  const getAppointmentsHandler = async () => {
+    dispatch(setLoading({ loading: true, message: `${t("loading_appointment_requests")}` }));
+    try {
+      const [providerPractice] = provider?.providerPractices;
+      if (providerPractice) {
+        await dispatch(getEventsAction({
+          practiceId: providerPractice.practiceId,
+          providerId: providerPractice.providerId,
+          start: dayjs().subtract(3, 'months').toISOString(),
+          end: dayjs().add(1, 'year').endOf('year').toISOString(),
+          pageNumber: 0,
+          pageSize: 999,
+        }));
+        dispatch(setLoading({ loading: false, message: `` }));
+      }
+    } catch (error) {
+      dispatch(setLoading({ loading: false, message: `` }));
+      presentToast(
+        `!${t("toast_messages_error_something_went_wrong")}!`,
+        1000,
+        'top',
+        'danger'
+      );
+      console.error('error at load appointments by date: ', error);
+    }
+  }
+  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+    getAppointmentsHandler().then(() => {
+      event.detail.complete();
+    }).catch((error) => {
+      console.error('Error refreshing appointments:', error);
+      event.detail.complete();
+    });
+  }
   return (
     <>
       <Menu menuId={APPOINTMENT_REQUESTS_MENU_ID} contentId="appointment-requests-content" />
@@ -210,8 +246,8 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
         {...handlers}
         ref={refPassthrough}
         className={CSSprefix} id="appointment-requests-content"
-      >
-        <SwipeHandler parentRef={appointmentRequestsRef} />
+      > 
+        {/* <SwipeHandler parentRef={appointmentRequestsRef} /> */}
         <Header
           showMenu
           menuId={APPOINTMENT_REQUESTS_MENU_ID}
@@ -220,6 +256,12 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
           datePickerCB={openDatePickerHandler}
         />
         <IonContent fullscreen={true}>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent
+              pullingIcon="chevron-down-circle-outline"
+              refreshingSpinner="circles"
+            ></IonRefresherContent>
+          </IonRefresher>
           <IonList>
             {content}
           </IonList>
