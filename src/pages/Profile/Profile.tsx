@@ -59,7 +59,7 @@ const Profile: React.FC = (): React.ReactElement => {
         <SwipeHandler parentRef={profileRef} />
         <Header showMenu menuId={PROFILE_MENU_ID} />
         <IonContent fullscreen={true} className={CSSprefix}>
-          <IonItem lines="none">
+        <IonItem className="ion-margin-vertical" lines="none">
             <IonText className={`${CSSprefix}-title`}>
               {t("profile_settings")}
             </IonText>
@@ -85,8 +85,7 @@ const Profile: React.FC = (): React.ReactElement => {
             className="custom-item"
             onClick={() => history.push(CONFIGRATION)}
           >
-            <IonText>{t("configuration")}</IonText>
-
+            <IonText className="custom-text">{t("configuration")}</IonText>
             <IonIcon icon={caretForwardOutline} className="custom-icon" />
           </div>
           <IonItem id="open-logout-modal" lines="none">

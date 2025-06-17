@@ -16,9 +16,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px; // adjust as needed
-  border-bottom: 1px solid #eee;
-  background: transparent;
+  padding:16px; 
+  background:transparent;
   cursor: pointer;
 
   &:hover {
@@ -28,10 +27,12 @@
 
 .custom-text {
   font-size: 16px;
-  color: #333;
+  font-weight: 500;
+  font-family:'Poppins';
+  color:#2E2E2E;
 }
 
 .custom-icon {
-  font-size: 18px;
+  font-size: 16px;
   color: var(--ion-color-dark);
 }
