@@ -290,121 +290,93 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 
   return (
     <div className={CSSPrefix}>
-      <IonItem lines="none">
-        <IonText className={`${CSSPrefix}-title`}>
-          {t("schedule_appointment")}
-        </IonText>
-      </IonItem>
-      <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
+      <IonText className="title">{t("schedule_appointment")}</IonText>
+
+      <div className={`${CSSPrefix}-subtitle`}>
         <IonText>
           {t("schedule_appointment_review_appointment_details")}
         </IonText>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+      </div>
+      <div
+        className="custom-input-container"
         onClick={() => goToStep && goToStep(0)}
       >
-        <IonLabel position="stacked">{t("scheduling_client")}</IonLabel>
-        <IonIcon
-          className={`${CSSPrefix}-at-the-very-right`}
-          icon={caretDownOutline}
-        />
-        <IonLabel position="stacked">{`${selectedClient?.firstName} ${selectedClient?.lastName}`}</IonLabel>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
+        <label className="custom-label">{t("scheduling_client")}</label>
+
+        <span className="custom-value">{`${selectedClient?.firstName} ${selectedClient?.lastName}`}</span>
+      </div>
+      <div
+        className="custom-input-container"
         onClick={() => goToStep && goToStep(1)}
       >
-        <IonLabel position="stacked">{t("scheduling_service")}</IonLabel>
-        <IonIcon
-          className={`${CSSPrefix}-at-the-very-right`}
-          icon={caretDownOutline}
-        />
-        <IonLabel position="stacked">
+        <label className="custom-label">{t("scheduling_service")}</label>
+
+        <span className="custom-value">
           {`${selectedService?.name} (${selectedService?.location}, ${duration})`}
-        </IonLabel>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input  ion-padding-horizontal`}
+        </span>
+      </div>
+      <div
+        className="custom-input-container"
         onClick={() => goToStep && goToStep(2)}
       >
-        <IonLabel position="stacked">
+        <label className="custom-label">
           {t("schedule_appointment_date_and_time")}
-        </IonLabel>
-        <IonIcon
-          className={`${CSSPrefix}-at-the-very-right`}
-          icon={caretDownOutline}
-        />
-        <IonLabel position="stacked">{dateTime}</IonLabel>
-      </IonItem>
+        </label>
 
-      <IonItem
-        lines="none"
-        detail={false}
-        className="custom-radio-item"
-        button
-        onClick={handleClick}
-      >
+        <span className="custom-value">{dateTime}</span>
+      </div>
+
+      <div className="custom-radio-container" onClick={handleClick}>
         <IonIcon
-          slot="start"
           icon={isChecked ? radioButtonOn : radioButtonOff}
-          className="black-radio-icon"
+          className="custom-radio-icon"
         />
-        <IonLabel class="custom-radio-text">
-          {t("recurring_appointment")}
-        </IonLabel>
-      </IonItem>
+        <span className="custom-radio-label">{t("recurring_appointment")}</span>
+      </div>
 
       {isChecked && (
         <IonGrid>
           <IonRow class={`${CSSPrefix}-recurring-appointment-row`}>
-            <IonCol size="5.7" className="custom-box">
-              <IonItem className="custom-input custom-ion-item" lines="none">
-                <IonLabel position="stacked" className="custom-label">
-                  {t("recurring_appointment_repeats_on")}
-                </IonLabel>
-                <IonSelect
-                  className="custom-select custom-label"
-                  placeholder={t("recurring_appointment_repeats_select")}
-                  interface="action-sheet"
-                  cancelText={t("log_out_cancel")}
-                  value={repeatOption}
-                  onIonChange={(e) => setRepeatOption(e.detail.value)}
-                >
-                  <IonSelectOption value="Daily">
-                    {t("recurring_appointment_repeats_daily")}
-                  </IonSelectOption>
-                  <IonSelectOption value="Weekly">
-                    {t("recurring_appointment_weekly_on_day")} {selectedDayName}
-                  </IonSelectOption>
-                  <IonSelectOption value="Biweekly">
-                    {t("recurring_appointment_every_two_weeks_on_day")}{" "}
-                    {selectedDayName}
-                  </IonSelectOption>
-                  <IonSelectOption value="Monthly">
-                    {t("recurring_appointment_montly_on_the_third_day")}{" "}
-                    {selectedDayName}
-                  </IonSelectOption>
-                </IonSelect>
-              </IonItem>
+            <IonCol size="5.7" className="custom-input-container2">
+              <label className="custom-label">
+                {t("recurring_appointment_repeats_on")}
+              </label>
+              <IonSelect
+                className="selection-container"
+                placeholder={t("recurring_appointment_repeats_select")}
+                interface="action-sheet"
+                cancelText={t("log_out_cancel")}
+                value={repeatOption}
+                onIonChange={(e) => setRepeatOption(e.detail.value)}
+              >
+                <IonSelectOption value="Daily">
+                  {t("recurring_appointment_repeats_daily")}
+                </IonSelectOption>
+                <IonSelectOption value="Weekly">
+                  {t("recurring_appointment_weekly_on_day")} {selectedDayName}
+                </IonSelectOption>
+                <IonSelectOption value="Biweekly">
+                  {t("recurring_appointment_every_two_weeks_on_day")}{" "}
+                  {selectedDayName}
+                </IonSelectOption>
+                <IonSelectOption value="Monthly">
+                  {t("recurring_appointment_montly_on_the_third_day")}{" "}
+                  {selectedDayName}
+                </IonSelectOption>
+              </IonSelect>
             </IonCol>
 
-            <IonCol size="5.7" className="custom-box">
-              <IonItem className="custom-input custom-ion-item" lines="none">
-                <IonLabel position="stacked" className="custom-label">
-                  {t("recurring_appointment_ends_after")}
-                </IonLabel>
-                <IonInput
-                  className="custom-input custom-label"
-                  type="number"
-                  value={endsAfter}
-                  placeholder="0"
-                  onIonInput={handleEndsAfterInput}
-                />
-                <IonIcon
+            <IonCol size="5.7" className="custom-input-container2">
+              <label className="custom-label">
+                {t("recurring_appointment_ends_after")}
+              </label>
+              <IonInput
+                type="number"
+                value={endsAfter}
+                placeholder="0"
+                onIonInput={handleEndsAfterInput}
+              />
+              {/* <IonIcon
                   className="caretUpOutline"
                   onClick={() => setEndsAfter((prev) => Number(prev || 0) + 1)}
                   icon={caretUpOutline}
@@ -415,27 +387,23 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
                     setEndsAfter((prev) => Math.max(0, Number(prev || 0) - 1))
                   }
                   icon={caretDownOutline}
-                />
-              </IonItem>
+                /> */}
             </IonCol>
           </IonRow>
         </IonGrid>
       )}
 
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
-      >
-        <IonLabel position="stacked">
-          {t("scheduling_payment_type")}
+      <div className="custom-input-container">
+        <div className="custom-label-with-icon">
+          <label className="custom-label">{t("scheduling_payment_type")}</label>
           <IonIcon
-            className={`${CSSPrefix}-info-icon`}
+            className="info-icon"
             icon={informationCircle}
             onClick={openPopover}
           />
-        </IonLabel>
-        <IonLabel position="stacked">{paymentType}</IonLabel>
-      </IonItem>
+        </div>
+        <span className="custom-radio-label">{paymentType}</span>
+      </div>
       <IonButton
         className={`${CSSPrefix}-schedule-button ion-padding`}
         color="primary"
