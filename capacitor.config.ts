@@ -6,6 +6,7 @@ const config: CapacitorConfig = {
   appName: 'Trova',
   webDir: 'dist',
   server: {
+  
     allowNavigation: ['*'],
     androidScheme: 'http',
     iosScheme: 'https',
