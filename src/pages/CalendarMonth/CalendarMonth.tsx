@@ -48,13 +48,36 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const { provider, scheduling: { events, microsoftEvents, googleEvents, state }, calendar: { selectedDate, selectedDates } } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
   const { t } = useTranslation();
+  // const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
+  //   if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'month');
+
+  //   return [...events.events, ...microsoftEvents, ...googleEvents].filter(({ startTime, status, busy }) =>
+  //     dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
+  //     dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
+  //     (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY || busy)
+  //   ).map((event) => ({
+  //     id: event?.id,
+  //     title: JSON.stringify({
+  //       id: event?.id,
+  //       service: event?.patientServiceName || event?.title,
+  //       patient: event?.patientName || event?.providerName,
+  //       color: event?.color,
+  //       redirect: event?.status !== AppointmentStatusEnum.BUSY,
+  //       isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
+  //     }),
+  //     start: event?.allDay ? dayjs(event.endTime).startOf('day').toDate() : dayjs(event?.startTime || '').toDate(),
+  //     end: event?.allDay ? dayjs(event.endTime).endOf('day').toDate() : dayjs(event.endTime || '').toDate(),
+  //     allDay: event?.allDay
+  //   })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
+  // }, [events.events, microsoftEvents, googleEvents, state.loading, selectedDates]);
+
+
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDates[0], selectedDates[1], 'month');
-
-    return [...events.events, ...microsoftEvents, ...googleEvents].filter(({ startTime, status, busy }) =>
+  
+    return [...events.events, ...microsoftEvents, ...googleEvents].filter(({ startTime }) =>
       dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
-      (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY || busy)
+      dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
     ).map((event) => ({
       id: event?.id,
       title: JSON.stringify({
@@ -70,6 +93,9 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       allDay: event?.allDay
     })).sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
   }, [events.events, microsoftEvents, googleEvents, state.loading, selectedDates]);
+  
+
+
   const [presentToast] = usePresentToast();
 
   const dispatch = useDispatch<AppDispatch>();
