@@ -36,7 +36,8 @@ const Login: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const { checkSessionHandler } = useBiometrics();
-  const { t } = useTranslation();
+  const {t} = useTranslation();
+  const validationSchema = signInSchema(t);
   const { currentEnv } = useSelector((state: RootState) => state.white);
 
   useEffect(() => {
@@ -55,7 +56,7 @@ const Login: React.FC = (): React.ReactElement => {
       email: '',
       password: '',
     },
-    validationSchema: signInSchema,
+    validationSchema: validationSchema,
     enableReinitialize: true,
     onSubmit: async values => {
       try {

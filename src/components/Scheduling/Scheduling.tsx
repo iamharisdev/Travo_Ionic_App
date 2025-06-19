@@ -1,8 +1,13 @@
-import React, { useMemo } from 'react';
-import { NylasScheduling, NylasDatePicker, NylasTimeslotPicker } from '@nylas/react';
-import { AppointmentDateTime } from '../CreateAppointment/CreateAppointment';
+import {
+  NylasDatePicker,
+  NylasScheduling,
+  NylasTimeslotPicker,
+} from "@nylas/react";
+import React, { useMemo } from "react";
+import { AppointmentDateTime } from "../CreateAppointment/CreateAppointment";
 
-import './Scheduling.scss';
+import "./Scheduling.scss";
+
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 
@@ -26,18 +31,19 @@ const Scheduling: React.FC<SchedulingProps> = ({
 
 
   const { currentEnv } = useSelector((state: RootState) => state.white);
-  console.log("currentENVSech:=>  ",currentEnv)
+ 
 
 
   const selectedTimeslot = useMemo(() => {
-    if (start_time && end_time) return {
-      start_time,
-      end_time,
-      emails: []
-    };
+    if (start_time && end_time)
+      return {
+        start_time,
+        end_time,
+        emails: [],
+      };
 
     return null;
-  }, [start_time, end_time])
+  }, [start_time, end_time]);
 
   return (
     <>
@@ -51,17 +57,17 @@ const Scheduling: React.FC<SchedulingProps> = ({
           confirmedEventInfo: undefined,
           nylasBranding: false,
           selectedDate,
-          selectedTimeslot
+          selectedTimeslot,
         }}
         themeConfig={{
-          '--nylas-primary': 'var(--ion-color-primary)',
-          '--nylas-font-family': 'Poppins',
+          "--nylas-primary": "var(--ion-color-primary)",
+          "--nylas-font-family": "Poppins",
         }}
         mode="composable"
         eventOverrides={{
           timeslotConfirmed: async (
             event: CustomEvent<any>,
-            connector?: any,
+            connector?: any
           ): Promise<void> => {
             event.preventDefault();
             const { start_time, end_time } = event.detail;
@@ -69,11 +75,14 @@ const Scheduling: React.FC<SchedulingProps> = ({
               startTime: (start_time as Date).toISOString(),
               endTime: (end_time as Date).toISOString(),
             });
-          }
+          },
         }}
       >
         <NylasDatePicker
-          onDateSelected={(date: CustomEvent<Date>) => onDateSelected && onDateSelected(date)}
+          onDateSelected={(date: CustomEvent<Date>) =>
+            onDateSelected && onDateSelected(date)
+          }
+        
         />
         <NylasTimeslotPicker className="time-slot-picker" />
       </NylasScheduling>

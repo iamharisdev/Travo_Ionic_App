@@ -12,14 +12,19 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { HeaderProps } from "./header.type";
 import { useHistory } from "react-router";
-import { caretDownOutline, menu , notifications, searchOutline} from "ionicons/icons";
-import { menuController } from '@ionic/core/components';
+import {
+  caretDownOutline,
+  menu,
+  notifications,
+  searchOutline,
+} from "ionicons/icons";
+import { menuController } from "@ionic/core/components";
 
-import './Header.scss';
+import "./Header.scss";
 import { useTranslation } from "react-i18next";
 import { NOTIFICATIONS_DETAILS } from "../../shared/routes/routes";
 
-const CSSPrefix = 'header';
+const CSSPrefix = "header";
 
 const Header: React.FC<HeaderProps> = ({
   className,
@@ -45,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({
   saveCB,
 }): React.ReactElement => {
   const history = useHistory();
-      const {t} = useTranslation();
+  const { t } = useTranslation();
   const [showSearchInput, setShowSearchInput] = useState(false);
 
   async function openMenuHandler() {
@@ -53,15 +58,15 @@ const Header: React.FC<HeaderProps> = ({
   }
   const inputRef = useRef<HTMLIonInputElement | null>(null);
 
-// Focus input when it appears
-useEffect(() => {
-  if (showSearchInput && inputRef.current) {
-    setTimeout(() => {
-      inputRef.current?.setFocus();
-    }, 100); // Small delay helps on some devices
-  }
-}, [showSearchInput]);
-let count=900;
+  // Focus input when it appears
+  useEffect(() => {
+    if (showSearchInput && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.setFocus();
+      }, 100); // Small delay helps on some devices
+    }
+  }, [showSearchInput]);
+  let count = 900;
 
   return (
     <IonHeader
@@ -76,7 +81,10 @@ let count=900;
               className="header-button"
               color="primary"
               onClick={() =>
-                customBackRoute ? history.push(customBackRoute) : history.goBack()}
+                customBackRoute
+                  ? history.push(customBackRoute)
+                  : history.goBack()
+              }
             >
               {t("scheduling_back")}
             </IonButton>
@@ -108,15 +116,15 @@ let count=900;
               color="primary"
               onClick={editCB}
             >
-              {t("scheduling_edit")};
+              {t("scheduling_edit")}
             </IonButton>
           </IonButtons>
         )}
-           {showSave && (
+        {showSave && (
           <IonButtons slot="end">
             <IonButton
               className="header-button"
-              color={selectedLang === newLang ?  "medium": "primary"}
+              color={selectedLang === newLang ? "medium" : "primary"}
               disabled={selectedLang === newLang}
               onClick={saveCB}
             >
@@ -139,13 +147,13 @@ let count=900;
             )}
 
             {showSearchInput && (
-                <IonInput
+              <IonInput
                 ref={inputRef}
-                  className="search-input"
-                  placeholder="Search..."
-                  clearInput
-                  onIonBlur={() => setShowSearchInput(false)}
-                />
+                className="search-input"
+                placeholder="Search..."
+                clearInput
+                onIonBlur={() => setShowSearchInput(false)}
+              />
             )}
           </>
         )}
@@ -159,18 +167,32 @@ let count=900;
               <IonText className={`${CSSPrefix}-date-text`}>
                 {datePickerText}
               </IonText>
-              <IonIcon className={`${CSSPrefix}-date-icon`} icon={caretDownOutline} size="small" />
+              <IonIcon
+                className={`${CSSPrefix}-date-icon`}
+                icon={caretDownOutline}
+                size="small"
+              />
             </IonButton>
           </IonButtons>
         )}
         {showNotifications && (
-          <IonButtons slot="end"      className="header-button main-notification"
-          color="dark"
-          onClick={() => history.push(NOTIFICATIONS_DETAILS)}>
-
-              <IonIcon className="notifications-icon" icon={notifications}/>
-              <IonBadge className={`notifications-badge ${count >= 99 ? "notifications-badge-text":"notifications-badge-text-small" }`} color="danger">{count >= 99 ? "99+" : count}</IonBadge>
-
+          <IonButtons
+            slot="end"
+            className="header-button main-notification"
+            color="dark"
+            onClick={() => history.push(NOTIFICATIONS_DETAILS)}
+          >
+            <IonIcon className="notifications-icon" icon={notifications} />
+            <IonBadge
+              className={`notifications-badge ${
+                count >= 99
+                  ? "notifications-badge-text"
+                  : "notifications-badge-text-small"
+              }`}
+              color="danger"
+            >
+              {count >= 99 ? "99+" : count}
+            </IonBadge>
           </IonButtons>
         )}
         {leftLabel && (

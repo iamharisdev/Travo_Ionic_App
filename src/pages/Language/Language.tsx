@@ -27,13 +27,12 @@ const LanguagePage: React.FC = (): React.ReactElement => {
   const subscriptionDetailsRef = useRef(null);
   const history = useHistory();
   const { t, i18n } = useTranslation();
-
-  const { currentEnv } = useSelector((state: RootState) => state.white);
-
   const [selectedLang, setSelectedLang] = useState<string>(
     localStorage.getItem('language') || 'en'
   );
   const [newLang, setNewLang] = useState<string>(localStorage.getItem('language') || 'en');
+
+  const { currentEnv } = useSelector((state: RootState) => state.white);
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: subscriptionDetailsRef,
@@ -48,6 +47,7 @@ const LanguagePage: React.FC = (): React.ReactElement => {
     localStorage.setItem('language', newLang);
     setSelectedLang(newLang);
     i18n.changeLanguage(newLang);
+    history.goBack();
     const token = await getStorageValue(STORAGE_TOKEN);
     try {
       await axios.get(`${currentEnv.providerApiBaseUrl}lookups/${newLang}`, {
@@ -82,11 +82,11 @@ const LanguagePage: React.FC = (): React.ReactElement => {
         <IonRadioGroup value={newLang} onIonChange={e => handleLanguageChange(e.detail.value)}>
           <IonItem lines="none">
             <IonLabel>{t('configuration_english')}</IonLabel>
-            <IonRadio slot="end" value="en" />
+            <IonRadio slot="end" value="en" mode="md" />
           </IonItem>
           <IonItem lines="none">
             <IonLabel>{t('configuration_portuguese')}</IonLabel>
-            <IonRadio slot="end" value="pt" />
+            <IonRadio slot="end" value="pt" mode="md" />
           </IonItem>
         </IonRadioGroup>
       </IonContent>

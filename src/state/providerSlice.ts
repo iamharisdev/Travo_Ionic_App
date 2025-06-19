@@ -1,12 +1,13 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { resetAll } from './common.actions';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { resetAll } from "./common.actions";
+import { StatusState } from "../shared/types/state.type";
 import {
   getCountriesForRegion,
   getMe,
   getPractice,
   updatePractice,
 } from '../api/services/provider';
-import { StatusState } from '../shared/types/state.type';
+
 import { NewModalCountry } from './practiceSlice';
 
 interface GetProfile {
@@ -128,14 +129,14 @@ export const getMeAction = createAsyncThunk('provider/getMe', async (): Promise<
 });
 
 export const getPracticeAction = createAsyncThunk(
-  'provider/getPractice',
+  "provider/getPractice",
   async ({ practiceId, providerId }: GetProfile): Promise<Practice | null> => {
     try {
       const response = await getPractice(practiceId, providerId);
 
       return response.data;
     } catch (error: any) {
-      console.error('[getPractice]: ', error);
+      console.error("[getPractice]: ", error);
       return null;
     }
   }
@@ -149,7 +150,7 @@ export const updatePracticeAction = createAsyncThunk(
 
       return practice;
     } catch (error: any) {
-      console.error('[updatePractice]: ', error);
+      console.error("[updatePractice]: ", error);
 
       return null;
     }
@@ -157,18 +158,21 @@ export const updatePracticeAction = createAsyncThunk(
 );
 
 const providerSlice = createSlice({
-  name: 'provider',
+  name: "provider",
   initialState,
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getMeAction.pending, () => console.log('pending get profile'))
-      .addCase(getMeAction.fulfilled, (state, action: PayloadAction<ProviderState>) => {
-        state.principal = action.payload.principal;
-        state.providerPractices = action.payload.providerPractices;
-        state.practice = action.payload.practice;
-        state.state = { ...action.payload.state };
-      })
+      .addCase(getMeAction.pending, () => console.log("pending get profile"))
+      .addCase(
+        getMeAction.fulfilled,
+        (state, action: PayloadAction<ProviderState>) => {
+          state.principal = action.payload.principal;
+          state.providerPractices = action.payload.providerPractices;
+          state.practice = action.payload.practice;
+          state.state = { ...action.payload.state };
+        }
+      )
       .addCase(resetAll, () => initialState)
       .addCase(getMeAction.rejected, state => {
         state = initialState;
