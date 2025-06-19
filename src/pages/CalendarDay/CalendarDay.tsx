@@ -60,9 +60,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
 
     return events.events
       .filter(
-        ({ endTime, status }) =>
-          dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
-          (status === AppointmentStatusEnum.CONFIRMEND || status === AppointmentStatusEnum.BUSY)
+        ({ endTime}) =>
+          dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') 
       )
       .map(event => ({
         id: event?.id,
