@@ -3,6 +3,8 @@ import { NylasScheduling, NylasDatePicker, NylasTimeslotPicker } from '@nylas/re
 import { AppointmentDateTime } from '../CreateAppointment/CreateAppointment';
 
 import './Scheduling.scss';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../state/store';
 
 interface SchedulingProps {
   configurationId: string;
@@ -21,6 +23,12 @@ const Scheduling: React.FC<SchedulingProps> = ({
   setSelectedDateTime,
   onDateSelected,
 }): React.ReactElement => {
+
+
+  const { currentEnv } = useSelector((state: RootState) => state.white);
+  console.log("currentENVSech:=>  ",currentEnv)
+
+
   const selectedTimeslot = useMemo(() => {
     if (start_time && end_time) return {
       start_time,
@@ -36,7 +44,7 @@ const Scheduling: React.FC<SchedulingProps> = ({
       <NylasScheduling
         className="scheduling"
         configurationId={configurationId}
-        schedulerApiUrl={process.env.REACT_APP_NYLAS_API_URL}
+        schedulerApiUrl={currentEnv?.nylasApiUrl}
         enableUserFeedback={false}
         defaultSchedulerState={{
           showBookingForm: false,
@@ -65,11 +73,6 @@ const Scheduling: React.FC<SchedulingProps> = ({
         }}
       >
         <NylasDatePicker
-          configSettings={{
-            scheduler: {
-              // hide_additional_guests: true,
-            }
-          }}
           onDateSelected={(date: CustomEvent<Date>) => onDateSelected && onDateSelected(date)}
         />
         <NylasTimeslotPicker className="time-slot-picker" />
