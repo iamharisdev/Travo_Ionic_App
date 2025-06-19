@@ -1,7 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { resetAll } from "./common.actions";
-import { getMe, getPractice, updatePractice } from "../api/services/provider";
 import { StatusState } from "../shared/types/state.type";
+import {
+  getCountriesForRegion,
+  getMe,
+  getPractice,
+  updatePractice,
+} from '../api/services/provider';
+
+import { NewModalCountry } from './practiceSlice';
 
 interface GetProfile {
   practiceId: string;
@@ -52,6 +59,7 @@ export interface MeInterface {
   principal: Principal | null;
   providerPractices: Array<ProviderPractices>;
   practice: Practice | null;
+  countries: NewModalCountry;
 }
 
 export interface ProviderState extends MeInterface {
@@ -62,51 +70,63 @@ const initialState: ProviderState = {
   principal: null,
   providerPractices: [],
   practice: null,
-
+  countries: {},
   state: {
     success: false,
   },
 };
 
-export const getMeAction = createAsyncThunk(
-  "provider/getMe",
-  async (): Promise<ProviderState> => {
+export const getCountriesForRegionAction = createAsyncThunk(
+  'practice/getCountriesForRegion',
+  async (): Promise<NewModalCountry> => {
     try {
-      let practice: Practice | null = null;
-      const response = await getMe();
+      const response = await getCountriesForRegion();
 
-      if (response.data.providerPractices.length > 0) {
-        const [providerPractice] = response.data.providerPractices;
-        practice = (
-          await getPractice(
-            providerPractice.practiceId,
-            providerPractice.providerId
-          )
-        ).data;
-      }
 
-      const payload: ProviderState = {
-        principal: response.data.principal,
-        providerPractices: response.data.providerPractices,
-        practice,
+      const countriesRaw = response?.data?.countries;
+      const countries: NewModalCountry = typeof countriesRaw === 'string'
+        ? JSON.parse(countriesRaw)
+        : countriesRaw;
 
-        state: {
-          success: true,
-        },
-      };
-
-      return payload;
+      return countries;
     } catch (error: any) {
-      console.error("[getMe]: ", error);
-      const payload = {
-        ...initialState,
-        state: { message: error.response.statusText, error, success: false },
-      };
-
-      return payload;
+      console.error('[getCountries]: ', error);
+      return {}; 
     }
   }
 );
+
+export const getMeAction = createAsyncThunk('provider/getMe', async (): Promise<ProviderState> => {
+  try {
+    let practice: Practice | null = null;
+    const response = await getMe();
+
+    if (response.data.providerPractices.length > 0) {
+      const [providerPractice] = response.data.providerPractices;
+      practice = (await getPractice(providerPractice.practiceId, providerPractice.providerId)).data;
+    }
+
+    const payload: ProviderState = {
+      principal: response.data.principal,
+      providerPractices: response.data.providerPractices,
+      practice,
+      countries:{},
+      state: {
+        success: true,
+      },
+    };
+
+    return payload;
+  } catch (error: any) {
+    console.error('[getMe]: ', error);
+    const payload = {
+      ...initialState,
+      state: { message: error.response.statusText, error, success: false },
+    };
+
+    return payload;
+  }
+});
 
 export const getPracticeAction = createAsyncThunk(
   "provider/getPractice",
@@ -123,12 +143,8 @@ export const getPracticeAction = createAsyncThunk(
 );
 
 export const updatePracticeAction = createAsyncThunk(
-  "provider/updatePractice",
-  async ({
-    practiceId,
-    providerId,
-    practice,
-  }: any): Promise<Practice | null> => {
+  'provider/updatePractice',
+  async ({ practiceId, providerId, practice }: any): Promise<Practice | null> => {
     try {
       await updatePractice(practiceId, providerId, practice);
 
@@ -145,7 +161,7 @@ const providerSlice = createSlice({
   name: "provider",
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       .addCase(getMeAction.pending, () => console.log("pending get profile"))
       .addCase(
@@ -158,51 +174,40 @@ const providerSlice = createSlice({
         }
       )
       .addCase(resetAll, () => initialState)
-      .addCase(getMeAction.rejected, (state) => {
+      .addCase(getMeAction.rejected, state => {
         state = initialState;
       })
-      .addCase(getPracticeAction.pending, () =>
-        console.log("pending get practice")
-      )
-      .addCase(
-        getPracticeAction.fulfilled,
-        (state, action: PayloadAction<Practice | null>) => {
-          state.practice = action.payload;
-          state.state = {
-            ...state.state,
-            success: true,
-            error: null,
-            message: "",
-          };
-        }
-      )
-      .addCase(getPracticeAction.rejected, (state) => {
+      .addCase(getPracticeAction.pending, () => console.log('pending get practice'))
+      .addCase(getPracticeAction.fulfilled, (state, action: PayloadAction<Practice | null>) => {
+        state.practice = action.payload;
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(getPracticeAction.rejected, state => {
         state.practice = null;
         state.state = { ...state.state, success: false };
       })
-
-      .addCase(updatePracticeAction.pending, () =>
-        console.log("pending update practice")
-      )
+      .addCase(getCountriesForRegionAction.pending, () => console.log('pending get countries'))
       .addCase(
-        updatePracticeAction.fulfilled,
-        (state, action: PayloadAction<Practice | null>) => {
-          state.practice = action.payload;
-          state.state = {
-            ...state.state,
-            success: true,
-            error: null,
-            message: "",
-          };
+        getCountriesForRegionAction.fulfilled,
+        (state, action: PayloadAction<NewModalCountry>) => {
+          state.countries = action.payload;
         }
       )
-      .addCase(updatePracticeAction.rejected, (state) => {
-        state.practice = state.practice;
+      .addCase(getCountriesForRegionAction.rejected, state => {
         state.state = {
           ...state.state,
           success: false,
-          message: "error at update practice state",
+          message: 'error at get countries state',
         };
+      })
+      .addCase(updatePracticeAction.pending, () => console.log('pending update practice'))
+      .addCase(updatePracticeAction.fulfilled, (state, action: PayloadAction<Practice | null>) => {
+        state.practice = action.payload;
+        state.state = { ...state.state, success: true, error: null, message: '' };
+      })
+      .addCase(updatePracticeAction.rejected, state => {
+        state.practice = state.practice;
+        state.state = { ...state.state, success: false, message: 'error at update practice state' };
       });
   },
 });

@@ -212,5 +212,9 @@
   "biometric_cancel_title": "Cancel",
   "biometric_android_title": "Biometric login",
   "biometric_android_subtitle": "Log in using biometric authentication",
-  "biometric_iosFallbackTitle": "Use passcode"
+  "biometric_iosFallbackTitle": "Use passcode",
+  "select_country": "Select Country",
+  "please_select_your_country": "Please select your country below",
+  "country": "Country",
+  "continue": "Continue"
 }
