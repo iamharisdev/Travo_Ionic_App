@@ -1,4 +1,3 @@
-import React, { useMemo, useRef } from "react";
 import {
   IonButton,
   IonContent,
@@ -7,17 +6,16 @@ import {
   IonPage,
   IonText,
 } from "@ionic/react";
-import Header from "../../components/Header/Header";
 import { caretForwardOutline } from "ionicons/icons";
-import { BRANDING, BUSINESS_INFORMATION, LANGUAGE, PROFILE_INFORMATION } from "../../shared/routes/routes";
+import React, { useRef } from "react";
 import { useHistory } from "react-router";
-import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
-import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import Header from "../../components/Header/Header";
 import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+import UseSwipeGesture from "../../hooks/useSwipeGesture";
+import { LANGUAGE } from "../../shared/routes/routes";
 
-import "./Configuration.scss";
 import { useTranslation } from "react-i18next";
+import "./Configuration.scss";
 
 const CSSprefix = 'my-profile';
 
