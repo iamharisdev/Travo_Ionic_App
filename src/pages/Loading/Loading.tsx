@@ -135,11 +135,11 @@ const Loading: React.FC = (): React.ReactElement => {
 
     if (
       auth.state.success && (
-        !provider.state.success ||
-        !practice.state.success ||
-        !billing.state.success ||
-        !scheduling.state.success ||
-        !calendar.state.success ||
+        !provider.state.success &&
+        !practice.state.success &&
+        !billing.state.success &&
+        !scheduling.state.success &&
+        !calendar.state.success &&
         !patient.state.success
       )
       && location.pathname.includes(LOADING)

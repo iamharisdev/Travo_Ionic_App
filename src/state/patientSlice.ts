@@ -40,18 +40,12 @@ const initialState: ProviderState = {
   patients: [],
   state: {
     success: false,
-  },
-};
+  }
+}
 
 export const searchPatientAction = createAsyncThunk(
   'practice/searchPatient',
-  async ({
-    practiceId,
-    patient,
-  }: {
-    practiceId: string;
-    patient: string;
-  }): Promise<Array<Patient>> => {
+  async ({ practiceId, patient }: { practiceId: string, patient: string }): Promise<Array<Patient>> => {
     try {
       const response = await searchPatient(practiceId, patient);
 
@@ -67,28 +61,28 @@ const patientSlice = createSlice({
   name: 'patient',
   initialState,
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
       .addCase(resetAll, () => initialState)
       .addCase(searchPatientAction.pending, () => console.log('pending search patient'))
       .addCase(searchPatientAction.fulfilled, (state, action: PayloadAction<Array<Patient>>) => {
         const newPatients = [...state.patients];
         if (action.payload.length > 0) {
-          action.payload.forEach(patient => {
+          action.payload.forEach((patient) => {
             if (!state.patients.some(({ id }) => id === patient.id)) {
               newPatients.push(patient);
             }
-          });
+          })
         }
 
         state.patients = newPatients;
         state.state = { ...state.state, success: true, error: null, message: '' };
       })
-      .addCase(searchPatientAction.rejected, state => {
+      .addCase(searchPatientAction.rejected, (state) => {
         state.patients = [];
-        state.state = { ...state.state, success: false };
+        state.state = { ...state.state, success: false }
       });
-  },
+  }
 });
 
 export default patientSlice.reducer;

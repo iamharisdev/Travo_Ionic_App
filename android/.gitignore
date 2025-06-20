@@ -16,6 +16,8 @@
 bin/
 gen/
 out/
+#  Uncomment the following line in case you need and you don't have the release build type files in your app
+# release/
 
 # Gradle files
 .gradle/
@@ -38,19 +40,25 @@ captures/
 
 # IntelliJ
 *.iml
-.idea/
-*.iws
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+# Android Studio 3 in .gitignore file.
+.idea/caches
+.idea/modules.xml
+# Comment next line if keeping position of elements in Navigation Editor is relevant for you
+.idea/navEditor.xml
 
 # Keystore files
+# Uncomment the following lines if you do not want to check your keystore files in.
 #*.jks
 #*.keystore
 
-*.jks
-*.keystore
-*.keystore.properties
-
-# External native build folder
-.externalNativeBuild/
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
 .cxx/
 
 # Google Services (e.g. APIs or Firebase)
@@ -71,97 +79,22 @@ fastlane/test_output
 vcs.xml
 
 # lint
-lint/
-# or just more specific:
 lint/intermediates/
 lint/generated/
 lint/outputs/
 lint/tmp/
+# lint/reports/
 
 # Android Profiling
 *.hprof
 
 # Cordova plugins for Capacitor
-capacitor-cordova-android-plugins/
+capacitor-cordova-android-plugins
 
-# Capacitor build artifacts
-app/src/main/assets/public/
+# Copied web assets
+app/src/main/assets/public
+
+# Generated Config files
 app/src/main/assets/capacitor.config.json
 app/src/main/assets/capacitor.plugins.json
 app/src/main/res/xml/config.xml
-
-# === Ionic Specific ===
-
-# Ionic build outputs
-www/
-dist/
-.build/
-
-# Environment files
-.env
-.env.*
-
-# Node modules
-node_modules/
-
-# iOS Platform Artifacts
-ios/App/App.xcworkspace/
-ios/App/build/
-ios/App/Pods/
-ios/App/Podfile.lock
-ios/App/Podfile
-ios/App/*.xcuserstate
-ios/App/*.xcuserdata
-ios/App/*.xcworkspace
-ios/App/.DS_Store
-
-# Android Platform Artifacts
-android/.gradle/
-android/build/
-android/captures/
-android/local.properties
-android/.idea/
-android/app/build/
-android/app/release/
-android/app/.cxx/
-android/app/.externalNativeBuild/
-
-# VS Code settings
-.vscode/
-
-# macOS junk
-.DS_Store
-
-# npm/yarn logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Capacitor sync generated
-android/app/src/main/assets/
-ios/App/App/public/
-
-# Web build
-platforms/
-
-# Xcode
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-xcuserdata/
-*.xcuserstate
-*.xcworkspace
-
-# JetBrains IDEs
-.idea/
-*.iml
-*.ipr
-
-# Test and coverage
-coverage/
-test-results/

@@ -6,18 +6,15 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  
   }
 
   &-container {
     width: 78vw;
-    height: auto;
-   
+    height: 7vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     text-align: center;
-   
 
     ion-text {
       color: var(--ion-trova-gray-text);
@@ -27,7 +24,6 @@
       line-height: normal;
       text-align: center;
       font-size: 6.5vw;
-      margin-bottom: 1vh;
     }
 
     ion-progress-bar {
