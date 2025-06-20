@@ -11,3 +11,28 @@
     line-height: normal;
   }
 }
+
+.custom-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding:16px; 
+  background:transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+}
+
+.custom-text {
+  font-size: 16px;
+  font-weight: 500;
+  font-family:'Poppins';
+  color:#2E2E2E;
+}
+
+.custom-icon {
+  font-size: 16px;
+  color: var(--ion-color-dark);
+}

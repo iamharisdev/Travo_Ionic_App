@@ -35,7 +35,7 @@ const providerInitialState: AuthProvider = {
   accountId: '',
   superAdmin: false,
   exp: 0,
-}
+};
 
 const initialState: AuthState = {
   success: false,
@@ -44,7 +44,7 @@ const initialState: AuthState = {
   provider: providerInitialState,
   state: {
     success: false,
-  }
+  },
 };
 
 export const signInAction = createAsyncThunk(
@@ -53,6 +53,8 @@ export const signInAction = createAsyncThunk(
     try {
       const response = await signIn(email, password);
 
+      console.log('Sign in api response:=>  ', response);
+
       const provider = jwtDecode(response.data.token) as AuthProvider;
 
       const payload: AuthState = {
@@ -60,12 +62,10 @@ export const signInAction = createAsyncThunk(
         token: response.data.token,
         message: response.data.message,
         provider,
-        state: { success: true }
+        state: { success: true },
       };
 
-      await Promise.all([
-        setStorageValue(STORAGE_TOKEN, response.data.token),
-      ]);
+      await Promise.all([setStorageValue(STORAGE_TOKEN, response.data.token)]);
 
       return payload;
     } catch (error: any) {
@@ -75,7 +75,7 @@ export const signInAction = createAsyncThunk(
         token: '',
         message: error.response.statusText,
         provider: null,
-        state: { success: false }
+        state: { success: false },
       };
 
       return payload;
@@ -95,9 +95,9 @@ const authSlice = createSlice({
       state.message = 'auth reloaded';
       state.provider = provider;
       state.state = { success: true };
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       .addCase(signInAction.pending, () => console.log('pending sign-in user'))
       .addCase(signInAction.fulfilled, (state, action: PayloadAction<AuthState>) => {
@@ -108,14 +108,14 @@ const authSlice = createSlice({
         state.state = { success: true };
       })
       .addCase(resetAll, () => initialState)
-      .addCase(signInAction.rejected, (state) => {
+      .addCase(signInAction.rejected, state => {
         state.success = false;
         state.token = '';
         state.message = 'Request rejected';
         state.provider = null;
         state.state = { success: false };
       });
-  }
+  },
 });
 
 export const { reloadAuth } = authSlice.actions;

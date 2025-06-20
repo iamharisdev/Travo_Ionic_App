@@ -1,13 +1,21 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonIcon, IonInput, IonItem, IonText } from '@ionic/react';
-import React from 'react';
-import { LinePreview } from '../../shared/types/invoice.type';
-import dayjs from 'dayjs';
-import { trashOutline } from 'ionicons/icons';
+import {
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonInput,
+  IonItem,
+  IonText,
+} from "@ionic/react";
+import dayjs from "dayjs";
+import "dayjs/locale/en";
+import "dayjs/locale/pt";
+import React from "react";
+import { LinePreview } from "../../shared/types/invoice.type";
 
-import './InvoiceCard.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import "./InvoiceCard.scss";
 
-const CSSPrefix = 'invoice-card';
+const CSSPrefix = "invoice-card";
 
 interface InvoiceCardProps {
   name: string;
@@ -17,14 +25,22 @@ interface InvoiceCardProps {
   setFieldValue: (name: string, value: any) => void;
 }
 
-const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, currencySymbol, removeLineItem, setFieldValue }): React.ReactElement => {
+const InvoiceCard: React.FC<InvoiceCardProps> = ({
+  name,
+  line,
+  currencySymbol,
+  removeLineItem,
+  setFieldValue,
+}): React.ReactElement => {
   const { t } = useTranslation();
-  
+  const lang = localStorage.getItem("language") || "en";
+  dayjs.locale(lang); // This sets the locale globally
+
   return (
     <IonCard className={CSSPrefix}>
       <IonCardHeader>
         <IonItem lines="none" className="ion-no-padding">
-          <IonText>{dayjs(line.serviceDate).format('MMM D, YYYY')}</IonText>
+          <IonText>{dayjs(line.serviceDate).format("MMM D, YYYY")}</IonText>
           {/*
           // TODO: uncomment this in app V2
           <IonButton
@@ -54,7 +70,9 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, currencySymbol, r
           className={`${CSSPrefix}-custom-input ion-margin-bottom`}
           placeholder={t("schedule_appointment_description")}
           value={line.description}
-          onIonChange={(e) => setFieldValue(`${name}.description`, e.detail.value!!)}
+          onIonChange={(e) =>
+            setFieldValue(`${name}.description`, e.detail.value!!)
+          }
         />
         <IonInput
           // TODO: remove this live in app V2
@@ -62,7 +80,9 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, currencySymbol, r
           className={`${CSSPrefix}-custom-input ion-no-margin`}
           placeholder="ICD 10 code"
           value={line.icd10Code}
-          onIonChange={(e) => setFieldValue(`${name}.icd10Code`, e.detail.value!!)}
+          onIonChange={(e) =>
+            setFieldValue(`${name}.icd10Code`, e.detail.value!!)
+          }
         />
         <div className="divider ion-margin-vertical" />
         <div className={`${CSSPrefix}-amount-container`}>
@@ -72,12 +92,14 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ name, line, currencySymbol, r
             type="text"
             className={`${CSSPrefix}-amount`}
             value={`${currencySymbol}${line.amount}`}
-            onIonChange={(e) => setFieldValue(`${name}.amount`, e.detail.value!!)}
+            onIonChange={(e) =>
+              setFieldValue(`${name}.amount`, e.detail.value!!)
+            }
           />
         </div>
       </IonCardContent>
     </IonCard>
-  )
-}
+  );
+};
 
 export default InvoiceCard;
