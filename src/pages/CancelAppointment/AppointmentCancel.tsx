@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 import {
   IonButton,
   IonCheckbox,
@@ -10,22 +10,22 @@ import {
   IonRow,
   IonText,
   IonTextarea,
-} from "@ionic/react";
-import Header from "../../components/Header/Header";
-import { useFormik } from "formik";
-import { useHistory, useLocation } from "react-router";
-import { CancelAppointmentState } from "./appointmentCancel.type";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../state/store";
-import { setLoading } from "../../state/loadingSlice";
-import { cancelAppointmentAction } from "../../state/schedulingSlice";
-import usePresentToast from "../../hooks/usePresentToast";
-import { cancelAppointmentSchema } from "./validation/appointmentCancel.schema";
-import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
+} from '@ionic/react';
+import Header from '../../components/Header/Header';
+import { useFormik } from 'formik';
+import { useHistory, useLocation } from 'react-router';
+import { CancelAppointmentState } from './appointmentCancel.type';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../state/store';
+import { setLoading } from '../../state/loadingSlice';
+import { cancelAppointmentAction } from '../../state/schedulingSlice';
+import usePresentToast from '../../hooks/usePresentToast';
+import { cancelAppointmentSchema } from './validation/appointmentCancel.schema';
+import { AppointmentDetailTypeEnum } from '../../shared/types/appointment.type';
 
-import "./AppointmentCancel.scss";
-import { APPOINTMENT_REQUESTS, APPOINTMENTS } from "../../shared/routes/routes";
-import { useTranslation } from "react-i18next";
+import './AppointmentCancel.scss';
+import { APPOINTMENT_REQUESTS, APPOINTMENTS } from '../../shared/routes/routes';
+import { useTranslation } from 'react-i18next';
 
 const CSSprefix = 'appointment-cancel';
 
@@ -35,7 +35,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const history = useHistory();
-    const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const initialValues = {
     notAcceptingNewClients: {
@@ -56,7 +56,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
     },
   };
 
-  const { practiceId, providerId }: { practiceId: string, providerId: string } = useMemo(() => {
+  const { practiceId, providerId }: { practiceId: string; providerId: string } = useMemo(() => {
     let practiceId = '';
     let providerId = '';
 
@@ -69,7 +69,9 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
     return { practiceId, providerId };
   }, [provider.providerPractices]);
 
-  const preparePayloadHandler = (values: { [key: string]: { checked: boolean, value: string } }) => {
+  const preparePayloadHandler = (values: {
+    [key: string]: { checked: boolean; value: string };
+  }) => {
     for (const key in values) {
       const fieldValue = values[key];
 
@@ -81,40 +83,56 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
     }
 
     return { additionalDetails: '', reason: '' };
-  }
+  };
 
-  const { title, description, buttonText }: { title: string, description: string, buttonText: string } = useMemo(() => {
-    let title = `${t("scheduling_cancel_appointment")}`;
-    let description = `${t("cancel_appointment_reason_message")}`;
-    let buttonText = `${t("scheduling_cancel_appointment")}`;
+  const {
+    title,
+    description,
+    buttonText,
+  }: { title: string; description: string; buttonText: string } = useMemo(() => {
+    let title = `${t('scheduling_cancel_appointment')}`;
+    let description = `${t('cancel_appointment_reason_message')}`;
+    let buttonText = `${t('scheduling_cancel_appointment')}`;
 
     if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
-      title = `${t("appointment_request_not_accepted")}`;
-      description = `${t("appointment_request_reason_to_not_accepting_message")}`;
-      buttonText = `${t("appointment_request_decline_request")}`;
+      title = `${t('appointment_request_not_accepted')}`;
+      description = `${t('appointment_request_reason_to_not_accepting_message')}`;
+      buttonText = `${t('appointment_request_decline_request')}`;
     }
 
-    return { title, description, buttonText }
+    return { title, description, buttonText };
   }, [location?.state?.type]);
 
   const formik = useFormik({
     initialValues,
     enableReinitialize: true,
-    onSubmit: async (values) => {
+    onSubmit: async values => {
       try {
         const valid = await cancelAppointmentSchema.validate(values);
 
         if (valid && practiceId && providerId && location.state.appointmentId) {
-          dispatch(setLoading({ loading: true }));
+          //dispatch(setLoading({ loading: true }));
 
-          const payload = preparePayloadHandler(formik.values);
+          const thisAndFollowingPayload = preparePayloadHandler(formik.values);
+          const onlyThisPayload = {
+            ...thisAndFollowingPayload,
+            ignoreOthers: true,
+          };
 
-          const response = await dispatch(cancelAppointmentAction({
-            practiceId,
-            providerId,
-            appointmentId: location.state.appointmentId,
-            payload
-          }));
+          const payload =
+            location?.state?.selected == 'thisAndFollowing'
+              ? thisAndFollowingPayload
+              : onlyThisPayload;
+
+          const response = await dispatch(
+            cancelAppointmentAction({
+              practiceId,
+              providerId,
+              appointmentId: location.state.appointmentId,
+              endPoint: location.state.isRecurring ? 'cancel/recurring' : 'cancel',
+              payload,
+            })
+          );
 
           if (response.meta.requestStatus === 'fulfilled') {
             dispatch(setLoading({ loading: false, message: undefined }));
@@ -122,7 +140,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
 
           if (response.meta.requestStatus === 'rejected') {
             presentToast(
-              `!${t("toast_messages_error_cancel_appointment")}!`,
+              `!${t('toast_messages_error_cancel_appointment')}!`,
               1000,
               'top',
               'danger'
@@ -142,24 +160,24 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
       } catch (error) {
         formik.resetForm();
         dispatch(setLoading({ loading: false, message: undefined }));
-        presentToast(
-          `!${t("toast_messages_error_cancel_appointment")}!`,
-          1000,
-          'top',
-          'danger'
-        );
+        presentToast(`!${t('toast_messages_error_cancel_appointment')}!`, 1000, 'top', 'danger');
       }
     },
   });
 
   const checkItemHandler = (field: string) => {
     for (const key in formik.values) {
-      const fieldValue = (formik.values as { [key: string]: { checked: boolean, value: string } })[key];
+      const fieldValue = (formik.values as { [key: string]: { checked: boolean; value: string } })[
+        key
+      ];
 
       if (key === field) {
         formik.setFieldValue(field, { ...fieldValue, checked: true });
       } else {
-        formik.setFieldValue(key, { checked: false, value: key === 'other' ? '' : fieldValue.value });
+        formik.setFieldValue(key, {
+          checked: false,
+          value: key === 'other' ? '' : fieldValue.value,
+        });
       }
     }
   };
@@ -170,14 +188,10 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonGrid className="ion-padding">
           <IonRow>
-            <IonText className={`${CSSprefix}-title ion-margin-top`}>
-              {title}
-            </IonText>
+            <IonText className={`${CSSprefix}-title ion-margin-top`}>{title}</IonText>
           </IonRow>
           <IonRow>
-            <IonText className={`${CSSprefix}-description`}>
-              {description}
-            </IonText>
+            <IonText className={`${CSSprefix}-description`}>{description}</IonText>
           </IonRow>
         </IonGrid>
         <IonList>
@@ -185,36 +199,36 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
             <IonCheckbox
               justify="space-between"
               checked={formik.values.notAcceptingNewClients.checked}
-              onIonChange={(e) => checkItemHandler('notAcceptingNewClients')}
+              onIonChange={e => checkItemHandler('notAcceptingNewClients')}
             >
-              {t("cancel_appointment_not_accepting_new_clients")}
+              {t('cancel_appointment_not_accepting_new_clients')}
             </IonCheckbox>
           </IonItem>
           <IonItem lines="none">
             <IonCheckbox
               justify="space-between"
               checked={formik.values.notWithinScopeOfExpertise.checked}
-              onIonChange={(e) => checkItemHandler('notWithinScopeOfExpertise')}
+              onIonChange={e => checkItemHandler('notWithinScopeOfExpertise')}
             >
-              {t("cancel_appointment_not_within_scope_of_expertise")}
+              {t('cancel_appointment_not_within_scope_of_expertise')}
             </IonCheckbox>
           </IonItem>
           <IonItem lines="none">
             <IonCheckbox
               justify="space-between"
               checked={formik.values.needReferral.checked}
-              onIonChange={(e) => checkItemHandler('needReferral')}
+              onIonChange={e => checkItemHandler('needReferral')}
             >
-              {t("cancel_appointment_need_referral")}
+              {t('cancel_appointment_need_referral')}
             </IonCheckbox>
           </IonItem>
           <IonItem lines="none">
             <IonCheckbox
               justify="space-between"
               checked={formik.values.other.checked}
-              onIonChange={(e) => checkItemHandler('other')}
+              onIonChange={e => checkItemHandler('other')}
             >
-              {t("cancel_appointment_other")}
+              {t('cancel_appointment_other')}
             </IonCheckbox>
           </IonItem>
           {formik.values.other.checked && (
@@ -225,7 +239,9 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
                 autoGrow
                 aria-label="other"
                 value={formik.values.other.value}
-                onIonInput={(e) => formik.setFieldValue('other', { ...formik.values.other, value: e.detail.value })}
+                onIonInput={e =>
+                  formik.setFieldValue('other', { ...formik.values.other, value: e.detail.value })
+                }
               />
             </IonItem>
           )}
@@ -240,7 +256,7 @@ const AppointmentCancel: React.FC = (): React.ReactElement => {
           {buttonText}
         </IonButton>
       </IonContent>
-    </IonPage >
+    </IonPage>
   );
 };
 

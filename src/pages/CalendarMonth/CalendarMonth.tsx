@@ -74,10 +74,13 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
     return [...events.events, ...microsoftEvents, ...googleEvents]
       .filter(
-        ({ startTime }) =>
+        ({ startTime,status }) =>
           dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
+          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
+          status !== AppointmentStatusEnum.CANCELLED
       )
+
+
       .map(event => ({
         id: event?.id,
         title: JSON.stringify({
@@ -150,7 +153,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const getAppointmentsHandler = async () => {
     try {
       const [providerPractice] = provider?.providerPractices;
-      console.log('getAppointmentsHandler', providerPractice);
+
       if (providerPractice) {
         await dispatch(
           getEventsAction({
@@ -204,6 +207,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
   useIonViewWillEnter(() => {
+    getAppointmentsHandler();
     const start = dayjs().startOf('month').format('YYYY-MM-DD');
     const end = dayjs().endOf('month').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));

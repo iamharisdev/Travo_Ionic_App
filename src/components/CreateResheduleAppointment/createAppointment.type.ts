@@ -5,6 +5,7 @@ export interface CreateAppointmentProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   selectedSlot?: SlotInfo;
+  selected?:string;
   currentDate?: string;
   view?: 'month' | 'week' | 'day' | 'appointments';
   currentStep?:number;

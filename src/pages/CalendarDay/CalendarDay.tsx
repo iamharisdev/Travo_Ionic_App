@@ -60,8 +60,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
 
     return events.events
       .filter(
-        ({ endTime}) =>
-          dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') 
+        ({ endTime,status }) =>
+          dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
+          status !== AppointmentStatusEnum.CANCELLED
       )
       .map(event => ({
         id: event?.id,
@@ -246,6 +247,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   );
 
   useIonViewWillEnter(() => {
+    getAppointmentsHandler();
     if (!selectedDate) {
       dispatch(setDate(dayjs().format('YYYY-MM-DD')));
     }

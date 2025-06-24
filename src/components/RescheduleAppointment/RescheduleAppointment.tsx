@@ -7,10 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../state/store';
 import usePresentToast from '../../hooks/usePresentToast';
 import { setLoading } from '../../state/loadingSlice';
-import { getEventsAction, rescheduleAppointmentAction } from '../../state/schedulingSlice';
+import {
+  editAppointmentAction,
+  getEventsAction,
+  rescheduleAppointmentAction,
+} from '../../state/schedulingSlice';
 import dayjs from 'dayjs';
 import { useHistory } from 'react-router';
-import { APPOINTMENTS } from '../../shared/routes/routes';
+import { APPOINTMENT_DETAILS_EDIT, APPOINTMENTS } from '../../shared/routes/routes';
 import { setDate } from '../../state/calendarSlice';
 import PaidInAdvance from './Steps/PaidInAdvance/PaidInAdvance';
 
@@ -24,22 +28,28 @@ export interface AppointmentDateTime {
   endTime: string;
 }
 
-const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, appointment, setIsOpen }) => {
-  const { services: { patientServiceRequestDtos } } = useSelector((state: RootState) => state.scheduling)
+const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({
+  isOpen,
+  appointment,
+  setIsOpen,
+}) => {
+  const {
+    services: { patientServiceRequestDtos },
+  } = useSelector((state: RootState) => state.scheduling);
   const [selectedDateTime, setSelectedDateTime] = useState<AppointmentDateTime>();
   const [step, setStep] = useState<number>(0);
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const history = useHistory();
-      const { t } = useTranslation();
-  const {
-    provider,
-  } = useSelector((state: RootState) => state)
+  const { t } = useTranslation();
+  const { provider } = useSelector((state: RootState) => state);
   const [invoiceDataId, setInvoiceDataId] = useState<string>();
+
 
   const duration = useMemo(() => {
     if (patientServiceRequestDtos && appointment?.patientServiceId) {
-      return patientServiceRequestDtos.find(({ id }) => id === appointment.patientServiceId)?.duration!!;
+      return patientServiceRequestDtos.find(({ id }) => id === appointment.patientServiceId)
+        ?.duration!!;
     }
 
     return 0;
@@ -53,14 +63,17 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
     return;
   }, [patientServiceRequestDtos, appointment?.patientServiceId]);
 
-  const selectedClientId = useMemo(() => appointment?.patientId, [patientServiceRequestDtos, appointment?.patientServiceId]);
+  const selectedClientId = useMemo(
+    () => appointment?.patientId,
+    [patientServiceRequestDtos, appointment?.patientServiceId]
+  );
 
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {
-      return `${t("scheduling_at_session_completion")}`;
+      return `${t('scheduling_at_session_completion')}`;
     }
 
-    return `${t("schedule_appointment_in_advance_of_session")}`;
+    return `${t('schedule_appointment_in_advance_of_session')}`;
   }, [selectedService?.paymentType]);
 
   const disableSaveChanges = useMemo(() => {
@@ -76,26 +89,29 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
   const cancelOrBackText = useMemo(() => {
     if (step === 1 || step === 2 || step === 3) return 'Back';
 
-    return `${t("log_out_cancel")}`;
+    return `${t('log_out_cancel')}`;
   }, [step]);
 
-  const closeHandler = useCallback((close?: boolean) => {
-    if ((step === 1 || step === 2 || step === 3) && !close) {
-      setStep(step - 1);
-    }
+  const closeHandler = useCallback(
+    (close?: boolean) => {
+      if ((step === 1 || step === 2 || step === 3) && !close) {
+        setStep(step - 1);
+      }
 
-    if (step === 0 || close) {
-      setIsOpen(false)
-      setStep(0);
-      setSelectedDateTime(undefined);
-    }
-  }, [step]);
+      if (step === 0 || close) {
+        setIsOpen(false);
+        setStep(0);
+        setSelectedDateTime(undefined);
+      }
+    },
+    [step]
+  );
 
   const rescheduleAppointmentHandler = async () => {
     let redirect = false;
 
     try {
-      dispatch(setLoading({ loading: true, message: `${t("loading_rescheduling_appointment")}` }));
+      dispatch(setLoading({ loading: true, message: `${t('loading_rescheduling_appointment')}` }));
 
       const [providerPractice] = provider.providerPractices;
       if (
@@ -112,40 +128,59 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
       ) {
         const startTime = dayjs(selectedDateTime.startTime);
         const endTimeByDuration = startTime.add(duration || 0, 'minutes');
-        const response = await dispatch(rescheduleAppointmentAction({
-          practiceId: providerPractice.practiceId,
-          providerId: providerPractice.providerId,
-          appointmentId: appointment.id,
-          payload: {
-            invoiceDataId: invoiceDataId || '',
-            patientEmail: appointment.patientEmail,
-            patientId: appointment.id,
-            patientName: appointment.patientName,
-            patientNumber: appointment.patientNumber,
-            patientServiceId: appointment.patientServiceId,
-            price: appointment.price,
-            startTime: startTime.toISOString(),
-            endTime: endTimeByDuration.toISOString(),
-          }
-        }));
+
+        const response = await dispatch(
+          rescheduleAppointmentAction({
+            practiceId: providerPractice.practiceId,
+            providerId: providerPractice.providerId,
+            appointmentId: appointment.id,
+       
+            payload: appointment.recurring
+              ? {
+                  count: appointment?.count || 1,
+                  frequency: appointment?.frequency || 'Monthly',
+                  recurring: appointment?.recurring,
+                  price: selectedService?.price || appointment?.price || 0,
+                  location: appointment?.location,
+                  invoiceDataId: invoiceDataId || null,
+                  patientEmail: appointment.patientEmail,
+                  patientId: appointment.id,
+                  patientName: appointment.patientName || '',
+                  patientNumber: appointment.patientNumber || '',
+                  patientServiceId: appointment.patientServiceId,
+                  startTime: startTime.toISOString(),
+                  endTime: endTimeByDuration.toISOString(),
+                }
+              : {
+                  recurring: appointment?.recurring,
+                  price: selectedService?.price || appointment?.price || 0,
+                  location: appointment?.location,
+                  invoiceDataId: invoiceDataId || null,
+                  patientEmail: appointment.patientEmail,
+                  patientId: appointment.id,
+                  patientName: appointment.patientName || '',
+                  patientNumber: appointment.patientNumber || '',
+                  patientServiceId: appointment.patientServiceId,
+                  startTime: startTime.toISOString(),
+                  endTime: endTimeByDuration.toISOString(),
+                },
+          })
+        );
 
         if (response.payload) {
           dispatch(setLoading({ loading: false, message: '' }));
-          presentToast(
-            `${t("toast_messages_reschedule_success")}`,
-            1000,
-            'middle',
-            'success'
-          );
+          presentToast(`${t('toast_messages_reschedule_success')}`, 1000, 'middle', 'success');
 
-          await dispatch(getEventsAction({
-            practiceId: providerPractice.practiceId,
-            providerId: providerPractice.providerId,
-            start: dayjs(selectedDateTime.startTime).startOf('day').toISOString(),
-            end: dayjs(selectedDateTime.endTime).endOf('day').toISOString(),
-            pageNumber: 0,
-            pageSize: 999,
-          }));
+          await dispatch(
+            getEventsAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
+              start: dayjs(selectedDateTime.startTime).startOf('day').toISOString(),
+              end: dayjs(selectedDateTime.endTime).endOf('day').toISOString(),
+              pageNumber: 0,
+              pageSize: 999,
+            })
+          );
 
           dispatch(setDate(dayjs(selectedDateTime.startTime).startOf('day').toISOString()));
           dispatch(setLoading({ loading: false, message: '' }));
@@ -157,7 +192,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
           dispatch(setLoading({ loading: false, message: '' }));
           closeHandler(true);
           presentToast(
-            `${t("toast_messages_error_reschedule_appointment")}`,
+            `${t('toast_messages_error_reschedule_appointment')}`,
             1000,
             'middle',
             'danger'
@@ -167,13 +202,8 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
     } catch (error) {
       dispatch(setLoading({ loading: false, message: '' }));
       closeHandler();
-      presentToast(
-        `${t("toast_messages_error_reschedule_appointment")}`,
-        1000,
-        'top',
-        'danger'
-      );
-      console.error(`${t("toast_messages_error_reschedule_appointment")} :`, error);
+      presentToast(`${t('toast_messages_error_reschedule_appointment')}`, 1000, 'top', 'danger');
+      console.error(`${t('toast_messages_error_reschedule_appointment')} :`, error);
     } finally {
       if (redirect) {
         history.push(APPOINTMENTS);
@@ -184,23 +214,26 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
   const steps = useMemo(() => {
     switch (step) {
       case 0:
-        return <ReviewDetails
-          patientName={appointment?.patientName || ''}
-          patientServiceName={appointment?.patientServiceName || ''}
-          price={appointment?.price || 0}
-          location={appointment?.location || ''}
-          selectedDateTime={selectedDateTime}
-          paymentType={paymentType}
-          disableSaveChanges={disableSaveChanges}
-          setStep={setStep}
-          rescheduleHandler={rescheduleAppointmentHandler}
-        />;
+        return (
+          <ReviewDetails
+            patientName={appointment?.patientName || ''}
+            patientServiceName={appointment?.patientServiceName || ''}
+            price={appointment?.price || 0}
+            location={appointment?.location || ''}
+            selectedDateTime={selectedDateTime}
+            paymentType={paymentType}
+            event={appointment}
+            disableSaveChanges={disableSaveChanges}
+            setStep={setStep}
+            rescheduleHandler={rescheduleAppointmentHandler}
+          />
+        );
       case 1:
         return (
           <SelectDateTime
             duration={duration}
             selectedDateTime={selectedDateTime}
-            setSelectedDateTime={(selectedDateTime) => {
+            setSelectedDateTime={selectedDateTime => {
               setSelectedDateTime({ ...selectedDateTime });
               if (selectedService?.paymentType === 'In Advance') {
                 setStep(2);
@@ -211,15 +244,17 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
           />
         );
       case 2:
-        return <PaidInAdvance
-          selectedService={selectedService}
-          selectedClientId={selectedClientId}
-          selectedDateTime={selectedDateTime}
-          setInvoiceDataId={(id) => {
-            setInvoiceDataId(id);
-            setStep(0);
-          }}
-        />;
+        return (
+          <PaidInAdvance
+            selectedService={selectedService}
+            selectedClientId={selectedClientId}
+            selectedDateTime={selectedDateTime}
+            setInvoiceDataId={id => {
+              setInvoiceDataId(id);
+              setStep(0);
+            }}
+          />
+        );
 
       default:
         <ReviewDetails
@@ -229,6 +264,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
           location={appointment?.location || ''}
           selectedDateTime={selectedDateTime}
           paymentType={paymentType}
+          event={appointment}
           disableSaveChanges={disableSaveChanges}
           setStep={setStep}
           rescheduleHandler={rescheduleAppointmentHandler}
@@ -249,43 +285,31 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({ isOpen, a
   useEffect(() => {
     if (
       !selectedDateTime ||
-      (
-        selectedDateTime.startTime === '' &&
-        selectedDateTime.endTime === '' &&
-        isOpen
-      )
+      (selectedDateTime.startTime === '' && selectedDateTime.endTime === '' && isOpen)
     ) {
       setSelectedDateTime({
-        startTime: appointment?.startTime as string || '',
-        endTime: appointment?.endTime as string || ''
-      })
+        startTime: (appointment?.startTime as string) || '',
+        endTime: (appointment?.endTime as string) || '',
+      });
     }
   }, [selectedDateTime, isOpen]);
 
   useEffect(() => setInvoiceDataId(undefined), []);
 
   return (
-    <IonModal
-      isOpen={isOpen}
-      className={CSSPrefix}
-    >
+    <IonModal isOpen={isOpen} className={CSSPrefix}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton
-              color="primary"
-              onClick={() => closeHandler()}
-            >
+            <IonButton color="primary" onClick={() => closeHandler()}>
               {cancelOrBackText}
             </IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-no-padding">
-        {steps}
-      </IonContent>
+      <IonContent className="ion-no-padding">{steps}</IonContent>
     </IonModal>
   );
-}
+};
 
 export default RescheduleAppointment;

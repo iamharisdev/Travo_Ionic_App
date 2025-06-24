@@ -20,7 +20,16 @@ export interface AppointmentDateTime {
   endTime: string;
 }
 
-const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, isOpen, selectedSlot, currentDate, setIsOpen, currentStep, appointment, selected }) => {
+const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({
+  view,
+  isOpen,
+  selectedSlot,
+  currentDate,
+  setIsOpen,
+  currentStep,
+  appointment,
+  selected,
+}) => {
   const [selectedClient, setSelectedClient] = useState<Patient>();
   const [selectedService, setSelectedService] = useState<Services>();
   const [selectedPrevService, setSelectedPrevService] = useState<Services>();
@@ -29,71 +38,74 @@ const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, is
   const [prevStep, setPrevStep] = useState<number>(-1);
   const contentRef = useRef<HTMLIonContentElement | null>(null);
   const [invoiceDataId, setInvoiceDataId] = useState<string>();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const cancelOrBackText = useMemo(() => {
-    if (step === 1 || step === 2 || step === 3 || step === 4 || prevStep > -1) return `${t("scheduling_back")}`;
+    if (step === 1 || step === 2 || step === 3 || step === 4 || prevStep > -1)
+      return `${t('scheduling_back')}`;
 
-    return `${t("log_out_cancel")}`;
+    return `${t('log_out_cancel')}`;
   }, [step, prevStep]);
 
-  const closeHandler = useCallback((close?: boolean) => {
-
-    if (!close) {
-      if ((step === 1 || step === 2 || step === 3 || step === 4) && prevStep === -1) {
-        if (selectedService?.paymentType === 'At Completion' && step === 4) {
-          // if the user comes from paid in advance and go back and change to services that is at completion
-          setStep(step - 2);
+  const closeHandler = useCallback(
+    (close?: boolean) => {
+      if (!close) {
+        if ((step === 1 || step === 2 || step === 3 || step === 4) && prevStep === -1) {
+          if (selectedService?.paymentType === 'At Completion' && step === 4) {
+            // if the user comes from paid in advance and go back and change to services that is at completion
+            setStep(step - 2);
+          } else {
+            setStep(step - 1);
+          }
         } else {
+          // In advance flow
           setStep(step - 1);
         }
-      } else {
-        // In advance flow
-        setStep(step - 1);
-      }
 
-      if ((step === 0) && prevStep === -1) {
-        setIsOpen(false);
-        setStep(0);
-      }
-
-      if (prevStep > -1 && selectedService?.paymentType === 'At Completion') {
-        setStep(prevStep);
-        setPrevStep(-1);
-      } else {
-        // In advance flow
-        // Paid in advance
-        if (prevStep === 4 && step === 3) {
-          setStep(1);
-          setPrevStep(4);
+        if (step === 0 && prevStep === -1) {
+          setIsOpen(false);
+          setStep(0);
         }
-        // Paid in advance select service
-        if (prevStep === 4 && step === 1) {
+
+        if (prevStep > -1 && selectedService?.paymentType === 'At Completion') {
           setStep(prevStep);
           setPrevStep(-1);
-          if (!invoiceDataId) {
-            setSelectedService(selectedPrevService);
-            setSelectedPrevService(undefined);
+        } else {
+          // In advance flow
+          // Paid in advance
+          if (prevStep === 4 && step === 3) {
+            setStep(1);
+            setPrevStep(4);
+          }
+          // Paid in advance select service
+          if (prevStep === 4 && step === 1) {
+            setStep(prevStep);
+            setPrevStep(-1);
+            if (!invoiceDataId) {
+              setSelectedService(selectedPrevService);
+              setSelectedPrevService(undefined);
+            }
+          }
+          // review
+          if (prevStep === 4 && step === 4) {
+            setStep(step - 1);
+            setPrevStep(-1);
+          }
+          // select date time & select client
+          if ((prevStep === 4 && step === 2) || (prevStep === 4 && step === 0)) {
+            setStep(prevStep);
+            setPrevStep(-1);
           }
         }
-        // review
-        if (prevStep === 4 && step === 4) {
-          setStep(step - 1);
-          setPrevStep(-1);
-        }
-        // select date time & select client
-        if (prevStep === 4 && step === 2 || prevStep === 4 && step === 0) {
-          setStep(prevStep);
-          setPrevStep(-1);
-        }
       }
-    }
 
-    if (close) {
-      setIsOpen(false);
-      setStep(2);
-    }
-  }, [step, prevStep, isOpen, selectedService, selectedPrevService, invoiceDataId]);
+      if (close) {
+        setIsOpen(false);
+        setStep(2);
+      }
+    },
+    [step, prevStep, isOpen, selectedService, selectedPrevService, invoiceDataId]
+  );
 
   // Android native back button
   document.addEventListener('ionBackButton', (ev: any) => {
@@ -105,61 +117,81 @@ const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, is
   const steps = useMemo(() => {
     switch (step) {
       case 0:
-        return <SelectClient isOpen={isOpen} setSelectedClient={(client) => {
-          setSelectedClient(client);
-          if (prevStep === -1) {
-            setStep(1);
-          } else {
-            setStep(prevStep);
-            setPrevStep(-1);
-          }
-        }} />;
+        return (
+          <SelectClient
+            isOpen={isOpen}
+            setSelectedClient={client => {
+              setSelectedClient(client);
+              if (prevStep === -1) {
+                setStep(1);
+              } else {
+                setStep(prevStep);
+                setPrevStep(-1);
+              }
+            }}
+          />
+        );
       case 1:
-        return <SelectService setSelectedService={(service) => {
-          if (service.paymentType === 'In Advance') {
-            setSelectedPrevService(selectedService);
-            setSelectedService(service);
-          } else {
-            setSelectedService(service);
-            setSelectedPrevService(undefined);
-            setInvoiceDataId(undefined);
-          }
-          // if comes from selected timeslot
-          if (prevStep === -1) {
-            if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
-              const endTime = dayjs(selectedSlot?.start).add(service.duration, 'minutes').toISOString();
-              setSelectedDateTime({
-                startTime: dayjs(selectedSlot?.start).toISOString(),
-                endTime
-              });
-              if (view !== 'month') {
+        return (
+          <SelectService
+            setSelectedService={service => {
+              if (service.paymentType === 'In Advance') {
+                setSelectedPrevService(selectedService);
+                setSelectedService(service);
+              } else {
+                setSelectedService(service);
+                setSelectedPrevService(undefined);
+                setInvoiceDataId(undefined);
+              }
+              // if comes from selected timeslot
+              if (prevStep === -1) {
+                if (selectedSlot && selectedSlot?.start && selectedSlot?.end) {
+                  const endTime = dayjs(selectedSlot?.start)
+                    .add(service.duration, 'minutes')
+                    .toISOString();
+                  setSelectedDateTime({
+                    startTime: dayjs(selectedSlot?.start).toISOString(),
+                    endTime,
+                  });
+                  if (view !== 'month') {
+                    if (service.paymentType === 'In Advance') {
+                      setStep(3);
+                    } else {
+                      setStep(4);
+                    }
+                  } else {
+                    setStep(2);
+                  }
+                } else {
+                  setStep(2);
+                }
+              } else {
+                // from month or appointments view
                 if (service.paymentType === 'In Advance') {
                   setStep(3);
                 } else {
                   setStep(4);
                 }
-              } else {
-                setStep(2);
               }
-            } else {
-              setStep(2);
-            }
-          } else {
-            // from month or appointments view
-            if (service.paymentType === 'In Advance') {
-              setStep(3);
-            } else {
-              setStep(4);
-            }
-          }
-        }} />;
+            }}
+          />
+        );
       case 2:
         return (
           <SelectDateTime
-            selectedDate={currentDate || (selectedDateTime?.startTime ? dayjs(selectedDateTime?.startTime).toISOString() : dayjs(selectedSlot?.start).toISOString())}
-            start_time={selectedDateTime ? (dayjs(selectedDateTime?.startTime).toDate()!!) : selectedSlot?.start}
-            end_time={selectedDateTime ? (dayjs(selectedDateTime?.endTime).toDate()!!) : selectedSlot?.end}
-            setSelectedDateTime={(selectedDateTime) => {
+            selectedDate={
+              currentDate ||
+              (selectedDateTime?.startTime
+                ? dayjs(selectedDateTime?.startTime).toISOString()
+                : dayjs(selectedSlot?.start).toISOString())
+            }
+            start_time={
+              selectedDateTime ? dayjs(selectedDateTime?.startTime).toDate()!! : selectedSlot?.start
+            }
+            end_time={
+              selectedDateTime ? dayjs(selectedDateTime?.endTime).toDate()!! : selectedSlot?.end
+            }
+            setSelectedDateTime={selectedDateTime => {
               setSelectedDateTime({ ...selectedDateTime });
               if (prevStep === -1) {
                 if (selectedService?.paymentType === 'In Advance') {
@@ -177,23 +209,58 @@ const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, is
           />
         );
       case 3:
-        return <ReviewDetails
-        selectedClient={appointment?.patientName ? { firstName: appointment.patientName, lastName: '', id: '', email: '', patientNumber: '' } as Patient : undefined}
-        selectedService={appointment?.patientServiceName ? { name: appointment.patientServiceName, id: '', duration: 0, paymentType: 'At Completion' } as Services : undefined}
-        selectedDateTime={selectedDateTime}
-        invoiceDataId={appointment?.invoiceDataId}
-        selected={selected}
-        closeHandler={closeHandler}
-        goToStep={(step) => setStep((prevState) => {
-          setPrevStep(prevState);
-          return step;
-        })}
-      />;
+        return (
+          <ReviewDetails
+            selectedClient={
+              appointment?.patientName
+                ? ({
+                    firstName: appointment.patientName,
+                    lastName: '',
+                    id: '',
+                    email: '',
+                    patientNumber: '',
+                  } as Patient)
+                : undefined
+            }
+            selectedService={
+              appointment?.patientServiceName
+                ? ({
+                    name: appointment.patientServiceName,
+                    id: '',
+                    duration: 0,
+                    paymentType: 'At Completion',
+                  } as Services)
+                : undefined
+            }
+            selectedDateTime={selectedDateTime}
+            invoiceDataId={appointment?.invoiceDataId}
+            selected={selected}
+            appointment={appointment}
+            closeHandler={closeHandler}
+            goToStep={step =>
+              setStep(prevState => {
+                setPrevStep(prevState);
+                return step;
+              })
+            }
+          />
+        );
 
       default:
         <SelectClient isOpen={isOpen} setSelectedClient={setSelectedClient} />;
     }
-  }, [step, selectedClient, selectedService, selectedDateTime, isOpen, selectedSlot, prevStep, invoiceDataId, selectedPrevService, currentDate]);
+  }, [
+    step,
+    selectedClient,
+    selectedService,
+    selectedDateTime,
+    isOpen,
+    selectedSlot,
+    prevStep,
+    invoiceDataId,
+    selectedPrevService,
+    currentDate,
+  ]);
 
   const scrollBottomHandler = () => {
     contentRef.current && contentRef.current.scrollToBottom();
@@ -210,16 +277,13 @@ const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, is
   }, [isOpen]);
 
   return (
-    <IonModal
-      isOpen={isOpen}
-      className={CSSPrefix}
-    >
+    <IonModal isOpen={isOpen} className={CSSPrefix}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
             <IonButton
               color="primary"
-              onClick={() => step < 3 ? closeHandler(true) :closeHandler()}
+              onClick={() => (step < 3 ? closeHandler(true) : closeHandler())}
             >
               {cancelOrBackText}
             </IonButton>
@@ -231,6 +295,6 @@ const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({ view, is
       </IonContent>
     </IonModal>
   );
-}
+};
 
 export default CreateResheduleAppointment;

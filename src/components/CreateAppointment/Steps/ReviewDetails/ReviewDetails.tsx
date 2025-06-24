@@ -177,6 +177,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           payload:
             isChecked && endsAfter && repeatOption
               ? {
+                
                   patientServiceId: selectedService.id,
                   patientId: selectedClient.id,
                   patientEmail: selectedClient.email,
@@ -190,6 +191,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
                   recurring: isChecked,
                 }
               : {
+                
                   patientServiceId: selectedService.id,
                   patientId: selectedClient.id,
                   patientEmail: selectedClient.email,
@@ -334,64 +336,65 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         <span className="custom-radio-label">{t("recurring_appointment")}</span>
       </div>
 
-      {isChecked && (
-        <IonGrid>
-          <IonRow class={`${CSSPrefix}-recurring-appointment-row`}>
-            <IonCol size="5.7" className="custom-input-container2">
-              <label className="custom-label">
-                {t("recurring_appointment_repeats_on")}
-              </label>
-              <IonSelect
-                className="selection-container"
-                placeholder={t("recurring_appointment_repeats_select")}
-                interface="action-sheet"
-                cancelText={t("log_out_cancel")}
-                value={repeatOption}
-                onIonChange={(e) => setRepeatOption(e.detail.value)}
-              >
-                <IonSelectOption value="Daily">
-                  {t("recurring_appointment_repeats_daily")}
-                </IonSelectOption>
-                <IonSelectOption value="Weekly">
-                  {t("recurring_appointment_weekly_on_day")} {selectedDayName}
-                </IonSelectOption>
-                <IonSelectOption value="Biweekly">
-                  {t("recurring_appointment_every_two_weeks_on_day")}{" "}
-                  {selectedDayName}
-                </IonSelectOption>
-                <IonSelectOption value="Monthly">
-                  {t("recurring_appointment_montly_on_the_third_day")}{" "}
-                  {selectedDayName}
-                </IonSelectOption>
-              </IonSelect>
-            </IonCol>
-
-            <IonCol size="5.7" className="custom-input-container2">
-              <label className="custom-label">
-                {t("recurring_appointment_ends_after")}
-              </label>
-              <IonInput
-                type="number"
-                value={endsAfter}
-                placeholder="0"
-                onIonInput={handleEndsAfterInput}
-              />
-              {/* <IonIcon
-                  className="caretUpOutline"
-                  onClick={() => setEndsAfter((prev) => Number(prev || 0) + 1)}
-                  icon={caretUpOutline}
-                />
-                <IonIcon
-                  className="caretDownOutline"
-                  onClick={() =>
-                    setEndsAfter((prev) => Math.max(0, Number(prev || 0) - 1))
-                  }
-                  icon={caretDownOutline}
-                /> */}
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-      )}
+     {isChecked  && (
+            <IonGrid>
+              <IonRow class={`${CSSPrefix}-recurring-appointment-row`}>
+              <IonCol size="5.7" className="custom-input-container2">
+                  
+                  <label className="custom-label">
+                      {t('recurring_appointment_repeats_on')}
+                   </label>
+                    <IonSelect
+                      className="custom-select custom-label"
+                      placeholder={t('recurring_appointment_repeats_select')}
+                      interface="action-sheet"
+                      cancelText={t('log_out_cancel')}
+                      value={repeatOption}
+                      onIonChange={e => setRepeatOption(e.detail.value)}
+                    >
+                      <IonSelectOption value="Daily">
+                        {t('recurring_appointment_repeats_daily')}
+                      </IonSelectOption>
+                      <IonSelectOption value="Weekly">
+                        {t('recurring_appointment_weekly_on_day')} {selectedDayName}
+                      </IonSelectOption>
+                      <IonSelectOption value="Biweekly">
+                        {t('recurring_appointment_every_two_weeks_on_day')} {selectedDayName}
+                      </IonSelectOption>
+                      <IonSelectOption value="Monthly">
+                        {t('recurring_appointment_montly_on_the_third_day')} {selectedDayName}
+                      </IonSelectOption>
+                    </IonSelect>
+                 
+                </IonCol>
+    
+                <IonCol size="5.7" className="custom-input-container2">
+                  
+                  <label className="custom-label">
+                      {t('recurring_appointment_ends_after')}
+                   </label>
+                    <IonInput
+                      className="custom-input custom-label"
+                      type="number"
+                      value={endsAfter}
+                      placeholder="0"
+                      onIonInput={handleEndsAfterInput}
+                    />
+                    <IonIcon
+                      className="caretUpOutline"
+                      onClick={() => setEndsAfter(prev => Number(prev || 0) + 1)}
+                      icon={caretUpOutline}
+                    />
+                    <IonIcon
+                      className="caretDownOutline"
+                      onClick={() => setEndsAfter(prev => Math.max(0, Number(prev || 0) - 1))}
+                      icon={caretDownOutline}
+                    />
+                
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          )}
 
       <div className="custom-input-container">
         <div className="custom-label-with-icon">

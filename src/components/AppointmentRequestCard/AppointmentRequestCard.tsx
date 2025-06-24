@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 const CSSprefix = 'appointment-request-card';
 
 const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({ appointment, acceptCB, declineCB }) => {
+
   const history = useHistory();
   const barColor = useMemo(() => getAppointmentColor(appointment?.color as CALENDAR_SLOTS), [appointment?.color]);
   const { provider } = useSelector((state: RootState) => state);
