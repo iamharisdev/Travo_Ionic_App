@@ -70,6 +70,7 @@
     justify-content: space-between;
     padding: 0 10px;
     gap: 5px;
+ 
   }
   ion-select::part(icon) {
     position: absolute;
@@ -149,24 +150,7 @@
   --padding-top: 0px !important;
   --padding-bottom: 0px !important;
 }
-.caretUpOutline {
-  color: var(--ion-trova-black);
-  height: 16px;
-  width: 16px;
-  position: absolute;
-  right: 16px;
-  top: 35px;
-  z-index: 99;
-}
-.caretDownOutline {
-  color: var(--ion-trova-black);
-  height: 16px;
-  width: 16px;
-  position: absolute;
-  bottom: 8px;
-  right: 16px;
-  z-index: 99;
-}
+
 
 .custom-radio-container {
   display: flex;
@@ -208,6 +192,8 @@
   padding: 2px 8px;
   border: 1px solid #d1d3d4;
   border-radius: 5px;
+ 
+  
 }
 
 .custom-label {
@@ -244,4 +230,29 @@
   font-weight: 600;
   margin: 0px 16px;
   letter-spacing: 0px;
+}
+
+
+.input-with-icons {
+  position: relative;
+}
+
+.caretUpOutline {
+  color: var(--ion-trova-black);
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  right: 8px;
+
+  z-index: 99;
+}
+
+.caretDownOutline {
+  color: var(--ion-trova-black);
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  right: 8px;
+
+  z-index: 99;
 }

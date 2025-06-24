@@ -381,7 +381,6 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
                   <IonCol size="5.7" className="custom-input-container2">
                     <label className="custom-label">{t('recurring_appointment_ends_after')}</label>
                     <IonInput
-                      className="custom-input custom-label"
                       type="number"
                       value={endsAfter}
                       placeholder="0"

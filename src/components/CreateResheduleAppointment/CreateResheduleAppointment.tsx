@@ -234,7 +234,7 @@ const CreateResheduleAppointment: React.FC<CreateAppointmentProps> = ({
             }
             selectedDateTime={selectedDateTime}
             invoiceDataId={appointment?.invoiceDataId}
-            selected={selected}
+            selected={selected||''}
             appointment={appointment}
             closeHandler={closeHandler}
             goToStep={step =>

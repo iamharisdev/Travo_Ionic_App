@@ -4,4 +4,5 @@ export interface CancelAppointmentState {
   appointmentId: string;
   selected: string;
   isRecurring: string;
+  type:string;
 }

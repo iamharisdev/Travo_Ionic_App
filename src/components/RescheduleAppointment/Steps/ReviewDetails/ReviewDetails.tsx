@@ -85,8 +85,8 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           patientEmail: event?.patientEmail,
           location: event?.location,
           patientServiceId: event?.patientServiceId,
-          startTime: date.startTime,
-          endTime: date.endTime,
+          startTime: date?.startTime || '',
+          endTime: date?.endTime || '',
           frequency: null,
           count: null,
           recurring: false,
@@ -153,20 +153,6 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
           expand="block"
           disabled={disableSaveChanges}
           onClick={rescheduleHandler}
-          // onClick={() => {
-          //   // if (event?.recurring) {
-          //     rescheduleHandler();
-          //   } else {
-          //     presentToast(
-          //      "Under dev mode",
-          //       1000,
-          //       'middle',
-          //       'danger'
-          //     );
-          //     // dispatch(setLoading({ loading: true, message: '' }));
-          //     // editAppointment();
-          //   }
-          // }}
         >
           {t('scheduling_save_changes')}
         </IonButton>
