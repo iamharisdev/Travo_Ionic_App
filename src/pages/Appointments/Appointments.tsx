@@ -107,7 +107,7 @@ const Appointments: React.FC = (): React.ReactElement => {
   const getAppointmentsHandler = async () => {
     try {
       const [providerPractice] = provider?.providerPractices;
-      console.log('getAppointmentsHandler', providerPractice);
+
       if (providerPractice) {
         await dispatch(
           getEventsAction({
@@ -215,6 +215,7 @@ const Appointments: React.FC = (): React.ReactElement => {
           menuId={APPOINTMENTS_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
+          reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
           // showNotifications
           // showSearchOption

@@ -216,8 +216,11 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
   const showEdit = useMemo(() => {
     const isBefore = dayjs().isBefore(event?.startTime);
-
+    if (event?.status === AppointmentStatusEnum.PENDING) return false;
     if (isBefore) return true;
+   
+
+    
 
     return false;
   }, [event]);
@@ -326,9 +329,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
   }, []);
 
-
-
-
   https: useEffect(() => {
     const fetchPatientContactInfo = async () => {
       if (event?.patientId) {
@@ -346,6 +346,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     fetchPatientContactInfo();
   }, [event?.patientId]);
 
+  console.log(event?.status === AppointmentStatusEnum.PENDING);
 
   return (
     <IonPage className={CSSprefix}>
@@ -452,7 +453,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
                 />
               </IonItem>
             )}
-          
+
             {location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE && isOnline && (
               <>
                 <IonButton

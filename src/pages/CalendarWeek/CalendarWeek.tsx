@@ -219,6 +219,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
           menuId={CALENDAR_WEEK_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
+          reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>

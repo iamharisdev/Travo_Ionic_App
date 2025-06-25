@@ -74,13 +74,10 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
     return [...events.events, ...microsoftEvents, ...googleEvents]
       .filter(
-        ({ startTime,status }) =>
+        ({ startTime }) =>
           dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
-          status !== AppointmentStatusEnum.CANCELLED
+          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
       )
-
-
       .map(event => ({
         id: event?.id,
         title: JSON.stringify({
@@ -191,7 +188,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     parentRef: calendarMonthRef,
     onSwipedLeft: () => dispatch(setNextMonth()),
     onSwipedRight: () => dispatch(setPrevMonth()),
-    onSwipedDown: () => getAppointmentsHandler(),
   });
 
   useEffect(() => {
@@ -207,7 +203,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
   useIonViewWillEnter(() => {
-    getAppointmentsHandler();
     const start = dayjs().startOf('month').format('YYYY-MM-DD');
     const end = dayjs().endOf('month').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
@@ -234,15 +229,10 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           menuId={CALENDAR_MONTH_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
+          reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>
-          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-            <IonRefresherContent
-              pullingIcon="chevron-down-circle-outline"
-              refreshingSpinner="circles"
-            ></IonRefresherContent>
-          </IonRefresher>
           <Calendar
             defaultDate={selectedDates[0]}
             date={selectedDates[0]}

@@ -240,7 +240,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
       console.error(`${t('toast_messages_error_create_appointment')} :`, error);
     } finally {
       if (redirect) {
-        console.log('CHl bi');
+     
         history.push(APPOINTMENTS);
       }
     }

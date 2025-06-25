@@ -53,7 +53,7 @@ export const signInAction = createAsyncThunk(
     try {
       const response = await signIn(email, password);
 
-      console.log('Sign in api response:=>  ', response);
+  
 
       const provider = jwtDecode(response.data.token) as AuthProvider;
 

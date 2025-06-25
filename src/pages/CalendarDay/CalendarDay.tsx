@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../state/store';
 import EventCard from '../../components/EventCard/EventCard';
 import DatePicker from '../../components/DatePicker/DatePicker';
-import { months } from '../../shared/constants/dates';
 import { setLoading } from '../../state/loadingSlice';
 import {
   getEventsAction,
@@ -37,10 +36,8 @@ import {
 } from '../../shared/types/appointment.type';
 import { useHistory, useLocation } from 'react-router';
 import { getDefaultDates } from '../../shared/utils/dates.util';
-
 import './CalendarDay.scss';
 import { useTranslation } from 'react-i18next';
-
 const localizer = dayjsLocalizer(dayjs);
 
 const CSSprefix = 'calendar-day';
@@ -60,7 +57,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
 
     return events.events
       .filter(
-        ({ endTime,status }) =>
+        ({ endTime, status }) =>
           dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
           status !== AppointmentStatusEnum.CANCELLED
       )
@@ -245,6 +242,15 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     },
     [mappedEvents, mappedBackgroundEvents, isCreateAppointmentOpen, tapped, scrollingUpOrDown]
   );
+  const handleSelectEvent = useCallback((event: any) => {
+    const redirect = JSON.parse((event.title as string) || '').redirect;
+    if (redirect) {
+      history.push(`${APPOINTMENT_DETAILS}/${event.id}`, {
+        eventId: event.id,
+        type: AppointmentDetailTypeEnum.RESCHEDULE,
+      });
+    }
+  }, []);
 
   useIonViewWillEnter(() => {
     getAppointmentsHandler();
@@ -276,6 +282,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           menuId={CALENDAR_DAY_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
+          reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>
@@ -306,8 +313,9 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             }}
             onNavigate={() => {}}
             selectable={true}
-            longPressThreshold={60}
-            onSelectSlot={handleSelectSlot}
+            longPressThreshold={0}
+             onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent}
           />
         </IonContent>
         <IonFab className="big-z-index" slot="fixed" vertical="bottom" horizontal="end">
