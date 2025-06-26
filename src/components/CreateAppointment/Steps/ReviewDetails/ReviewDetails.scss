@@ -256,3 +256,13 @@
 
   z-index: 99;
 }
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.flex-cloumn{
+  display: flex;
+  flex-direction: column;
+}

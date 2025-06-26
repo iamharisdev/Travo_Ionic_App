@@ -218,10 +218,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     const isBefore = dayjs().isBefore(event?.startTime);
     if (event?.status === AppointmentStatusEnum.PENDING) return false;
     if (isBefore) return true;
-   
-
-    
-
     return false;
   }, [event]);
 
@@ -346,7 +342,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     fetchPatientContactInfo();
   }, [event?.patientId]);
 
-  console.log(event?.status === AppointmentStatusEnum.PENDING);
+  console.log(event);
 
   return (
     <IonPage className={CSSprefix}>

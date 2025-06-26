@@ -71,16 +71,22 @@ const Recurring: React.FC<LogoutProps> = ({
                 <p className={`${CSSprefix}-description`}>
                   <IonRadioGroup value={selected} onIonChange={e => setSelected(e.detail.value)}>
                     <IonItem lines="none" className={`${CSSprefix}-radio-item`}>
-                      <IonRadio slot="start" value="this" className={`${CSSprefix}-radio`} />
-                      <IonLabel>{t('This Event')}</IonLabel>
+                      <IonRadio
+                        slot="start"
+                        value="this"
+                        className={`${CSSprefix}-radio`}
+                        mode="md"
+                      />
+                      <IonLabel>{t('recurring_appointment_this_event')}</IonLabel>
                     </IonItem>
                     <IonItem lines="none" className={`${CSSprefix}-radio-item`}>
                       <IonRadio
                         slot="start"
                         value="thisAndFollowing"
                         className={`${CSSprefix}-radio`}
+                        mode="md"
                       />
-                      <IonLabel>{t('This and following events')}</IonLabel>
+                      <IonLabel>{t('recurring_appointment_this_and_following_events')}</IonLabel>
                     </IonItem>
                   </IonRadioGroup>
                 </p>
@@ -97,12 +103,12 @@ const Recurring: React.FC<LogoutProps> = ({
                 {t('Go Back')}
               </IonButton>
               <IonButton
-                color="primary"
+                color={type === 'cancel' ? 'danger' : 'primary'}
                 fill="solid"
                 expand="block"
                 className={`${CSSprefix}-right-bottom`}
                 onClick={() => {
-                  if (type == 'cancel') {
+                  if (type === 'cancel') {
                     close();
                     history.push(APPOINTMENT_CANCEL, {
                       appointmentId: appointment?.id,
@@ -110,7 +116,7 @@ const Recurring: React.FC<LogoutProps> = ({
                       selected: selected,
                       isRecurring: appointment?.recurring,
                     });
-                  } else if (type == 'edit recurring') {
+                  } else if (type === 'edit recurring') {
                     history.push(`${APPOINTMENT_DETAILS_EDIT}/${appointment?.id}`, {
                       appointmentId: appointment?.id,
                       patientServiceId: appointment?.patientServiceId || '',
@@ -131,7 +137,7 @@ const Recurring: React.FC<LogoutProps> = ({
                   }
                 }}
               >
-                {t('Continue')}
+                {type === 'cancel' ? t('schedule_appointment_next') : t('Continue')}
               </IonButton>
             </IonItem>
           </IonList>

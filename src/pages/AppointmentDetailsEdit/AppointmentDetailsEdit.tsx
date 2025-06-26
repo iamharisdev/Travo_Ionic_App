@@ -380,22 +380,24 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
 
                   <IonCol size="5.7" className="custom-input-container2">
                     <label className="custom-label">{t('recurring_appointment_ends_after')}</label>
-                    <IonInput
-                      type="number"
-                      value={endsAfter}
-                      placeholder="0"
-                      onIonInput={handleEndsAfterInput}
-                    />
-                    <IonIcon
-                      className="caretUpOutline"
-                      onClick={() => setEndsAfter(prev => Number(prev || 0) + 1)}
-                      icon={caretUpOutline}
-                    />
-                    <IonIcon
-                      className="caretDownOutline"
-                      onClick={() => setEndsAfter(prev => Math.max(0, Number(prev || 0) - 1))}
-                      icon={caretDownOutline}
-                    />
+                    <div className="flex-row">
+                      <IonInput
+                        type="number"
+                        value={endsAfter}
+                        placeholder="0"
+                        onIonInput={handleEndsAfterInput}
+                      />
+                      <div className="flex-cloumn">
+                        <IonIcon
+                          onClick={() => setEndsAfter(prev => Number(prev || 0) + 1)}
+                          icon={caretUpOutline}
+                        />
+                        <IonIcon
+                          onClick={() => setEndsAfter(prev => Math.max(0, Number(prev || 0) - 1))}
+                          icon={caretDownOutline}
+                        />
+                      </div>
+                    </div>
                   </IonCol>
                 </IonRow>
               </IonGrid>

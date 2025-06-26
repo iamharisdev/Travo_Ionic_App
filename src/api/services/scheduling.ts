@@ -216,3 +216,6 @@ export const editAppointmentsRecurring = async (
     `practices/${practiceId}/providers/${providerId}/appointments/${appointmentId}/edit/recurring`,
     payload
   );
+
+
+ 

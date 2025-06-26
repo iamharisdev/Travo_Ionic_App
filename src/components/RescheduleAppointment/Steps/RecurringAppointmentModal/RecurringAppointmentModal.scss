@@ -49,10 +49,13 @@ ion-modal#recurring-modal::part(backdrop) {
     line-height: normal;
     margin: 14px auto 20px auto;
   }
-  &-input{
-    background: var(--ion-trova-white, #FFF);
-    border: 1px solid #D1D3D4;
+  &-input {
+    background: var(--ion-trova-white, #fff);
+    border: 1px solid #d1d3d4;
     border-radius: 5px;
+padding-top:10px;
+padding-left: 10px;
+    margin: 0 10px;
   }
   ion-select::part(icon) {
     position: absolute;
@@ -67,8 +70,8 @@ ion-modal#recurring-modal::part(backdrop) {
   ion-select::part(text) {
     font-size: 14px !important;
     color: inherit;
- }
- 
+  }
+
   &-buttons {
     margin-top: 14px;
 
@@ -78,23 +81,21 @@ ion-modal#recurring-modal::part(backdrop) {
       height: 48px;
     }
   }
-  &-left-button{
+  &-left-button {
     margin-right: 10px !important;
   }
-  &-right-button{
+  &-right-button {
     margin-left: 10px !important;
   }
-  &-select-input-field{
+  &-select-input-field {
     margin-bottom: 10px;
   }
-  &-lables{
+  &-lables {
     font-size: small !important;
     margin-top: -10px !important;
     z-index: 99 !important;
   }
 }
-
-
 
 .custom-select,
 .custom-input {
@@ -112,7 +113,7 @@ ion-modal#recurring-modal::part(backdrop) {
   --padding-top: 0px !important;
   --padding-bottom: 0px !important;
 }
-.caretUpOutline{
+.caretUpOutline {
   color: var(--ion-trova-black);
   height: 16px;
   width: 16px;
@@ -121,7 +122,7 @@ ion-modal#recurring-modal::part(backdrop) {
   top: 28px;
   z-index: 99;
 }
-.caretDownOutline{
+.caretDownOutline {
   color: var(--ion-trova-black);
   height: 16px;
   width: 16px;
@@ -129,4 +130,26 @@ ion-modal#recurring-modal::part(backdrop) {
   bottom: 0px;
   right: 16px;
   z-index: 99;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.flex-cloumn {
+ 
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+}
+
+.inputNumber {
+}
+
+.custom-label {
+  font-family: 'Poppins';
+  font-size: 16px;
+  font-weight: 500;
+  color: #2e2e2e;
 }
