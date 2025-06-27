@@ -109,6 +109,10 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     return '';
   }, [selectedDateTime?.startTime, i18n.language]);
 
+
+
+
+
   const paymentType = useMemo(() => {
     if (selectedService?.paymentType === 'At Completion') {
       return `${t('scheduling_at_session_completion')}`;
