@@ -22,6 +22,7 @@ import { getCountriesForRegionAction } from '../../state/providerSlice';
 import { AppDispatch } from '../../state/store';
 import './CountryPicker.scss';
 import TrovaLogo from '/assets/TrovaLogo.png';
+import { countries } from '../../shared/utils/json';
 
 const CSSprefix = 'country-picker';
 
@@ -30,7 +31,7 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
-  const [countries, setCountries] = useState<any>();
+  // const [countries, setCountries] = useState<any>();
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
@@ -39,13 +40,13 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
     setShowingAnimation(true);
     setTimeout(() => setShowingAnimation(false), 1800);
     setLoading(false);
-    getCountries();
+    // getCountries();
   }, []);
 
-  const getCountries = async () => {
-    let res = await dispatch(getCountriesForRegionAction());
-    setCountries(res?.payload);
-  };
+  // const getCountries = async () => {
+  //   let res = await dispatch(getCountriesForRegionAction());
+  //   setCountries(res?.payload);
+  // };
 
   useIonViewWillEnter(() => {
     setSelectedCountry('');
@@ -104,7 +105,7 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                       dispatch(setCountryFlag(e.detail.value));
                     }}
                   >
-                    {countries && Object.keys(countries).length > 0 ? (
+                    {/* {countries && Object.keys(countries).length > 0 ? (
                       Object.entries(countries).map(([code, name]) => (
                         <IonSelectOption key={code} value={code}>
                           {getFlagEmoji(code)} {name}
@@ -112,7 +113,12 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                       ))
                     ) : (
                       <IonSpinner name="dots" />
-                    )}
+                    )} */}
+                    {countries?.map(({ code, name }: any) => (
+                      <IonSelectOption key={code} value={code}>
+                        {getFlagEmoji(code)} {name}
+                      </IonSelectOption>
+                    ))}
                   </IonSelect>
                 )}
               </IonItem>
