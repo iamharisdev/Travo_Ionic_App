@@ -59,89 +59,82 @@ const Recurring: React.FC<LogoutProps> = ({
   return (
     <>
       <IonModal className={CSSprefix} id="recurring-modal" isOpen={isOpen}>
-        <IonContent>
-          <IonList>
-            <IonItem lines="none">
-              <IonText className={`${CSSprefix}-title`}>
-                {type == 'cancel'
-                  ? t('cancel_appointment')
-                  : type == 'edit recurring'
-                  ? t('scheduling_edit_appointment')
-                  : t('scheduling_reschedule_appointment')}
-                <p className={`${CSSprefix}-description`}>
-                  <IonRadioGroup value={selected} onIonChange={e => setSelected(e.detail.value)}>
-                    <IonItem lines="none" className={`${CSSprefix}-radio-item`}>
-                      <IonRadio
-                        slot="start"
-                        value="this"
-                        className={`${CSSprefix}-radio`}
-                        mode="md"
-                      />
-                      <IonLabel>{t('recurring_appointment_this_event')}</IonLabel>
-                    </IonItem>
-                    <IonItem lines="none" className={`${CSSprefix}-radio-item`}>
-                      <IonRadio
-                        slot="start"
-                        value="thisAndFollowing"
-                        className={`${CSSprefix}-radio`}
-                        mode="md"
-                      />
-                      <IonLabel>{t('recurring_appointment_this_and_following_events')}</IonLabel>
-                    </IonItem>
-                  </IonRadioGroup>
-                </p>
-              </IonText>
-            </IonItem>
-            <IonItem className={`${CSSprefix}-buttons`} lines="none">
-              <IonButton
-                color="primary"
-                fill="outline"
-                expand="block"
-                className={`${CSSprefix}-left-bottom`}
-                onClick={close}
-              >
-                {t('Go Back')}
-              </IonButton>
-              <IonButton
-                color={type === 'cancel' ? 'danger' : 'primary'}
-                fill="solid"
-                expand="block"
-                className={`${CSSprefix}-right-bottom`}
-                onClick={() => {
-                  if (type === 'cancel') {
-                    close();
-                    history.push(APPOINTMENT_CANCEL, {
-                      appointmentId: appointment?.id,
-                      type: locationType,
-                      selected: selected,
-                      isRecurring: appointment?.recurring,
-                    });
-                  } else if (type === 'edit recurring') {
-                    history.push(`${APPOINTMENT_DETAILS_EDIT}/${appointment?.id}`, {
-                      appointmentId: appointment?.id,
-                      patientServiceId: appointment?.patientServiceId || '',
-                      patientName: appointment?.patientName || '',
-                      patientServiceName: appointment?.patientServiceName || '',
-                      price: appointment?.price || '',
-                      location: appointment?.location || '',
-                      startTime: appointment?.startTime || '',
-                      endTime: appointment?.endTime || '',
-                      event: appointment,
-                      selected: selected,
-                      duration,
-                    });
-                    close();
-                  } else {
-                    setRescheduleOpen(true);
-                    close();
-                  }
-                }}
-              >
-                {type === 'cancel' ? t('schedule_appointment_next') : t('Continue')}
-              </IonButton>
-            </IonItem>
-          </IonList>
-        </IonContent>
+       
+        <IonText className={`${CSSprefix}-title`}>
+          {type == 'cancel'
+            ? t('cancel_appointment')
+            : type == 'edit recurring'
+            ? t('scheduling_edit_appointment')
+            : t('scheduling_reschedule_appointment')}
+        </IonText>
+        <div className='container'>
+        <IonRadioGroup value={selected} onIonChange={e => setSelected(e.detail.value)}>
+          <IonItem lines="none" className={`${CSSprefix}-radio-item`}>
+            <IonRadio slot="start" value="this" className={`${CSSprefix}-radio`} mode="md" />
+            <IonLabel>{t('recurring_appointment_this_event')}</IonLabel>
+          </IonItem>
+          <IonItem lines="none" className={`${CSSprefix}-radio-item`}>
+            <IonRadio
+              slot="start"
+              value="thisAndFollowing"
+              className={`${CSSprefix}-radio`}
+              mode="md"
+            />
+            <IonLabel>{t('recurring_appointment_this_and_following_events')}</IonLabel>
+          </IonItem>
+        
+        </IonRadioGroup>
+        </div>
+
+        <IonItem className={`${CSSprefix}-buttons`} lines="none">
+          <IonButton
+            color="primary"
+            fill="outline"
+            expand="block"
+            className={`${CSSprefix}-left-bottom`}
+            onClick={close}
+          >
+            {t('Go Back')}
+          </IonButton>
+          <IonButton
+            color={type === 'cancel' ? 'danger' : 'primary'}
+            fill="solid"
+            expand="block"
+            className={`${CSSprefix}-right-bottom`}
+            onClick={() => {
+              if (type === 'cancel') {
+                close();
+                history.push(APPOINTMENT_CANCEL, {
+                  appointmentId: appointment?.id,
+                  type: locationType,
+                  selected: selected,
+                  isRecurring: appointment?.recurring,
+                });
+              } else if (type === 'edit recurring') {
+                history.push(`${APPOINTMENT_DETAILS_EDIT}/${appointment?.id}`, {
+                  appointmentId: appointment?.id,
+                  patientServiceId: appointment?.patientServiceId || '',
+                  patientName: appointment?.patientName || '',
+                  patientServiceName: appointment?.patientServiceName || '',
+                  price: appointment?.price || '',
+                  location: appointment?.location || '',
+                  startTime: appointment?.startTime || '',
+                  endTime: appointment?.endTime || '',
+                  event: appointment,
+                  selected: selected,
+                  duration,
+                });
+                close();
+              } else {
+                setRescheduleOpen(true);
+                close();
+              }
+            }}
+          >
+            {type === 'cancel' ? t('schedule_appointment_next') : t('Continue')}
+          </IonButton>
+        </IonItem>
+
       </IonModal>
       <CreateResheduleAppointment
         isOpen={rescheduleOpen}

@@ -278,6 +278,8 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
     return '';
   }, [event?.startTime, i18n.language]);
 
+ 
+
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showMenu={false} />
