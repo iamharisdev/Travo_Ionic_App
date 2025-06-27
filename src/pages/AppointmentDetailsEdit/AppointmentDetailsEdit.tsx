@@ -6,9 +6,6 @@ import {
   IonGrid,
   IonIcon,
   IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
   IonPage,
   IonRow,
   IonSelect,
@@ -284,7 +281,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
     return '';
   }, [event?.startTime, i18n.language]);
 
-  function formatLabel(label) {
+  function formatLabel(label:string) {
     return label.toLowerCase().replace(/\s+/g, '_');
   }
 
