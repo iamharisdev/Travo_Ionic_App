@@ -283,7 +283,7 @@ const RecurringAppointmentModal: React.FC<RecurringAppointmentModalInterface> = 
                 className={`${CSSprefix}-left-button`}
                 onClick={() => setShowModal(false)}
               >
-                {t('Cancel')}
+                {t('log_out_cancel')}
               </IonButton>
               <IonButton
                 color="primary"
@@ -292,7 +292,7 @@ const RecurringAppointmentModal: React.FC<RecurringAppointmentModalInterface> = 
                 className={`${CSSprefix}-right-button`}
                 onClick={handleSaveRecurring}
               >
-                {t('Save')}
+                {t('configuration_save')}
               </IonButton>
             </IonItem>
           </IonList>

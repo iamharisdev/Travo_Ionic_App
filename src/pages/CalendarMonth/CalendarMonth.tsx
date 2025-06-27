@@ -5,8 +5,6 @@ import {
   IonIcon,
   IonPage,
   IonPopover,
-  IonRefresher,
-  IonRefresherContent,
   IonText,
   RefresherEventDetail,
   useIonViewWillEnter,
@@ -17,6 +15,7 @@ import 'dayjs/locale/pt'; // Portuguese
 import { addOutline } from 'ionicons/icons';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router';
 import CreateAppointment from '../../components/CreateAppointment/CreateAppointment';
@@ -25,6 +24,7 @@ import EventCard from '../../components/EventCard/EventCard';
 import Header from '../../components/Header/Header';
 import HeaderCalendar from '../../components/HeaderCalendar/HeaderCalendar';
 import Menu from '../../components/Menu/Menu';
+import usePresentToast from '../../hooks/usePresentToast';
 import UseSwipeGesture from '../../hooks/useSwipeGesture';
 import { CALENDAR_MONTH_MENU_ID } from '../../shared/constants/menu';
 import { CALENDAR_DAY, CALENDAR_MONTH } from '../../shared/routes/routes';
@@ -38,8 +38,6 @@ import {
   getMicrosoftEventsAction,
 } from '../../state/schedulingSlice';
 import { AppDispatch, RootState } from '../../state/store';
-import { useTranslation } from 'react-i18next';
-import usePresentToast from '../../hooks/usePresentToast';
 import './CalendarMonth.scss';
 
 const CSSprefix = 'calendar-month';
@@ -74,9 +72,10 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
     return [...events.events, ...microsoftEvents, ...googleEvents]
       .filter(
-        ({ startTime }) =>
+        ({ startTime, status }) =>
           dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
+          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
+          status !== AppointmentStatusEnum.CANCELLED
       )
       .map(event => ({
         id: event?.id,
@@ -219,6 +218,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
         event.detail.complete();
       });
   }
+
   return (
     <>
       <Menu menuId={CALENDAR_MONTH_MENU_ID} contentId="calendar-month-content" />

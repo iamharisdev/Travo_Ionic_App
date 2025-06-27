@@ -217,5 +217,8 @@
   "please_select_your_country": "Selecione seu país abaixo",
   "country": "País",
   "continue": "Continuar",
-  "empty": "vazia"
+  "choose_option": "Escolha a opção",
+  "take_photo": "Tirar foto",
+  "choose_photo": "Escolher foto",
+  "more_events": "mais"
 }

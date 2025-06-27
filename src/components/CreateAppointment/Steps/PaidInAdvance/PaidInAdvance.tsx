@@ -245,6 +245,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                       interface="action-sheet"
                       toggleIcon={caretDownOutline}
                       expandedIcon={caretUpOutline}
+                      cancelText={t('log_out_cancel')}
                       placeholder={t("schedule_appointment_Select_your_invoice_template")}
                       selectedText={templates?.items.find(({ id }) => values.templateId === id)?.templateName}
                       value={values.templateId}

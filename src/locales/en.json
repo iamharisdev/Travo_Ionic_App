@@ -217,5 +217,8 @@
   "please_select_your_country": "Please select your country below",
   "country": "Country",
   "continue": "Continue",
-  "empty": "empty"
+  "choose_option": "Choose Option",
+  "take_photo": "Take Photo",
+  "choose_photo": "Choose Photo",
+  "more_events": "more"
 }
