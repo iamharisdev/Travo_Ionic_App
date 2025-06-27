@@ -46,6 +46,7 @@
   "scheduling_adjusted_price": "Preço ajustado",
   "scheduling_location": "Local",
   "scheduling_payment_type": "Tipo de pagamento",
+  "scheduling_paid_in_advance": "Antes da sessão",
   "scheduling_at_session_completion": "Na conclusão da sessão",
   "scheduling_online": "Virtual",
   "scheduling_in_person": "Presencial",
@@ -220,5 +221,7 @@
   "choose_option": "Escolha a opção",
   "take_photo": "Tirar foto",
   "choose_photo": "Escolher foto",
-  "more_events": "mais"
+  "more_events": "mais",
+  "online": "Virtual",
+  "in_person": " Presencial"
 }

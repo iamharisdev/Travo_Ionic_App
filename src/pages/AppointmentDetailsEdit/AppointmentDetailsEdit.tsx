@@ -258,13 +258,17 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
     },
   });
 
-  const paymentType = useMemo(
-    () =>
-      services?.patientServiceRequestDtos.find(({ id }) => id === location?.state?.patientServiceId)
-        ?.paymentType,
-    [location?.state?.patientServiceId, services]
-  );
-
+  const paymentType = useMemo(() => {
+    const servicePaymentType = services?.patientServiceRequestDtos.find(
+      ({ id }) => id === location?.state?.patientServiceId
+    )?.paymentType;
+  
+    if (servicePaymentType === 'At Completion') {
+      return `${t('scheduling_at_session_completion')}`;
+    }
+  
+    return `${t('schedule_appointment_in_advance_of_session')}`;
+  }, [location?.state?.patientServiceId, services, t]);
   const handleClick = () => {
     setIsChecked(!isChecked);
   };
@@ -279,6 +283,14 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
     }
     return '';
   }, [event?.startTime, i18n.language]);
+
+  function formatLabel(label) {
+    return label.toLowerCase().replace(/\s+/g, '_');
+  }
+
+  const translatedText = t(formatLabel(formik.values.location));
+
+  
 
   return (
     <IonPage className={CSSprefix}>
@@ -326,7 +338,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             toggleIcon={caretDownOutline}
             expandedIcon={caretUpOutline}
             cancelText={t('log_out_cancel')}
-            selectedText={formik.values.location}
+            selectedText={translatedText}
             value={formik.values.location}
             onIonChange={e => formik.setFieldValue('location', e.detail.value)}
           >
