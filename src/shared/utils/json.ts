@@ -3,7 +3,7 @@ export const countries = [
     { code: 'AU', name: 'Australia' },
     { code: 'BD', name: 'Bangladesh' },
     { code: 'BW', name: 'Botswana' },
-    { code: 'BR', name: 'Brazil' },
+    { code: 'BR', name: 'Brasil' },
     { code: 'BG', name: 'Bulgaria' },
     { code: 'CA', name: 'Canada' },
     { code: 'CR', name: 'Costa Rica' },

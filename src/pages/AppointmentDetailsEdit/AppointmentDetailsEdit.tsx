@@ -339,10 +339,10 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             value={formik.values.location}
             onIonChange={e => formik.setFieldValue('location', e.detail.value)}
           >
-            <IonSelectOption value={t('scheduling_online')}>
+            <IonSelectOption value={'Online'}>
               {t('scheduling_online')}
             </IonSelectOption>
-            <IonSelectOption value={t('scheduling_in_person')}>
+            <IonSelectOption value={'In Person'}>
               {t('scheduling_in_person')}
             </IonSelectOption>
           </IonSelect>

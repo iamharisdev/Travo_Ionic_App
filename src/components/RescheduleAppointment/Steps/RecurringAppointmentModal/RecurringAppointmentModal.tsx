@@ -127,7 +127,7 @@ const RecurringAppointmentModal: React.FC<RecurringAppointmentModalInterface> = 
       count: endsAfter,
       endTime: event?.endTime,
       frequency: repeatOption,
-      location: event?.location || 'Online',
+      location: event?.location || 'Virtual',
       patientArchived: event?.patientArchived,
       patientEmail: event?.patientEmail,
       patientId: event?.patientId,

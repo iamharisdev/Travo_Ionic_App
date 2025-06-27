@@ -169,7 +169,10 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     return '';
   }, [provider.practice]);
 
-  const isOnline = useMemo(() => event?.location === 'Online', [event?.location]);
+  const isOnline = useMemo(
+    () => event?.location === 'Online' || event?.location === 'Virtual',
+    [event?.location]
+  );
 
   const barColor = useMemo(
     () => getAppointmentColor(event?.color as CALENDAR_SLOTS),
@@ -226,9 +229,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
       string: event?.onlineMeetUrl,
     });
   };
-
-
-
 
   const editAppointmentHandler = () => {
     if (event?.recurring) {
@@ -344,7 +344,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
     fetchPatientContactInfo();
   }, [event?.patientId]);
-
 
   return (
     <IonPage className={CSSprefix}>

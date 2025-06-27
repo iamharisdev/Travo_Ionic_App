@@ -44,7 +44,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }): React
       return { startTime, endTime };
     }, [appointment?.startTime, appointment?.endTime, provider.practice?.displayTwentyFourHourTime]);
 
-  const locationIcon = useMemo(() => appointment?.location === 'Online' ? MeetingSvg : PersonSvg, [appointment?.location]);
+  const locationIcon = useMemo(() => appointment?.location === 'Online'||appointment?.location === 'virtual' ? MeetingSvg : PersonSvg, [appointment?.location]);
 
   const checkRedirectionHandler = (appointment: IAppointment) => {
     // TODO: add redirection for google, outlook and meeting events in app V2
