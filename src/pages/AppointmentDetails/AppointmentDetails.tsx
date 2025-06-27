@@ -227,6 +227,9 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     });
   };
 
+
+
+
   const editAppointmentHandler = () => {
     if (event?.recurring) {
       setIsRecurringOpen(true);
@@ -342,7 +345,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     fetchPatientContactInfo();
   }, [event?.patientId]);
 
-  console.log(event);
 
   return (
     <IonPage className={CSSprefix}>

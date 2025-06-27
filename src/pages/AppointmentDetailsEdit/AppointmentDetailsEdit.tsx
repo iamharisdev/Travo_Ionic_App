@@ -67,6 +67,8 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
   const [endsAfter, setEndsAfter] = useState<number>(event?.count);
   const [repeatOption, setRepeatOption] = useState<string>(event?.frequency);
 
+  // console.log("Location:=>  ",location?.state?.location )
+
   const initialValues = useMemo(
     () => ({
       patientName: location?.state?.patientName || '',
@@ -323,12 +325,17 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             name="location"
             toggleIcon={caretDownOutline}
             expandedIcon={caretUpOutline}
+            cancelText={t('log_out_cancel')}
             selectedText={formik.values.location}
             value={formik.values.location}
             onIonChange={e => formik.setFieldValue('location', e.detail.value)}
           >
-            <IonSelectOption value="Online">{t('scheduling_online')}</IonSelectOption>
-            <IonSelectOption value="In Person">{t('scheduling_in_person')}</IonSelectOption>
+            <IonSelectOption value={t('scheduling_online')}>
+              {t('scheduling_online')}
+            </IonSelectOption>
+            <IonSelectOption value={t('scheduling_in_person')}>
+              {t('scheduling_in_person')}
+            </IonSelectOption>
           </IonSelect>
         </div>
 
@@ -406,10 +413,10 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
         )}
 
         <IonButton
-          className={`${CSSprefix}-schedule-button ion-padding`}
+          className="ion-padding"
           color="primary"
           expand="block"
-          // disabled={!formik.dirty}
+          disabled={!formik.dirty}
           onClick={() => formik.submitForm()}
         >
           {t('scheduling_save_changes')}

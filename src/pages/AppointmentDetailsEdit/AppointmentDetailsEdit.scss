@@ -27,6 +27,7 @@
     line-height: 18px;
     z-index: 99;
   }
+ 
 
   &-title {
     color: #2e2e2e;
@@ -64,6 +65,8 @@
 
   &-schedule-button {
     width: 100%;
+    text-transform: none;
+
   }
   &-recurring-appointment-row {
     display: flex;
@@ -155,10 +158,7 @@
  
  
 }
-.caretDownOutline {
 
- 
-}
 
 .custom-radio-container {
   display: flex;
@@ -262,4 +262,9 @@
 .flex-cloumn{
   display: flex;
   flex-direction: column;
+}
+
+.ion-padding{
+  text-transform: none !important;
+
 }
