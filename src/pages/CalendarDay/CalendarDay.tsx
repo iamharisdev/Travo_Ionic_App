@@ -300,14 +300,23 @@ const CalendarDay: React.FC = (): React.ReactElement => {
                   <IonText className={`${CSSprefix}-day`}>{dayjs(selectedDate).date()}</IonText>
                 </div>
               ),
-              eventWrapper: props => <EventCard {...props} loading={state.loading} />,
-             
+
+              eventWrapper: props => {
+                const handleClick = () => {
+                  handleSelectEvent(props.event);
+                };
+
+                return (
+                  <div onClick={handleClick} onTouchStart={handleClick}>
+                    <EventCard {...props} loading={state.loading} />
+                  </div>
+                );
+              },
             }}
             onNavigate={() => {}}
             selectable={true}
             longPressThreshold={0}
             onSelectSlot={handleSelectSlot}
-            onSelectEvent={handleSelectEvent}
           />
         </IonContent>
         <IonFab className="big-z-index" slot="fixed" vertical="bottom" horizontal="end">

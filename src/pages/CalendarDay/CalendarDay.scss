@@ -42,3 +42,15 @@
     }
   }
 }
+
+.rbc-calendar {
+  touch-action: manipulation !important;
+  -webkit-user-select: auto !important;
+  user-select: auto !important;
+  pointer-events: auto !important;
+}
+
+.rbc-event,
+.rbc-event-content {
+  pointer-events: auto !important;
+}
