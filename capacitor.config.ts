@@ -1,12 +1,11 @@
 import type { CapacitorConfig } from '@capacitor/cli';
-import { KeyboardResize} from '@capacitor/keyboard';
+import { KeyboardResize } from '@capacitor/keyboard';
 
 const config: CapacitorConfig = {
   appId: 'trovahealth.provider',
   appName: 'Trova',
   webDir: 'dist',
   server: {
-  
     allowNavigation: ['*'],
     androidScheme: 'http',
     iosScheme: 'https',
@@ -16,7 +15,7 @@ const config: CapacitorConfig = {
       resize: KeyboardResize.Native,
       resizeOnFullScreen: true,
     },
-  }
+  },
 };
 
 export default config;
