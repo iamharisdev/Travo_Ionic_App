@@ -23,8 +23,9 @@ export default defineConfig(({ mode }) => {
     },
     optimizeDeps: { exclude: ['node_modules/.cache'] },
     server: {
+  
       cors: {
-        origin: ['http://localhost', 'capacitor://localhost'],
+        origin: ['http://localhost', 'capacitor://localhost','http://192.168.3.61:5173'],
         methods: ['GET', 'POST', 'PUT', 'PATH', 'DELETE'],
         allowedHeaders: ['Content-Type']
       },

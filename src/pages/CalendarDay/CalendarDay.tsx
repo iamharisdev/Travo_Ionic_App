@@ -227,16 +227,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             setIsCreateAppointmentOpen(true);
             setSelectedSlot(value);
           }
-
-          if (eventExist && 'id' in eventExist && 'title' in eventExist) {
-            const redirect = JSON.parse((eventExist?.title as string) || '').redirect;
-            if (redirect) {
-              history.push(`${APPOINTMENT_DETAILS}/${eventExist.id}`, {
-                eventId: eventExist.id,
-                type: AppointmentDetailTypeEnum.RESCHEDULE,
-              });
-            }
-          }
         }
       }
     },
@@ -244,6 +234,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   );
   const handleSelectEvent = useCallback((event: any) => {
     const redirect = JSON.parse((event.title as string) || '').redirect;
+
     if (redirect) {
       history.push(`${APPOINTMENT_DETAILS}/${event.id}`, {
         eventId: event.id,
@@ -285,7 +276,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
         />
-        <IonContent {...handlers} ref={refPassthrough}>
+        <IonContent {...handlers} ref={refPassthrough} scrollEvents={true}>
           <Calendar
             defaultDate={selectedDate}
             date={selectedDate}
@@ -310,6 +301,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
                 </div>
               ),
               eventWrapper: props => <EventCard {...props} loading={state.loading} />,
+             
             }}
             onNavigate={() => {}}
             selectable={true}
