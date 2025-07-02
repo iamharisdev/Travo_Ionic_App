@@ -99,7 +99,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       }))
       .sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
   }, [events.events, microsoftEvents, googleEvents, state.loading, selectedDates]);
- 
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -298,7 +297,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           <Calendar
             key={selectedDates[0]}
             defaultDate={selectedDates[0]}
-            //date={selectedDates[0]}
+            date={selectedDates[0]}
             defaultView={Views.MONTH}
             events={mappedEvents}
             localizer={localizer}
@@ -329,12 +328,13 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             selectable={true}
             longPressThreshold={0}
             onSelectSlot={slot => {
+          
               if (isDraggingRef.current) {
-                return;
+                getAppointmentsHandler();
+              } else {
+                dispatch(setDate(dayjs(slot.start).toISOString()));
+                history.push(CALENDAR_DAY);
               }
-
-              dispatch(setDate(dayjs(slot.start).toISOString()));
-              history.push(CALENDAR_DAY);
             }}
           />
         </IonContent>
