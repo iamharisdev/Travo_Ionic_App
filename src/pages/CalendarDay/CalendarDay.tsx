@@ -14,6 +14,11 @@ import Menu from '../../components/Menu/Menu';
 import { CALENDAR_DAY_MENU_ID } from '../../shared/constants/menu';
 import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../state/store';
 import EventCard from '../../components/EventCard/EventCard';
@@ -51,7 +56,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     calendar: { selectedDate },
   } = useSelector((state: RootState) => state);
   const { t } = useTranslation();
-
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day');
 
@@ -182,6 +187,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             end: dayjs(selectedDate).endOf('day').toISOString(),
           })
         );
+        forceCalendarReRenderBySwipe();
       }
     } catch (error) {
       console.error('error at load appointments by date: ', error);
@@ -244,9 +250,11 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   }, []);
 
   useIonViewWillEnter(() => {
-    getAppointmentsHandler();
+    // getAppointmentsHandler();
     if (!selectedDate) {
       dispatch(setDate(dayjs().format('YYYY-MM-DD')));
+    } else {
+      forceCalendarReRenderBySwipe();
     }
     setSelectedSlot(undefined);
   }, []);
@@ -262,6 +270,16 @@ const CalendarDay: React.FC = (): React.ReactElement => {
       }
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
+
+  const forceCalendarReRenderBySwipe = () => {
+    dispatch(setNextDay()); // move to next day
+    setTimeout(() => {
+      dispatch(setPrevDay()); // come back to original day
+    }, 50); // small delay to allow state update
+  };
+
+  const min = dayjs.utc(selectedDate).tz(userTimezone).startOf('day').toDate();
+  const max = dayjs.utc(selectedDate).tz(userTimezone).endOf('day').toDate();
 
   return (
     <>
@@ -291,6 +309,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             timeslots={2}
             dayLayoutAlgorithm="no-overlap"
             showAllEvents={true}
+         
             components={{
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>
@@ -317,6 +336,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             selectable={true}
             longPressThreshold={0}
             onSelectSlot={handleSelectSlot}
+            min={min}
+            max={max}
           />
         </IonContent>
         <IonFab className="big-z-index" slot="fixed" vertical="bottom" horizontal="end">
