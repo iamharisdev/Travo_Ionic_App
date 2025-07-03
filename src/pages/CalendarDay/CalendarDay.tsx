@@ -14,11 +14,14 @@ import Menu from '../../components/Menu/Menu';
 import { CALENDAR_DAY_MENU_ID } from '../../shared/constants/menu';
 import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
+//Implement for time slots 12AM to 11PM
+
+// import utc from 'dayjs/plugin/utc';
+// import timezone from 'dayjs/plugin/timezone';
+
+// dayjs.extend(utc);
+// dayjs.extend(timezone);
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../state/store';
 import EventCard from '../../components/EventCard/EventCard';
@@ -56,7 +59,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     calendar: { selectedDate },
   } = useSelector((state: RootState) => state);
   const { t } = useTranslation();
-  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day');
 
@@ -166,7 +169,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -176,7 +179,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
           })
         );
         await dispatch(
@@ -184,10 +187,11 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
           })
         );
-        forceCalendarReRenderBySwipe();
+        //Implement for time slots 12AM to 11PM
+        // forceCalendarReRenderBySwipe();
       }
     } catch (error) {
       console.error('error at load appointments by date: ', error);
@@ -238,24 +242,36 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     },
     [mappedEvents, mappedBackgroundEvents, isCreateAppointmentOpen, tapped, scrollingUpOrDown]
   );
-  const handleSelectEvent = useCallback((event: any) => {
-    const redirect = JSON.parse((event.title as string) || '').redirect;
+  const handleSelectEvent = useCallback(
+    (event: any) => {
+      const redirect = JSON.parse((event.title as string) || '').redirect;
 
-    if (redirect) {
-      history.push(`${APPOINTMENT_DETAILS}/${event.id}`, {
-        eventId: event.id,
-        type: AppointmentDetailTypeEnum.RESCHEDULE,
-      });
-    }
-  }, []);
+      if (redirect) {
+        const targetPath = `${APPOINTMENT_DETAILS}/${event.id}`;
+
+        if (history.location.pathname === targetPath) {
+          return;
+        } else {
+         
+          history.push(targetPath, {
+            eventId: event.id,
+            type: AppointmentDetailTypeEnum.RESCHEDULE,
+          });
+        }
+      }
+    },
+    [history]
+  );
 
   useIonViewWillEnter(() => {
-    // getAppointmentsHandler();
+    getAppointmentsHandler();
     if (!selectedDate) {
       dispatch(setDate(dayjs().format('YYYY-MM-DD')));
-    } else {
-      forceCalendarReRenderBySwipe();
     }
+    //Implement for time slots 12AM to 11PM
+    // } else {
+    //   forceCalendarReRenderBySwipe();
+    // }
     setSelectedSlot(undefined);
   }, []);
 
@@ -271,15 +287,18 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
-  const forceCalendarReRenderBySwipe = () => {
-    dispatch(setNextDay()); // move to next day
-    setTimeout(() => {
-      dispatch(setPrevDay()); // come back to original day
-    }, 50); // small delay to allow state update
-  };
 
-  const min = dayjs.utc(selectedDate).tz(userTimezone).startOf('day').toDate();
-  const max = dayjs.utc(selectedDate).tz(userTimezone).endOf('day').toDate();
+  //Implement for time slots 12AM to 11PM
+
+  // const forceCalendarReRenderBySwipe = () => {
+  //   dispatch(setNextDay()); // move to next day
+  //   setTimeout(() => {
+  //     dispatch(setPrevDay()); // come back to original day
+  //   }, 50); // small delay to allow state update
+  // };
+
+  // const min = dayjs.utc(selectedDate).tz(userTimezone).startOf('day').toDate();
+  // const max = dayjs.utc(selectedDate).tz(userTimezone).endOf('day').toDate();
 
   return (
     <>
@@ -309,7 +328,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             timeslots={2}
             dayLayoutAlgorithm="no-overlap"
             showAllEvents={true}
-         
             components={{
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>
@@ -336,8 +354,8 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             selectable={true}
             longPressThreshold={0}
             onSelectSlot={handleSelectSlot}
-            min={min}
-            max={max}
+            // min={min}
+            // max={max}
           />
         </IonContent>
         <IonFab className="big-z-index" slot="fixed" vertical="bottom" horizontal="end">

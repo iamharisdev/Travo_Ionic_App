@@ -114,7 +114,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs().subtract(3, 'months').toISOString(),
-            end: dayjs().add(1, 'year').endOf('year').toISOString(),
+            end: dayjs().add(5, 'months').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -124,7 +124,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
           })
         );
         await dispatch(
@@ -132,7 +132,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
           })
         );
 
