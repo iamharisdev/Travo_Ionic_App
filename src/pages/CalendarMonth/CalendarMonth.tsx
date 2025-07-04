@@ -216,7 +216,13 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       const currentDate = eventsInSameDate.find(({ date }) => date === startDate);
       const index = currentDate?.ids.findIndex((id: string) => id === props.event.id);
       const eventsLeft = currentDate?.ids?.length! - index! || 0;
-
+  
+      // Skip rendering if event data is missing/invalid
+      if (!props.event || !props.event.id) {
+        console.log("okay")
+        return null;
+      }
+  
       return (
         <EventCard
           {...props}
