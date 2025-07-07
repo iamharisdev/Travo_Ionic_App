@@ -17,12 +17,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { BUILD_MOOD } from '../../config/envConfig';
 import { SING_IN } from '../../shared/routes/routes';
+import { countries } from '../../shared/utils/json';
 import { setCountryFlag, setEnvByCountry } from '../../state/persistSlice';
-import { getCountriesForRegionAction } from '../../state/providerSlice';
-import { AppDispatch } from '../../state/store';
+import { AppDispatch, RootState } from '../../state/store';
 import './CountryPicker.scss';
 import TrovaLogo from '/assets/TrovaLogo.png';
-import { countries } from '../../shared/utils/json';
 
 const CSSprefix = 'country-picker';
 
@@ -30,8 +29,10 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
 
+  const { isCountry } = useSelector((state: RootState) => state.white);
+
+
   const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
-  // const [countries, setCountries] = useState<any>();
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
@@ -48,9 +49,9 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
   //   setCountries(res?.payload);
   // };
 
-  useIonViewWillEnter(() => {
-    setSelectedCountry('');
-  }, []);
+  useEffect(()=>{
+    setSelectedCountry(isCountry || '');
+  },[isCountry])
 
   const getFlagEmoji = (countryCode: any) => {
     return countryCode

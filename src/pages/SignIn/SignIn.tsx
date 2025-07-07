@@ -1,6 +1,7 @@
 import {
   IonButton,
   IonContent,
+  IonIcon,
   IonImg,
   IonInput,
   IonInputPasswordToggle,
@@ -16,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router';
 import useBiometrics from '../../hooks/useBiometrics';
 import usePresentToast from '../../hooks/usePresentToast';
-import { LOADING, SING_IN } from '../../shared/routes/routes';
+import { COUNTRY_PICKER, LOADING, SING_IN } from '../../shared/routes/routes';
 import { isNative } from '../../shared/utils/native.util';
 import { AuthState, signInAction } from '../../state/authSlice';
 import { setLoading } from '../../state/loadingSlice';
@@ -26,6 +27,7 @@ import TrovaLogo from '/assets/TrovaLogo.png';
 
 import { useTranslation } from 'react-i18next';
 import './SignIn.scss';
+import { globeOutline } from 'ionicons/icons';
 
 const CSSprefix = 'sign-in';
 
@@ -36,7 +38,7 @@ const Login: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const { checkSessionHandler } = useBiometrics();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const validationSchema = signInSchema(t);
   const { currentEnv } = useSelector((state: RootState) => state.white);
 
@@ -117,9 +119,16 @@ const Login: React.FC = (): React.ReactElement => {
           </IonItem>
           {showingAnimation === false && (
             <>
-              <IonItem lines="none" className="ion-no-padding">
+              <div className="sign-in-header">
                 <IonText className={`${CSSprefix}-sign-in`}>{t('login_sign_in')}</IonText>
-              </IonItem>
+                <IonIcon
+                  icon={globeOutline}
+                  onClick={() => history.push(COUNTRY_PICKER)}
+                  size="small"
+                  color="primary"
+                  style={{ cursor: 'pointer' }}
+                />
+              </div>
               <IonItem lines="none" className="ion-no-padding ion-margin-bottom">
                 <IonText color="dark" className={`${CSSprefix}-welcome`}>
                   {t('login_welcome_message')}
@@ -175,6 +184,7 @@ const Login: React.FC = (): React.ReactElement => {
               >
                 {t('login_forgot_password?')}
               </IonButton>
+
               <IonButton
                 className="login-button"
                 color="primary"

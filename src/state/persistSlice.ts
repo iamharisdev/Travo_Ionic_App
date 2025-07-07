@@ -1,5 +1,5 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ENV_CONFIGS } from "../config/envConfig";
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { ENV_CONFIGS } from '../config/envConfig';
 
 type EnvSubKey = keyof typeof ENV_CONFIGS.default;
 interface EnvState {
@@ -10,23 +10,20 @@ interface EnvState {
 
 const initialState: EnvState = {
   isCountry: null,
-  envMode: "dev",
+  envMode: 'dev',
   currentEnv: ENV_CONFIGS.default.dev,
 };
 
 const whiteSlice = createSlice({
-  name: "white",
+  name: 'white',
   initialState,
   reducers: {
     setCountryFlag(state, action: PayloadAction<string | null>) {
       state.isCountry = action.payload;
     },
-    setEnvByCountry(
-      state,
-      action: PayloadAction<{ countryCode: string; mode: EnvSubKey }>
-    ) {
+    setEnvByCountry(state, action: PayloadAction<{ countryCode: string; mode: EnvSubKey }>) {
       const { countryCode, mode } = action.payload;
-      const region = countryCode.toLowerCase() === "br" ? "br" : "default";
+      const region = countryCode.toLowerCase() === 'br' ? 'br' : 'default';
 
       state.envMode = mode;
 
@@ -39,6 +36,6 @@ const whiteSlice = createSlice({
   },
 });
 
-export const { setCountryFlag,setEnvByCountry } = whiteSlice.actions;
+export const { setCountryFlag, setEnvByCountry } = whiteSlice.actions;
 
 export default whiteSlice.reducer;
