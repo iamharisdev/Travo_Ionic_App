@@ -142,11 +142,10 @@ const Login: React.FC = (): React.ReactElement => {
                   {t('login_email_address')}
                 </IonLabel>
                 <IonInput
-                  className={`${formik.errors?.email && 'ion-invalid'} ${
+                  className={`custom ${formik.errors?.email && 'ion-invalid'} ${
                     formik.touched?.email && 'ion-touched'
                   }`}
                   name="email"
-                  class="custom"
                   type="email"
                   placeholder={t('login_enter_email_address')}
                   errorText={formik.errors?.email}

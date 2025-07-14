@@ -5,7 +5,10 @@ const config: CapacitorConfig = {
   appId: 'trovahealth.provider',
   appName: 'Trova',
   webDir: 'dist',
+
   server: {
+    // url:'http://localhost:5173/',
+    // cleartext:true,
     allowNavigation: ['*'],
     androidScheme: 'http',
     iosScheme: 'https',

@@ -426,6 +426,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
           color="primary"
           expand="block"
           disabled={!formik.dirty}
+           style={{ marginBottom: '100px' }}
           onClick={() => formik.submitForm()}
         >
           {t('scheduling_save_changes')}
