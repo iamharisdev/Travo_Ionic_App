@@ -51,6 +51,7 @@ ion-item.custom-input {
   --border-radius: 5px;
   --border-color: var(--ion-trova-divider);
   --border-width: 1px;
+  
 }
 
 ion-item {
@@ -62,6 +63,7 @@ ion-label.custom-input {
   width: auto;
   color: var(--ion-trova-input-label);
   font-size: 16px;
+  
   font-style: normal;
   font-weight: 500;
   line-height: 18px;
@@ -78,6 +80,7 @@ ion-label.custom-input {
 ion-textarea {
   height: 150px;
   width: 100%;
+  font-size: 16px !important;
   --padding-start: 0;
 }
 
@@ -330,4 +333,19 @@ body {
 @font-face {
   font-family: 'Poppins Bold';
   src: url('/assets/fonts/Poppins-Bold.ttf') format('truetype');
+}
+
+
+.safe-area-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  overflow-y: auto;
+
+  // Safe area support
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }

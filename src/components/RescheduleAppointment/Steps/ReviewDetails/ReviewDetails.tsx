@@ -47,6 +47,9 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
 
+
+
+
   const date = {
     startTime: selectedDateTime?.startTime,
     endTime: selectedDateTime?.endTime,
@@ -147,7 +150,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
         <span className="custom-value">{paymentType}</span>
       </div>
 
-      <div className={`${CSSPrefix}-button-container ion-padding-horizontal`}>
+      <div className={`button-container ion-padding-horizontal`}>
         <IonButton
           color="primary"
           expand="block"

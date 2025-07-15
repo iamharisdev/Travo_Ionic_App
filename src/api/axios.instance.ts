@@ -47,7 +47,6 @@ const setAuthHeadersAndBaseUrl = async (config: any, apiName: ApiName) => {
       Accept: 'application/json',
     };
   }
-
   return config;
 };
 
