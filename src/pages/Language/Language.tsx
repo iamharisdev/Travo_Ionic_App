@@ -88,6 +88,10 @@ const LanguagePage: React.FC = (): React.ReactElement => {
             <IonLabel>{t('configuration_portuguese')}</IonLabel>
             <IonRadio slot="end" value="pt" mode="md" />
           </IonItem>
+          <IonItem lines="none">
+            <IonLabel>{t('configuration_spanish')}</IonLabel>
+            <IonRadio slot="end" value="es" mode="md" />
+          </IonItem>
         </IonRadioGroup>
       </IonContent>
     </IonPage>
