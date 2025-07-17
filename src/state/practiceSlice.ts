@@ -5,6 +5,7 @@ import {
   getBusinessInformation,
   getCountries,
   getCurrencies,
+  getLookupCurrencies,
   getPhoneCodes,
   updateBusinessInformation,
 } from '../api/services/practice';
@@ -47,6 +48,20 @@ export interface Currencies {
   code: string;
   symbol: string;
 }
+export interface LookupCurrencies {
+  currency: string;
+  symbol: string;
+  name: string;
+}
+
+interface LookupCurrenciesResponse {
+  currencies: {
+    [key: string]: {
+      symbol: string;
+      name: string;
+    };
+  };
+}
 
 interface UpdatebusinessInformation {
   practiceId: string;
@@ -58,6 +73,7 @@ export interface ProviderState {
   countries: Array<Country>;
   phoneCodes: Array<PhoneCode>;
   currencies: Array<Currencies>;
+  lookupCurrencies: Array<LookupCurrencies>;
   state: StatusState;
 }
 
@@ -66,6 +82,7 @@ const initialState: ProviderState = {
   countries: [],
   phoneCodes: [],
   currencies: [],
+  lookupCurrencies: [],
   state: {
     success: false,
   },
@@ -139,6 +156,29 @@ export const getCurrenciesAction = createAsyncThunk(
 
       return response.data;
     } catch (error: any) {
+      console.error('[getCurrencies]: ', error);
+      return [];
+    }
+  }
+);
+
+export const getLookupCurrenciesAction = createAsyncThunk(
+  'practice/getCurrenciesFromLookup',
+  async (): Promise<Array<LookupCurrencies>> => {
+    try {
+      const response = await getLookupCurrencies();
+
+      // Cast response to expected type
+      const data = ((response.data as unknown) as LookupCurrenciesResponse)?.currencies;
+
+      const currencyArray: LookupCurrencies[] = Object.entries(data).map(([code, value]) => ({
+        currency: code,
+        symbol: value.symbol,
+        name: value.name,
+      }));
+
+      return currencyArray;
+    } catch (error) {
       console.error('[getCurrencies]: ', error);
       return [];
     }
@@ -248,6 +288,24 @@ const practiceSlice = createSlice({
         };
       })
       .addCase(getCurrenciesAction.rejected, state => {
+        state.businessInformation = state.businessInformation;
+        state.state = {
+          ...state.state,
+          success: false,
+          message: 'error at get currencies state',
+        };
+      })
+      .addCase(getLookupCurrenciesAction.pending, () => console.log('pending get currencies'))
+      .addCase(getLookupCurrenciesAction.fulfilled, (state, action: any) => {
+        state.lookupCurrencies = action.payload;
+        state.state = {
+          ...state.state,
+          success: true,
+          error: null,
+          message: '',
+        };
+      })
+      .addCase(getLookupCurrenciesAction.rejected, state => {
         state.businessInformation = state.businessInformation;
         state.state = {
           ...state.state,

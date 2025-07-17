@@ -1,5 +1,5 @@
 import { BusinessInformation, Country, Currencies, PhoneCode } from '../../state/practiceSlice';
-import { practiceApiInstance } from '../axios.instance';
+import { practiceApiInstance, providerApiInstance } from '../axios.instance';
 
 export const getBusinessInformation = async (practiceId: string) => {
   return await practiceApiInstance.get<BusinessInformation>(`/practices/${practiceId}`);
@@ -45,4 +45,8 @@ export const updateBrandingInformation = async (
 
 export const getCurrencies = async () => {
   return await practiceApiInstance.get<Array<Currencies>>('/anonymous/global-data/currencies');
+};
+
+export const getLookupCurrencies = async () => {
+  return await providerApiInstance.get<Array<Currencies>>('/lookups/en');
 };
