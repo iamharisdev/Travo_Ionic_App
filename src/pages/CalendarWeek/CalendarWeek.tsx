@@ -93,10 +93,9 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
 
     return externalCalendarEvents
       .filter(
-        ({ startTime, busy }) =>
+        ({ startTime}) =>
           dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
-          busy
+          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
       )
       .map(event => ({
         id: event?.id,
