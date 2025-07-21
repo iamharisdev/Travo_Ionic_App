@@ -59,11 +59,11 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     calendar: { selectedDate },
   } = useSelector((state: RootState) => state);
   const { t } = useTranslation();
-  // const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day');
 
-    return events.events
+    return [...events.events, ...microsoftEvents, ...googleEvents]
       .filter(
         ({ startTime, status }) =>
           dayjs(startTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
@@ -94,42 +94,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         allDay: event?.allDay,
       }));
   }, [events.events, selectedDate, state.loading]);
-
-  const mappedBackgroundEvents: Array<Event & { id?: string }> = useMemo(() => {
-    if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day');
-
-    const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
-
-    return externalCalendarEvents
-      .filter(
-        ({ startTime}) =>
-          dayjs(startTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')
-      )
-      .map(event => ({
-        id: event?.id,
-        title: JSON.stringify({
-          id: event?.id,
-          service: event?.patientServiceName || event?.title,
-          patient: event?.patientName || event?.providerName,
-          color: event?.color,
-          start: event?.allDay
-            ? dayjs(event.endTime).startOf('day').toDate()
-            : dayjs(event?.startTime || '').toDate(),
-          end: event?.allDay
-            ? dayjs(event.endTime).endOf('day').toDate()
-            : dayjs(event.endTime || '').toDate(),
-          redirect: false,
-          isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
-        }),
-        start: event?.allDay
-          ? dayjs(event.endTime).startOf('day').toDate()
-          : dayjs(event?.startTime || '').toDate(),
-        end: event?.allDay
-          ? dayjs(event.endTime).endOf('day').toDate()
-          : dayjs(event.endTime || '').toDate(),
-        allDay: event?.allDay,
-      }));
-  }, [microsoftEvents, googleEvents, selectedDate, state.loading]);
 
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
@@ -240,7 +204,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         }
       }
     },
-    [mappedEvents, mappedBackgroundEvents, isCreateAppointmentOpen, tapped, scrollingUpOrDown]
+    [mappedEvents, isCreateAppointmentOpen, tapped, scrollingUpOrDown]
   );
   const handleSelectEvent = useCallback(
     (event: any) => {
@@ -252,7 +216,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         if (history.location.pathname === targetPath) {
           return;
         } else {
-         
           history.push(targetPath, {
             eventId: event.id,
             type: AppointmentDetailTypeEnum.RESCHEDULE,
@@ -287,19 +250,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
-
-  //Implement for time slots 12AM to 11PM
-
-  // const forceCalendarReRenderBySwipe = () => {
-  //   dispatch(setNextDay()); // move to next day
-  //   setTimeout(() => {
-  //     dispatch(setPrevDay()); // come back to original day
-  //   }, 50); // small delay to allow state update
-  // };
-
-  // const min = dayjs.utc(selectedDate).tz(userTimezone).startOf('day').toDate();
-  // const max = dayjs.utc(selectedDate).tz(userTimezone).endOf('day').toDate();
-
   return (
     <>
       <Menu menuId={CALENDAR_DAY_MENU_ID} contentId="calendar-day-content" />
@@ -315,18 +265,18 @@ const CalendarDay: React.FC = (): React.ReactElement => {
         />
         <IonContent {...handlers} ref={refPassthrough} scrollEvents={true}>
           <Calendar
+            key={`calendar-${selectedDate}`}
             defaultDate={selectedDate}
             date={selectedDate}
             defaultView={Views.DAY}
             events={mappedEvents}
-            backgroundEvents={mappedBackgroundEvents}
             localizer={localizer}
             toolbar={false}
             views={{
               day: true,
             }}
             timeslots={2}
-            dayLayoutAlgorithm="no-overlap"
+            dayLayoutAlgorithm="overlap"
             showAllEvents={true}
             components={{
               timeGutterHeader: () => (
@@ -342,7 +292,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
                 const handleClick = () => {
                   handleSelectEvent(props.event);
                 };
-
+                console.log(props);
                 return (
                   <div onClick={handleClick} onTouchStart={handleClick}>
                     <EventCard {...props} loading={state.loading} />
@@ -354,8 +304,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             selectable={true}
             longPressThreshold={0}
             onSelectSlot={handleSelectSlot}
-            // min={min}
-            // max={max}
           />
         </IonContent>
         <IonFab className="big-z-index" slot="fixed" vertical="bottom" horizontal="end">
