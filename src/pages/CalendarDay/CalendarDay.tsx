@@ -292,7 +292,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
                 const handleClick = () => {
                   handleSelectEvent(props.event);
                 };
-                console.log(props);
+
                 return (
                   <div onClick={handleClick} onTouchStart={handleClick}>
                     <EventCard {...props} loading={state.loading} />
