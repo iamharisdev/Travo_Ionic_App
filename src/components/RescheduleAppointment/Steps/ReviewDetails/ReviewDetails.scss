@@ -260,5 +260,7 @@
 
 .button-container {
   height: 100px;
+  padding-bottom: calc(constant(safe-area-inset-bottom, 0px)); 
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px));
 
 }

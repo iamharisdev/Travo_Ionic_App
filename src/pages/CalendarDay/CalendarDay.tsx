@@ -173,7 +173,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     (value: SlotInfo) => {
       if (value && tapped && !scrollingUpOrDown) {
         if ('start' in value && 'end' in value) {
-          const eventExist = [...mappedEvents, ...mappedBackgroundEvents].find(event => {
+          const eventExist = [...mappedEvents].find(event => {
             if (
               dayjs(event.start).valueOf() <= dayjs(value.start).valueOf() &&
               dayjs(value.start).valueOf() <= dayjs(event.end).valueOf() &&

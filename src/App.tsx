@@ -98,7 +98,7 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
-        <IonRouterOutlet defaultValue={COUNTRY_PICKER}>
+      <IonRouterOutlet defaultValue={COUNTRY_PICKER}>
           <Route path={COUNTRY_PICKER}>
             <CountryPickerScreen />
           </Route>
@@ -124,7 +124,7 @@ const App: React.FC = () => {
             <Tabs />
           </Route>
           <Route exact path="/">
-            {hasCountry(isCountry) ? <Redirect to={SING_IN} /> : <Redirect to={COUNTRY_PICKER} />}
+          {hasCountry(isCountry) ? <Redirect to={SING_IN} /> : <Redirect to={COUNTRY_PICKER} />}
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>
