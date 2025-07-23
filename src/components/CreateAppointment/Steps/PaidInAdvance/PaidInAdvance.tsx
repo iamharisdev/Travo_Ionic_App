@@ -271,7 +271,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                     <IonText className="paid-in-advance-footer-subtotal">{`${currency?.symbol!!}${values?.discount.toFixed(2)}`}</IonText>
                   </div>
                   <div className="paid-in-advance-footer-container">
-                    <IonText className="ion-margin-start paid-in-advance-footer-total">{t("schedule_appointment_total")}:</IonText>
+                    <IonText className="paid-in-advance-footer-total">{t("schedule_appointment_total")}:</IonText>
                     <IonText className="paid-in-advance-footer-total">{`${currency?.symbol!!}${values?.total.toFixed(2)}`}</IonText>
                   </div>
                 </div>

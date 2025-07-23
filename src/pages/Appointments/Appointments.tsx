@@ -217,8 +217,6 @@ const Appointments: React.FC = (): React.ReactElement => {
           datePickerText={dateText}
           reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
-          // showNotifications
-          // showSearchOption
         />
         <IonContent fullscreen={true}>
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>

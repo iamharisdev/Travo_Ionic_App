@@ -165,11 +165,13 @@
   padding: 16px;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--Divider, #D1D3D4);
+   border-top: 1px solid var(--Divider, #D1D3D4);
   background: var(--White, #FFF);
-  position: fixed;
-  bottom: 0;
+  position: static !important;
+  bottom: auto !important;
   z-index: 999;
+  margin-bottom: 120px !important;
+
 
   &-wrapper {
     display: flex;
@@ -201,6 +203,7 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+  
   }
 
   &-total {
@@ -210,7 +213,8 @@
     font-style: normal;
     font-weight: 600;
     line-height: normal;
-    padding-left: 4px;
+    padding-left: 0px !important;
+    margin-top: 5px !important;
   }
 }
 
