@@ -81,13 +81,14 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }): React
       onClick={() => checkRedirectionHandler(appointment)}
     >
       <IonItem lines="none" className="ion-no-padding">
-        <IonIcon icon={personCircleOutline} />
+        <IonIcon icon={personCircleOutline} className={`${CSSPrefix}-profile`} />
         <IonText className={`${CSSPrefix}-title`}>
           {appointment?.patientName || appointment.providerName || appointment.title}
+          dskjglsdlskgjdlsgdklsghdlsghklshgdslgkl
         </IonText>
       </IonItem>
       <IonRow>
-        <IonText className={`${CSSPrefix}-description`}>{`${startTime} - ${endTime}`}</IonText>
+        <IonText className={`${CSSPrefix}-time`}>{`${startTime} - ${endTime}`}</IonText>
         <div>
           <IonIcon className={`${CSSPrefix}-meeting-icon`} src={locationIcon} slot="end" />
         </div>

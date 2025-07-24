@@ -4,13 +4,39 @@
   height: auto;
   padding-bottom: 8px;
 
+  &-profile {
+    color: var(--ion-trova-gray-text);
+    width: 16.25px;
+    height: 16.25px;
+    top: 1.88px;
+    left: 1.87px;
+  }
+
   &-title {
     color: var(--ion-trova-gray-text);
     font-size: 18px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+    font-family: Poppins;
     margin-left: 5px;
+    display: -webkit-box;
+    display: box; // fallback
+    -webkit-line-clamp: 1;
+    line-clamp: 1; // standard (not yet widely supported, but good for future)
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &-time {
+    color: var(--ion-trova-medium-gray);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    font-family: Poppins;
     display: -webkit-box;
     display: box; // fallback
     -webkit-line-clamp: 1;
@@ -23,9 +49,10 @@
 
   &-description {
     color: var(--ion-trova-medium-gray);
-    font-size: 14px;
+    font-family: Poppins;
+    font-size: 16px;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
     line-height: normal;
     display: -webkit-box;
     display: box; // fallback
@@ -54,8 +81,8 @@
 
   &-meeting-icon {
     position: fixed;
-    height: 23px;
-    width: 23px;
+    height: 19.89px;
+    width: 24px;
     right: 16px;
   }
 }
