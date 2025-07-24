@@ -81,6 +81,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
   }, [preview]);
 
   const currency = practice.currencies.find(({ code }) => code === selectedService?.currency);
+  console.log("Currency:=>  ",practice.currencies)
 
   const generateInvoicePreviewHandler = useCallback(async () => {
     try {

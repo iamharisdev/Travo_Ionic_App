@@ -60,7 +60,7 @@ const Loading: React.FC = (): React.ReactElement => {
         }
         dispatch(getCountriesAction());
         dispatch(getPhoneCodesAction());
-        //dispatch(getCurrenciesAction());
+        dispatch(getCurrenciesAction());
         dispatch(getLookupCurrenciesAction());
 
         if (profileResponse.payload?.providerPractices?.length > 0 && profileResponse.payload?.principal?.countryCode) {
