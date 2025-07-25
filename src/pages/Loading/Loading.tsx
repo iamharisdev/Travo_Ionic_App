@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { IonContent, IonPage, IonProgressBar, IonText, useIonViewWillEnter } from "@ionic/react";
+import { IonContent, IonPage, IonProgressBar, IonText, useIonViewWillEnter } from '@ionic/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../state/store';
 import usePresentToast from '../../hooks/usePresentToast';
 import { useHistory, useLocation } from 'react-router';
 import { getMeAction } from '../../state/providerSlice';
-import { getBusinessInformationAction, getCountriesAction, getCurrenciesAction, getLookupCurrenciesAction, getPhoneCodesAction } from '../../state/practiceSlice';
-import { getPaymentMethodAction, getProductDetailsAction, getProductsDetailsAction } from '../../state/billingSlice';
-import { getEventsAction, getGoogleEventsAction, getMicrosoftEventsAction, getServicesAction } from '../../state/schedulingSlice';
+import {
+  getBusinessInformationAction,
+  getCountriesAction,
+  getCurrenciesAction,
+  getLookupCurrenciesAction,
+  getPhoneCodesAction,
+} from '../../state/practiceSlice';
+import {
+  getPaymentMethodAction,
+  getProductDetailsAction,
+  getProductsDetailsAction,
+} from '../../state/billingSlice';
+import {
+  getEventsAction,
+  getGoogleEventsAction,
+  getMicrosoftEventsAction,
+  getServicesAction,
+} from '../../state/schedulingSlice';
 import dayjs from 'dayjs';
 import { getStorageValue } from '../../storage/storage.util';
 import { STORAGE_TOKEN } from '../../constant/storage.constant';
@@ -16,6 +31,7 @@ import { CALENDAR_MONTH, LOADING } from '../../shared/routes/routes';
 
 import './Loading.scss';
 import { useTranslation } from 'react-i18next';
+import { setLang } from '../../state/persistSlice';
 
 const CSSprefix = 'loading';
 
@@ -33,37 +49,64 @@ const Loading: React.FC = (): React.ReactElement => {
     scheduling,
     calendar,
     patient,
+    white: { lang },
   } = useSelector((state: RootState) => state);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   useIonViewWillEnter(() => {
     setProgress(0);
   }, []);
 
+  function getLanguageCode(language: string) {
+    switch (language.toLowerCase()) {
+      case 'english':
+        return 'en';
+      case 'spanish':
+        return 'es';
+      case 'portuguese':
+        return 'pt';
+      default:
+        return 'en'; // default to English
+    }
+  }
+
   useEffect(() => {
     const initialLoad = async () => {
       try {
-
-        setProgress((prevProgress) => prevProgress + 0.08);
+        setProgress(prevProgress => prevProgress + 0.08);
         const profileResponse = await dispatch<any>(getMeAction());
-        if (profileResponse.payload?.providerPractices?.length > 0 && profileResponse.payload?.principal?.countryCode) {
+        console.log('profileResponse', profileResponse);
+        if (profileResponse.payload.practice.languages) {
+          let code = getLanguageCode(profileResponse.payload.practice.languages);
+          dispatch(setLang(code));
+          i18n.changeLanguage(code);
+        }
+        if (
+          profileResponse.payload?.providerPractices?.length > 0 &&
+          profileResponse.payload?.principal?.countryCode
+        ) {
           const [providerPractice] = profileResponse.payload.providerPractices;
-          await dispatch(getEventsAction({
-            practiceId: providerPractice.practiceId,
-            providerId: providerPractice.providerId,
-            start: dayjs().subtract(3, 'months').toISOString(),
-            end: dayjs().add(5, 'month').endOf('year').toISOString(),
-            pageNumber: 0,
-            pageSize: 999,
-          }));
-          setProgress((prevProgress) => prevProgress + 0.08);
+          await dispatch(
+            getEventsAction({
+              practiceId: providerPractice.practiceId,
+              providerId: providerPractice.providerId,
+              start: dayjs().subtract(3, 'months').toISOString(),
+              end: dayjs().add(5, 'month').endOf('year').toISOString(),
+              pageNumber: 0,
+              pageSize: 999,
+            })
+          );
+          setProgress(prevProgress => prevProgress + 0.08);
         }
         dispatch(getCountriesAction());
         dispatch(getPhoneCodesAction());
         dispatch(getCurrenciesAction());
         dispatch(getLookupCurrenciesAction());
 
-        if (profileResponse.payload?.providerPractices?.length > 0 && profileResponse.payload?.principal?.countryCode) {
+        if (
+          profileResponse.payload?.providerPractices?.length > 0 &&
+          profileResponse.payload?.principal?.countryCode
+        ) {
           const [providerPractice] = profileResponse.payload.providerPractices;
           if (providerPractice) {
             // await dispatch(getEventsAction({
@@ -75,41 +118,53 @@ const Loading: React.FC = (): React.ReactElement => {
             //   pageSize: 999,
             // }));
             dispatch(getBusinessInformationAction(providerPractice.practiceId));
-            dispatch(getPaymentMethodAction({
-              practiceId: providerPractice.practiceId,
-              providerId: providerPractice.providerId
-            }));
-            setProgress((prevProgress) => prevProgress + 0.08);
-            dispatch(getProductDetailsAction({
-              practiceId: providerPractice.practiceId,
-              providerId: providerPractice.providerId
-            }));
-            setProgress((prevProgress) => prevProgress + 0.08);
-            dispatch(getProductsDetailsAction({
-              practiceId: providerPractice.practiceId,
-              countryCode: profileResponse.payload?.principal?.countryCode
-            }));
-            setProgress((prevProgress) => prevProgress + 0.08);
-            dispatch(getMicrosoftEventsAction({
-              practiceId: providerPractice.practiceId,
-              providerId: providerPractice.providerId,
-              start: dayjs().subtract(3, 'months').toISOString(),
-              end: dayjs().add(5, 'month').endOf('year').toISOString(),
-            }));
-            dispatch(getGoogleEventsAction({
-              practiceId: providerPractice.practiceId,
-              providerId: providerPractice.providerId,
-              start: dayjs().subtract(3, 'months').toISOString(),
-              end: dayjs().add(5, 'month').endOf('year').toISOString(),
-            }));
-            setProgress((prevProgress) => prevProgress + 0.08);
-            dispatch(getServicesAction({
-              practiceId: providerPractice.practiceId,
-              providerId: providerPractice.providerId,
-              pageNumber: 0,
-              pageSize: 999,
-            }));
-            setProgress((prevProgress) => prevProgress + 0.60);
+            dispatch(
+              getPaymentMethodAction({
+                practiceId: providerPractice.practiceId,
+                providerId: providerPractice.providerId,
+              })
+            );
+            setProgress(prevProgress => prevProgress + 0.08);
+            dispatch(
+              getProductDetailsAction({
+                practiceId: providerPractice.practiceId,
+                providerId: providerPractice.providerId,
+              })
+            );
+            setProgress(prevProgress => prevProgress + 0.08);
+            dispatch(
+              getProductsDetailsAction({
+                practiceId: providerPractice.practiceId,
+                countryCode: profileResponse.payload?.principal?.countryCode,
+              })
+            );
+            setProgress(prevProgress => prevProgress + 0.08);
+            dispatch(
+              getMicrosoftEventsAction({
+                practiceId: providerPractice.practiceId,
+                providerId: providerPractice.providerId,
+                start: dayjs().subtract(3, 'months').toISOString(),
+                end: dayjs().add(5, 'month').endOf('year').toISOString(),
+              })
+            );
+            dispatch(
+              getGoogleEventsAction({
+                practiceId: providerPractice.practiceId,
+                providerId: providerPractice.providerId,
+                start: dayjs().subtract(3, 'months').toISOString(),
+                end: dayjs().add(5, 'month').endOf('year').toISOString(),
+              })
+            );
+            setProgress(prevProgress => prevProgress + 0.08);
+            dispatch(
+              getServicesAction({
+                practiceId: providerPractice.practiceId,
+                providerId: providerPractice.providerId,
+                pageNumber: 0,
+                pageSize: 999,
+              })
+            );
+            setProgress(prevProgress => prevProgress + 0.6);
 
             setTimeout(() => {
               history.push(CALENDAR_MONTH, { prevPath: LOADING });
@@ -117,12 +172,7 @@ const Loading: React.FC = (): React.ReactElement => {
           }
         }
       } catch (error) {
-        presentToast(
-          `! ${t("toast_messages_error_loading_data")} !`,
-          1000,
-          'top',
-          'danger'
-        );
+        presentToast(`! ${t('toast_messages_error_loading_data')} !`, 1000, 'top', 'danger');
       }
     };
 
@@ -135,15 +185,14 @@ const Loading: React.FC = (): React.ReactElement => {
     };
 
     if (
-      auth.state.success && (
-        !provider.state.success ||
+      auth.state.success &&
+      (!provider.state.success ||
         !practice.state.success ||
         !billing.state.success ||
         !scheduling.state.success ||
         !calendar.state.success ||
-        !patient.state.success
-      )
-      && location.pathname.includes(LOADING)
+        !patient.state.success) &&
+      location.pathname.includes(LOADING)
     ) {
       initialLoad();
     }
@@ -158,13 +207,13 @@ const Loading: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true}>
         <div className={`${CSSprefix}-main`}>
           <div className={`${CSSprefix}-container`}>
-            <IonText>{t("loading_appointments")}</IonText>
+            <IonText>{t('loading_appointments')}</IonText>
             <IonProgressBar value={progress} />
           </div>
         </div>
       </IonContent>
     </IonPage>
-  )
-}
+  );
+};
 
 export default Loading;

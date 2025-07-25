@@ -18,8 +18,10 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { getStorageValue } from '../../storage/storage.util';
 import { STORAGE_TOKEN } from '../../constant/storage.constant';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../state/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../state/store';
+import { setLang } from '../../state/persistSlice';
+import { updatePracticeAction } from '../../state/providerSlice';
 
 const CSSprefix = 'subscription-deatils';
 
@@ -27,23 +29,50 @@ const LanguagePage: React.FC = (): React.ReactElement => {
   const subscriptionDetailsRef = useRef(null);
   const history = useHistory();
   const { t, i18n } = useTranslation();
-  const [selectedLang, setSelectedLang] = useState<string>(
-    localStorage.getItem('language') || 'en'
-  );
-  const [newLang, setNewLang] = useState<string>(localStorage.getItem('language') || 'en');
+  const dispatch = useDispatch<AppDispatch>();
 
-  const { currentEnv } = useSelector((state: RootState) => state.white);
+  const {
+    provider,
+    practice: { phoneCodes },
+    white: { currentEnv, lang },
+  } = useSelector((state: RootState) => state);
+
+  const [selectedLang, setSelectedLang] = useState<string>(lang || 'en');
+
+  const [newLang, setNewLang] = useState<string>(lang || 'en');
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: subscriptionDetailsRef,
     onSwipedRight: () => history.goBack(),
   });
 
+  const {
+    practiceId,
+    providerId,
+  }: {
+    practiceId?: string;
+    providerId?: string;
+  } = useMemo(() => {
+    if (provider.providerPractices.length > 0) {
+      const [providerPractice] = provider.providerPractices;
+      return {
+        practiceId: providerPractice.practiceId,
+        providerId: providerPractice.providerId,
+      };
+    }
+
+    return {};
+  }, [provider.providerPractices]);
+
   const handleLanguageChange = (lang: string) => {
     setNewLang(lang);
   };
 
   const handleLanguageSave = async () => {
+    let res = await updateLanguage();
+
+    console.log(res);
+    dispatch(setLang(newLang));
     localStorage.setItem('language', newLang);
     setSelectedLang(newLang);
     i18n.changeLanguage(newLang);
@@ -59,6 +88,34 @@ const LanguagePage: React.FC = (): React.ReactElement => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  function getLanguageName(code) {
+    switch (code.toLowerCase()) {
+      case 'en':
+        return 'English';
+      case 'es':
+        return 'Spanish';
+      case 'pt':
+        return 'Portuguese';
+      default:
+        return 'English'; // default to English
+    }
+  }
+  const updateLanguage = async () => {
+    let lan = getLanguageName(lang);
+    let practice = provider.practice;
+
+    const updatedPractice = {
+      ...practice,
+      languages: lan, // or any updated value
+    };
+
+    console.log('updatedPractice', updatedPractice);
+    const response = await dispatch(
+      updatePracticeAction({ practiceId, providerId, practice: updatedPractice })
+    );
+    return response;
   };
 
   return (
