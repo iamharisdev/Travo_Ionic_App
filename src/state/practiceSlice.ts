@@ -54,6 +54,13 @@ export interface LookupCurrencies {
   name: string;
 }
 
+
+
+export interface LookupData {
+  currencies: LookupCurrencies[];
+  professions: any;
+}
+
 interface LookupCurrenciesResponse {
   currencies: {
     [key: string]: {
@@ -74,6 +81,7 @@ export interface ProviderState {
   phoneCodes: Array<PhoneCode>;
   currencies: Array<Currencies>;
   lookupCurrencies: Array<LookupCurrencies>;
+  professions: string[];
   state: StatusState;
 }
 
@@ -83,6 +91,7 @@ const initialState: ProviderState = {
   phoneCodes: [],
   currencies: [],
   lookupCurrencies: [],
+  professions: [],
   state: {
     success: false,
   },
@@ -164,23 +173,32 @@ export const getCurrenciesAction = createAsyncThunk(
 
 export const getLookupCurrenciesAction = createAsyncThunk(
   'practice/getCurrenciesFromLookup',
-  async (): Promise<Array<LookupCurrencies>> => {
+  async (lang: string): Promise<LookupData> => {
     try {
-      const response = await getLookupCurrencies();
+      const response = await getLookupCurrencies(lang);
 
       // Cast response to expected type
-      const data = ((response.data as unknown) as LookupCurrenciesResponse)?.currencies;
+      const currency = (response.data as unknown as LookupCurrenciesResponse)?.currencies;
+      const professions = (response?.data as any).professions;
 
-      const currencyArray: LookupCurrencies[] = Object.entries(data).map(([code, value]) => ({
+      const currencyArray: LookupCurrencies[] = Object.entries(currency).map(([code, value]) => ({
         currency: code,
         symbol: value.symbol,
         name: value.name,
       }));
 
-      return currencyArray;
+      let obj = {
+        currencies: currencyArray, // ✅ correct key
+        professions: professions,
+      };
+
+      return obj;
     } catch (error) {
       console.error('[getCurrencies]: ', error);
-      return [];
+      return {
+        currencies: [],
+        professions: {},
+      };
     }
   }
 );
@@ -297,7 +315,14 @@ const practiceSlice = createSlice({
       })
       .addCase(getLookupCurrenciesAction.pending, () => console.log('pending get currencies'))
       .addCase(getLookupCurrenciesAction.fulfilled, (state, action: any) => {
-        state.lookupCurrencies = action.payload;
+        state.lookupCurrencies = action.payload.currencies;
+
+        const temp: string[] = Object.entries(action.payload.professions).map(
+          ([_, value]) => value as string
+        );
+
+        state.professions = temp;
+
         state.state = {
           ...state.state,
           success: true,

@@ -12,7 +12,7 @@ import Header from '../../components/Header/Header';
 import UseSwipeGesture from '../../hooks/useSwipeGesture';
 import { useHistory } from 'react-router';
 import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
-
+import usePresentToast from '../../hooks/usePresentToast';
 import './Language.scss';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../state/store';
 import { setLang } from '../../state/persistSlice';
 import { updatePracticeAction } from '../../state/providerSlice';
+import { getLookupCurrenciesAction } from '../../state/practiceSlice';
 
 const CSSprefix = 'subscription-deatils';
 
@@ -30,6 +31,7 @@ const LanguagePage: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const [presentToast] = usePresentToast();
 
   const {
     provider,
@@ -71,50 +73,41 @@ const LanguagePage: React.FC = (): React.ReactElement => {
   const handleLanguageSave = async () => {
     let res = await updateLanguage();
 
-    console.log(res);
-    dispatch(setLang(newLang));
-    localStorage.setItem('language', newLang);
-    setSelectedLang(newLang);
-    i18n.changeLanguage(newLang);
-    history.goBack();
-    const token = await getStorageValue(STORAGE_TOKEN);
-    try {
-      await axios.get(`${currentEnv.providerApiBaseUrl}lookups/${newLang}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      });
-    } catch (error) {
-      console.log(error);
+    if (res?.payload) {
+      dispatch(setLang(newLang));
+      dispatch(getLookupCurrenciesAction(newLang));
+      localStorage.setItem('language', newLang);
+      setSelectedLang(newLang);
+      i18n.changeLanguage(newLang);
+      history.goBack();
+      const token = await getStorageValue(STORAGE_TOKEN);
+      try {
+        await axios.get(`${currentEnv.providerApiBaseUrl}lookups/${newLang}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log('Something went wrong');
     }
   };
 
-  function getLanguageName(code) {
-    switch (code.toLowerCase()) {
-      case 'en':
-        return 'English';
-      case 'es':
-        return 'Spanish';
-      case 'pt':
-        return 'Portuguese';
-      default:
-        return 'English'; // default to English
-    }
-  }
   const updateLanguage = async () => {
-    let lan = getLanguageName(lang);
     let practice = provider.practice;
 
     const updatedPractice = {
       ...practice,
-      languages: lan, // or any updated value
+      preferredLanguage: newLang, // or any updated value
     };
 
-    console.log('updatedPractice', updatedPractice);
     const response = await dispatch(
       updatePracticeAction({ practiceId, providerId, practice: updatedPractice })
     );
+
     return response;
   };
 

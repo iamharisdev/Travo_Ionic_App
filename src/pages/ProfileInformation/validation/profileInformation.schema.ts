@@ -12,5 +12,6 @@ export const practiceUpdateSchema = object({
   phoneNumber: string(),
   phoneNumberPrefix: string(),
   userName: string(),
+  profession:string(),
   skipAppointmentRequestNotifications: mixed({ type: 'boolean' }).nullable(),
 });

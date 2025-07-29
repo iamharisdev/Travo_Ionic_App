@@ -21,8 +21,8 @@ import {
 
 import { Device } from '@capacitor/device';
 import eruda from 'eruda';
-import { useSelector } from 'react-redux';
-import { RootState } from './state/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from './state/store';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -49,17 +49,41 @@ import { useTranslation } from 'react-i18next';
 import './i18n'; // Ensure this is at the top
 import CountryPickerScreen from './pages/CountryPicker/CountryPicker';
 import Loading from './pages/Loading/Loading';
+import { getMeAction } from './state/providerSlice';
+import { setLang } from './state/persistSlice';
+import { getLookupCurrenciesAction } from './state/practiceSlice';
 
 setupIonicReact();
 
 const App: React.FC = () => {
   const { loading, message } = useSelector((state: RootState) => state.loading);
-  const { isCountry, currentEnv } = useSelector((state: RootState) => state.white);
+  const {
+    practice: { professions },
+    white: { isCountry, currentEnv, lang },
+  } = useSelector((state: RootState) => state);
 
   const [present, dismiss] = useIonLoading();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const getLang = async () => {
+    try {
+      const profileResponse = await dispatch<any>(getMeAction());
+
+      if (profileResponse?.payload?.practice?.languages) {
+        let language = profileResponse?.payload?.practice?.preferredLanguage;
+
+        dispatch(setLang(language));
+        i18n.changeLanguage(language);
+      }
+    } catch (error) {
+      console.log('error:=>  ', 'something went wrong');
+    }
+  };
 
   useEffect(() => {
+    // dispatch(getLookupCurrenciesAction(lang));
+    getLang();
     const initHandler = async () => {
       const info = await Device.getInfo();
       if (
@@ -95,10 +119,12 @@ const App: React.FC = () => {
   const hasCountry = (country: string | null) => {
     return country !== null && country !== 'null' && country !== '';
   };
+
+  // console.log(professions);
   return (
     <IonApp>
       <IonReactRouter>
-      <IonRouterOutlet defaultValue={COUNTRY_PICKER}>
+        <IonRouterOutlet defaultValue={COUNTRY_PICKER}>
           <Route path={COUNTRY_PICKER}>
             <CountryPickerScreen />
           </Route>
@@ -124,7 +150,7 @@ const App: React.FC = () => {
             <Tabs />
           </Route>
           <Route exact path="/">
-          {hasCountry(isCountry) ? <Redirect to={SING_IN} /> : <Redirect to={COUNTRY_PICKER} />}
+            {hasCountry(isCountry) ? <Redirect to={SING_IN} /> : <Redirect to={COUNTRY_PICKER} />}
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>

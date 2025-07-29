@@ -31,7 +31,6 @@ import { CALENDAR_MONTH, LOADING } from '../../shared/routes/routes';
 
 import './Loading.scss';
 import { useTranslation } from 'react-i18next';
-import { setLang } from '../../state/persistSlice';
 
 const CSSprefix = 'loading';
 
@@ -51,36 +50,18 @@ const Loading: React.FC = (): React.ReactElement => {
     patient,
     white: { lang },
   } = useSelector((state: RootState) => state);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   useIonViewWillEnter(() => {
     setProgress(0);
   }, []);
-
-  function getLanguageCode(language: string) {
-    switch (language.toLowerCase()) {
-      case 'english':
-        return 'en';
-      case 'spanish':
-        return 'es';
-      case 'portuguese':
-        return 'pt';
-      default:
-        return 'en'; // default to English
-    }
-  }
 
   useEffect(() => {
     const initialLoad = async () => {
       try {
         setProgress(prevProgress => prevProgress + 0.08);
         const profileResponse = await dispatch<any>(getMeAction());
-        console.log('profileResponse', profileResponse);
-        if (profileResponse.payload.practice.languages) {
-          let code = getLanguageCode(profileResponse.payload.practice.languages);
-          dispatch(setLang(code));
-          i18n.changeLanguage(code);
-        }
+
         if (
           profileResponse.payload?.providerPractices?.length > 0 &&
           profileResponse.payload?.principal?.countryCode
@@ -101,7 +82,7 @@ const Loading: React.FC = (): React.ReactElement => {
         dispatch(getCountriesAction());
         dispatch(getPhoneCodesAction());
         dispatch(getCurrenciesAction());
-        dispatch(getLookupCurrenciesAction());
+        dispatch(getLookupCurrenciesAction(lang));
 
         if (
           profileResponse.payload?.providerPractices?.length > 0 &&
@@ -109,14 +90,6 @@ const Loading: React.FC = (): React.ReactElement => {
         ) {
           const [providerPractice] = profileResponse.payload.providerPractices;
           if (providerPractice) {
-            // await dispatch(getEventsAction({
-            //   practiceId: providerPractice.practiceId,
-            //   providerId: providerPractice.providerId,
-            //   start: dayjs().subtract(3, 'months').toISOString(),
-            //   end: dayjs().add(1, 'year').endOf('year').toISOString(),
-            //   pageNumber: 0,
-            //   pageSize: 999,
-            // }));
             dispatch(getBusinessInformationAction(providerPractice.practiceId));
             dispatch(
               getPaymentMethodAction({
