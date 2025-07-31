@@ -1,4 +1,4 @@
-export const BUILD_MOOD = 'dev';
+export const BUILD_MOOD = 'qa';
 
 export const ENV_CONFIGS = {
   default: {

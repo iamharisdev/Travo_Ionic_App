@@ -102,7 +102,6 @@ export const getBusinessInformationAction = createAsyncThunk(
   async (practiceId: string): Promise<BusinessInformation | null> => {
     try {
       const response = await getBusinessInformation(practiceId);
-
       return response.data;
     } catch (error: any) {
       console.error('[getBusinessInformation]: ', error);
