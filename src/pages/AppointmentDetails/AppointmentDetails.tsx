@@ -70,6 +70,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const {
     provider,
     scheduling: { events },
+    practice: { currencies, lookupCurrencies },
   } = useSelector((state: RootState) => state);
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
   const [eventType, setEventType] = useState<string>('');
@@ -167,6 +168,11 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
 
     return '';
+  }, [provider.practice]);
+
+  const currencySymbol = useMemo(() => {
+    let res = lookupCurrencies.find(i => i.currency == currency);
+    return res?.symbol;
   }, [provider.practice]);
 
   const isOnline = useMemo(
@@ -403,7 +409,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
             <IonItem lines="none">
               <IonIcon icon={pricetagOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-details`}>
-                {`$${event?.price?.toFixed(2)} ${currency}`}
+                {`${currencySymbol}${event?.price?.toFixed(2)} ${currency}`}
               </IonText>
             </IonItem>
             <IonItem lines="none">

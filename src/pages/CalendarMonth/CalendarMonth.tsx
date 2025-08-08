@@ -47,11 +47,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate, selectedDates },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
   const { t } = useTranslation();
   const history = useHistory();
-  const lang = localStorage.getItem('language') || 'en';
+
   const isDraggingRef = useRef(false);
   const dragStartPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -61,7 +62,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   };
 
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     return dayjs(selectedDates[0]).format('MMMM');
@@ -216,13 +216,13 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       const currentDate = eventsInSameDate.find(({ date }) => date === startDate);
       const index = currentDate?.ids.findIndex((id: string) => id === props.event.id);
       const eventsLeft = currentDate?.ids?.length! - index! || 0;
-  
+
       // Skip rendering if event data is missing/invalid
       if (!props.event || !props.event.id) {
-        console.log("okay")
+        console.log('okay');
         return null;
       }
-  
+
       return (
         <EventCard
           {...props}
