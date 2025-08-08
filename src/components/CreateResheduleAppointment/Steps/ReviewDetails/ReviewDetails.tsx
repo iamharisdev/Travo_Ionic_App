@@ -219,7 +219,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               start: dayjs(selectedDateTime?.startTime).startOf('day').toISOString(),
-              end: dayjs(selectedDateTime?.startTime).endOf('day').toISOString(),
+              end: dayjs(selectedDateTime?.startTime).add(5,'month').endOf('day').toISOString(),
               pageNumber: 0,
               pageSize: 999,
             })

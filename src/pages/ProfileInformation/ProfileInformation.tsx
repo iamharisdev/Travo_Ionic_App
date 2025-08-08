@@ -1,4 +1,3 @@
-import React, { useMemo, useRef, useState } from 'react';
 import {
   ActionSheetButton,
   IonActionSheet,
@@ -17,42 +16,59 @@ import {
   IonTextarea,
 } from '@ionic/react';
 import { useFormik } from 'formik';
-import Header from '../../components/Header/Header';
 import { caretDownOutline, caretUpOutline } from 'ionicons/icons';
-import PersonSvg from '/assets/person-circle.svg';
+import React, { useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../state/store';
+import { useHistory } from 'react-router';
+import { uploadProfilePicture } from '../../api/services/provider';
+import Header from '../../components/Header/Header';
+import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
+import useFiles, { FileResponse } from '../../hooks/useFiles';
 import usePresentToast from '../../hooks/usePresentToast';
+import UseSwipeGesture from '../../hooks/useSwipeGesture';
 import { setLoading } from '../../state/loadingSlice';
 import { updatePracticeAction } from '../../state/providerSlice';
+import { AppDispatch, RootState } from '../../state/store';
 import { practiceUpdateSchema } from './validation/profileInformation.schema';
-import { uploadProfilePicture } from '../../api/services/provider';
-import useFiles, { FileResponse } from '../../hooks/useFiles';
-import UseSwipeGesture from '../../hooks/useSwipeGesture';
-import { useHistory } from 'react-router';
-import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
+import PersonSvg from '/assets/person-circle.svg';
 
-import './ProfileInformation.scss';
 import { useTranslation } from 'react-i18next';
+import './ProfileInformation.scss';
 
 const CSSprefix = 'profile-information';
+
+export interface Practice {
+  profilePictureUrl: string | null;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  languages: string;
+  qualificationsAndTitle: string;
+  bio: string;
+  profession: string;
+  preferredCurrency: string;
+  phoneNumber: string;
+  phoneNumberPrefix: string;
+  userName: string;
+}
 
 const ProfileInformation: React.FC = (): React.ReactElement => {
   const profileInformationRef = useRef();
   const {
     provider,
-    practice: { phoneCodes },
+    practice: { phoneCodes, professions },
   } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
   const [presentToast] = usePresentToast();
   const { takePhoto, pickPhoto } = useFiles();
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
+
   const { t } = useTranslation();
   const [openUploadImageActionSheet, setOpenUploadImageActionSheet] = useState<boolean>(false);
-  const initialValues = useMemo(
-    () =>
-      provider.practice || {
+  const initialValues = useMemo<Practice>(
+    () => ({
+      ...{
         profilePictureUrl: null,
         firstName: '',
         lastName: '',
@@ -60,11 +76,14 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
         languages: '',
         qualificationsAndTitle: '',
         bio: '',
+        profession: '',
         preferredCurrency: '',
         phoneNumber: '',
         phoneNumberPrefix: '',
         userName: '',
       },
+      ...provider.practice,
+    }),
     [provider.practice]
   );
   const {
@@ -93,7 +112,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
 
       if (practiceId && providerId && valid) {
         dispatch(setLoading({ loading: true }));
-        let updatedValues = { ...values };
+        let updatedValues: any = { ...values };
         if (profilePictureFile) {
           const profilePictureResponse = await uploadProfilePicture(providerId, profilePictureFile);
           if (profilePictureResponse.data.data) {
@@ -312,6 +331,30 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
               onIonInput={e => formik.setFieldValue('qualificationsAndTitle', e.detail.value)}
             />
           </IonItem>
+
+          <IonItem
+            lines="none"
+            className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}
+          >
+            <IonLabel position="stacked" class="custom-input">
+              {t('profile_settings_profession')}*
+            </IonLabel>
+
+            <IonSelect
+              interface="popover"
+              placeholder={t('profile_settings_profession')}
+              selectedText={formik.values.profession}
+              value={formik.values.profession}
+              onIonChange={e => {
+                formik.setFieldValue('profession', e.detail.value);
+              }}
+            >
+              {professions?.map((i: any) => (
+                <IonSelectOption>{i}</IonSelectOption>
+              ))}
+            </IonSelect>
+          </IonItem>
+
           <IonItem
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}
@@ -333,6 +376,7 @@ const ProfileInformation: React.FC = (): React.ReactElement => {
               <IonSelectOption value="ZAR">ZAR</IonSelectOption>
             </IonSelect>
           </IonItem>
+
           <IonItem
             lines="none"
             className={`custom-input ion-margin-vertical ${CSSprefix}-form-item`}

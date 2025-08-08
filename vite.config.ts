@@ -23,12 +23,15 @@ export default defineConfig(({ mode }) => {
     },
     optimizeDeps: { exclude: ['node_modules/.cache'] },
     server: {
+      // host: true,
+      // port: 5173,
+     
       cors: {
-        origin: ['http://localhost', 'capacitor://localhost'],
+        origin: ['http://localhost', 'capacitor://localhost','http://192.168.18.29:5173'],
         methods: ['GET', 'POST', 'PUT', 'PATH', 'DELETE'],
         allowedHeaders: ['Content-Type']
       },
-      allowedHosts: ['https:/qaid.trovahealth.app']
+      // allowedHosts: ['https:/qaid.trovahealth.app']
     }
   }
 })

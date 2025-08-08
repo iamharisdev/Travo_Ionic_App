@@ -46,6 +46,7 @@
   "scheduling_adjusted_price": "Preço ajustado",
   "scheduling_location": "Local",
   "scheduling_payment_type": "Tipo de pagamento",
+  "scheduling_paid_in_advance": "Antes da sessão",
   "scheduling_at_session_completion": "Na conclusão da sessão",
   "scheduling_online": "Virtual",
   "scheduling_in_person": "Presencial",
@@ -124,6 +125,7 @@
   "profile_settings_qualifications_and_titles": "Qualificações e títulos",
   "profile_settings_enter_qualifications_and_titles": "Insira qualificações e títulos",
   "profile_settings_currency": "Moeda",
+  "profile_settings_profession": "profissão",
   "profile_settings_enter_currency": "Insira a moeda",
   "profile_settings_bio": "Bio",
   "profile_settings_save_details": "Salvar informações",
@@ -204,6 +206,7 @@
   "configuration_Language": "Linguagem",
   "configuration_english": "Inglês",
   "configuration_portuguese": "Português",
+  "configuration_spanish": "Espanhol",
   "configuration_save": "Salvar",
   "loading_appointments": "Carregando compromissos",
   "loading_appointment_requests": "Carregando solicitações de agendamento",
@@ -217,5 +220,10 @@
   "please_select_your_country": "Selecione seu país abaixo",
   "country": "País",
   "continue": "Continuar",
-  "empty": "vazia"
+  "choose_option": "Escolha a opção",
+  "take_photo": "Tirar foto",
+  "choose_photo": "Escolher foto",
+  "more_events": "mais",
+  "online": "Virtual",
+  "in_person": " Presencial"
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActionSheetButton,
   IonActionSheet,
@@ -10,21 +10,21 @@ import {
   IonPage,
   IonRow,
   IonText,
-} from "@ionic/react";
-import Header from "../../components/Header/Header";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../state/store";
-import usePresentToast from "../../hooks/usePresentToast";
-import useFiles, { FileResponse } from "../../hooks/useFiles";
-import { setLoading } from "../../state/loadingSlice";
-import { uploadPracticeLogo, updateBrandingInformation } from "../../api/services/practice";
-import { updateBrandingInformationAction } from "../../state/practiceSlice";
-import UseSwipeGesture from "../../hooks/useSwipeGesture";
-import { useHistory } from "react-router";
-import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
+} from '@ionic/react';
+import Header from '../../components/Header/Header';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../state/store';
+import usePresentToast from '../../hooks/usePresentToast';
+import useFiles, { FileResponse } from '../../hooks/useFiles';
+import { setLoading } from '../../state/loadingSlice';
+import { uploadPracticeLogo, updateBrandingInformation } from '../../api/services/practice';
+import { updateBrandingInformationAction } from '../../state/practiceSlice';
+import UseSwipeGesture from '../../hooks/useSwipeGesture';
+import { useHistory } from 'react-router';
+import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
 
-import "./Branding.scss";
-import { useTranslation } from "react-i18next";
+import './Branding.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSprefix = 'branding';
 
@@ -34,10 +34,9 @@ const Branding: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
   const [presentToast] = usePresentToast();
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const { takePhoto, pickPhoto } = useFiles();
-  const [openUploadImageActionSheet, setOpenUploadImageActionSheet] =
-    useState<boolean>(false);
+  const [openUploadImageActionSheet, setOpenUploadImageActionSheet] = useState<boolean>(false);
   const [initialLogoUrl, setInitialLogoUrl] = useState<string>('');
   const [practiceLogo, setPracticeLogo] = useState<{
     file: File | null;
@@ -47,7 +46,7 @@ const Branding: React.FC = (): React.ReactElement => {
   const changePhotoHandler = async (action: 'take' | 'pick') => {
     setOpenUploadImageActionSheet(false);
 
-    if (action === "take") {
+    if (action === 'take') {
       const res = await takePhoto();
 
       if (res.file === null && res.url === '') {
@@ -57,7 +56,7 @@ const Branding: React.FC = (): React.ReactElement => {
       }
     }
 
-    if (action === "pick") {
+    if (action === 'pick') {
       const res = await pickPhoto();
       if (res.file === null && res.url === '') {
         setPracticeLogo({ file: null, url: practice.businessInformation?.logoUrl!! });
@@ -70,64 +69,59 @@ const Branding: React.FC = (): React.ReactElement => {
   const saveAndUpdateLogoHandler = async () => {
     if (practice.businessInformation?.id) {
       try {
-        dispatch(
-          setLoading({ loading: true })
-        );
+        dispatch(setLoading({ loading: true }));
         let logoUrl: string | null = null;
         if (practiceLogo.file) {
-          const practiceLogoResponse = await uploadPracticeLogo(practice.businessInformation.id, practiceLogo.file);
+          const practiceLogoResponse = await uploadPracticeLogo(
+            practice.businessInformation.id,
+            practiceLogo.file
+          );
           logoUrl = practiceLogoResponse.data.data;
         }
 
-        await updateBrandingInformation(
-          practice.businessInformation.id,
-          { logoUrl }
+        await updateBrandingInformation(practice.businessInformation.id, { logoUrl });
+        dispatch(
+          updateBrandingInformationAction({
+            logoUrl,
+          })
         );
-        dispatch(updateBrandingInformationAction({
-          logoUrl,
-        }));
         setPracticeLogo({ ...practiceLogo, url: logoUrl || '' });
         setInitialLogoUrl(logoUrl || '');
 
         dispatch(setLoading({ loading: false, message: '' }));
       } catch (error) {
         dispatch(setLoading({ loading: false, message: '' }));
-        presentToast(
-          `!${t("toast_messages_error_upload_practice_logo")}!`,
-          1000,
-          'top',
-          'danger'
-        );
+        presentToast(`!${t('toast_messages_error_upload_practice_logo')}!`, 1000, 'top', 'danger');
         setPracticeLogo({ file: null, url: practice.businessInformation?.logoUrl || '' });
         setInitialLogoUrl(practice.businessInformation?.logoUrl || '');
       }
-
     }
   };
 
   const uploadActions = useMemo(() => {
     const actions: (string | ActionSheetButton<any>)[] = [
       {
-        text: "Take photo",
+        text: t('take_photo'),
         data: {
-          action: "takePhoto",
+          action: 'takePhoto',
         },
-        handler: async () => changePhotoHandler("take"),
+        handler: async () => changePhotoHandler('take'),
       },
       {
-        text: "Choose photo",
+        text: t('choose_photo'),
         data: {
-          action: "pickPhoto",
+          action: 'pickPhoto',
         },
-        handler: async () => changePhotoHandler("pick"),
+        handler: async () => changePhotoHandler('pick'),
       },
       {
-        text: "Cancel",
-        role: "cancel",
+        text: t('biometric_cancel_title'),
+        role: 'cancel',
         data: {
-          action: "cancel",
+          action: 'cancel',
         },
-        handler: () => setPracticeLogo({ file: null, url: practice.businessInformation?.logoUrl!! }),
+        handler: () =>
+          setPracticeLogo({ file: null, url: practice.businessInformation?.logoUrl!! }),
       },
     ];
 
@@ -154,12 +148,12 @@ const Branding: React.FC = (): React.ReactElement => {
       <IonContent fullscreen={true} className={CSSprefix}>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-title ion-margin-top`}>
-            {t("profile_settings_branding")}
+            {t('profile_settings_branding')}
           </IonText>
         </IonItem>
         <IonItem className="ion-margin-vertical" lines="none">
           <IonText className={`${CSSprefix}-description ion-margin-top`}>
-            {t("profile_settings_logo_appearance_message")}
+            {t('profile_settings_logo_appearance_message')}
           </IonText>
         </IonItem>
         <IonList>
@@ -173,13 +167,13 @@ const Branding: React.FC = (): React.ReactElement => {
                 color="primary"
                 onClick={() => setOpenUploadImageActionSheet(true)}
               >
-                {t("profile_settings_Upload_logo")}
+                {t('profile_settings_Upload_logo')}
               </IonButton>
             </IonItem>
           </IonRow>
           <IonRow className="ion-justify-content-center">
             <IonText className={`${CSSprefix}-image-description`}>
-            {t("profile_settings_preferred_image_size")}
+              {t('profile_settings_preferred_image_size')}
             </IonText>
           </IonRow>
           <IonButton
@@ -189,17 +183,17 @@ const Branding: React.FC = (): React.ReactElement => {
             disabled={initialLogoUrl === practiceLogo.url}
             onClick={saveAndUpdateLogoHandler}
           >
-            {t("profile_settings_save_and_update")}
+            {t('profile_settings_save_and_update')}
           </IonButton>
         </IonList>
       </IonContent>
       <IonActionSheet
-        header="Choose option"
+        header={t('choose_option')}
         buttons={uploadActions}
         isOpen={openUploadImageActionSheet}
         onDidDismiss={() => setOpenUploadImageActionSheet(false)}
       />
-    </IonPage >
+    </IonPage>
   );
 };
 

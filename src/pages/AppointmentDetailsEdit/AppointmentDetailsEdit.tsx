@@ -6,9 +6,6 @@ import {
   IonGrid,
   IonIcon,
   IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
   IonPage,
   IonRow,
   IonSelect,
@@ -67,6 +64,8 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
   const [endsAfter, setEndsAfter] = useState<number>(event?.count);
   const [repeatOption, setRepeatOption] = useState<string>(event?.frequency);
 
+  // console.log("Location:=>  ",location?.state?.location )
+
   const initialValues = useMemo(
     () => ({
       patientName: location?.state?.patientName || '',
@@ -101,7 +100,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5,'month').endOf('day').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -183,7 +182,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               start: dayjs(formik.values.startTime).startOf('day').toISOString(),
-              end: dayjs(formik.values.startTime).endOf('day').toISOString(),
+              end: dayjs(formik.values.startTime).add(5,'month').endOf('day').toISOString(),
               pageNumber: 0,
               pageSize: 999,
             })
@@ -256,13 +255,17 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
     },
   });
 
-  const paymentType = useMemo(
-    () =>
-      services?.patientServiceRequestDtos.find(({ id }) => id === location?.state?.patientServiceId)
-        ?.paymentType,
-    [location?.state?.patientServiceId, services]
-  );
-
+  const paymentType = useMemo(() => {
+    const servicePaymentType = services?.patientServiceRequestDtos.find(
+      ({ id }) => id === location?.state?.patientServiceId
+    )?.paymentType;
+  
+    if (servicePaymentType === 'At Completion') {
+      return `${t('scheduling_at_session_completion')}`;
+    }
+  
+    return `${t('schedule_appointment_in_advance_of_session')}`;
+  }, [location?.state?.patientServiceId, services, t]);
   const handleClick = () => {
     setIsChecked(!isChecked);
   };
@@ -278,7 +281,13 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
     return '';
   }, [event?.startTime, i18n.language]);
 
- 
+  function formatLabel(label:string) {
+    return label.toLowerCase().replace(/\s+/g, '_');
+  }
+
+  const translatedText = t(formatLabel(formik.values.location));
+
+  
 
   return (
     <IonPage className={CSSprefix}>
@@ -325,12 +334,17 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             name="location"
             toggleIcon={caretDownOutline}
             expandedIcon={caretUpOutline}
-            selectedText={formik.values.location}
+            cancelText={t('log_out_cancel')}
+            selectedText={translatedText}
             value={formik.values.location}
             onIonChange={e => formik.setFieldValue('location', e.detail.value)}
           >
-            <IonSelectOption value="Online">{t('scheduling_online')}</IonSelectOption>
-            <IonSelectOption value="In Person">{t('scheduling_in_person')}</IonSelectOption>
+            <IonSelectOption value={'Online'}>
+              {t('scheduling_online')}
+            </IonSelectOption>
+            <IonSelectOption value={'In Person'}>
+              {t('scheduling_in_person')}
+            </IonSelectOption>
           </IonSelect>
         </div>
 
@@ -408,10 +422,11 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
         )}
 
         <IonButton
-          className={`${CSSprefix}-schedule-button ion-padding`}
+          className="ion-padding"
           color="primary"
           expand="block"
-          // disabled={!formik.dirty}
+          disabled={!formik.dirty}
+           style={{ marginBottom: '100px' }}
           onClick={() => formik.submitForm()}
         >
           {t('scheduling_save_changes')}
