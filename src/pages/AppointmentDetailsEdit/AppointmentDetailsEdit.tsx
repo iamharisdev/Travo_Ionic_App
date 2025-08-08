@@ -100,7 +100,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5,'month').endOf('day').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -182,7 +182,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               start: dayjs(formik.values.startTime).startOf('day').toISOString(),
-              end: dayjs(formik.values.startTime).endOf('day').toISOString(),
+              end: dayjs(formik.values.startTime).add(5,'month').endOf('day').toISOString(),
               pageNumber: 0,
               pageSize: 999,
             })
@@ -339,10 +339,10 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
             value={formik.values.location}
             onIonChange={e => formik.setFieldValue('location', e.detail.value)}
           >
-            <IonSelectOption value={t('scheduling_online')}>
+            <IonSelectOption value={'Online'}>
               {t('scheduling_online')}
             </IonSelectOption>
-            <IonSelectOption value={t('scheduling_in_person')}>
+            <IonSelectOption value={'In Person'}>
               {t('scheduling_in_person')}
             </IonSelectOption>
           </IonSelect>
@@ -426,6 +426,7 @@ const AppointmentDetailsEdit: React.FC = (): React.ReactElement => {
           color="primary"
           expand="block"
           disabled={!formik.dirty}
+           style={{ marginBottom: '100px' }}
           onClick={() => formik.submitForm()}
         >
           {t('scheduling_save_changes')}

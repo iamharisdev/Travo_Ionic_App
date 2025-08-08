@@ -70,6 +70,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const {
     provider,
     scheduling: { events },
+    practice: { currencies, lookupCurrencies },
   } = useSelector((state: RootState) => state);
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
   const [eventType, setEventType] = useState<string>('');
@@ -169,7 +170,15 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     return '';
   }, [provider.practice]);
 
-  const isOnline = useMemo(() => event?.location === 'Online', [event?.location]);
+  const currencySymbol = useMemo(() => {
+    let res = lookupCurrencies.find(i => i.currency == currency);
+    return res?.symbol;
+  }, [provider.practice]);
+
+  const isOnline = useMemo(
+    () => event?.location === 'Online' || event?.location === 'Virtual',
+    [event?.location]
+  );
 
   const barColor = useMemo(
     () => getAppointmentColor(event?.color as CALENDAR_SLOTS),
@@ -226,9 +235,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
       string: event?.onlineMeetUrl,
     });
   };
-
-
-
 
   const editAppointmentHandler = () => {
     if (event?.recurring) {
@@ -345,7 +351,6 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     fetchPatientContactInfo();
   }, [event?.patientId]);
 
-
   return (
     <IonPage className={CSSprefix}>
       <Header showBack showEdit={showEdit} showMenu={false} editCB={editAppointmentHandler} />
@@ -404,7 +409,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
             <IonItem lines="none">
               <IonIcon icon={pricetagOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-details`}>
-                {`$${event?.price?.toFixed(2)} ${currency}`}
+                {`${currencySymbol}${event?.price?.toFixed(2)} ${currency}`}
               </IonText>
             </IonItem>
             <IonItem lines="none">

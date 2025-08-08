@@ -54,6 +54,7 @@ const Appointments: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -77,14 +78,12 @@ const Appointments: React.FC = (): React.ReactElement => {
   );
 
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     return dayjs(selectedDate).format('MMMM');
   }, [selectedDate]);
 
   const fromToDateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Set the locale dynamically
 
     if (selectedDate) {
@@ -114,7 +113,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs().subtract(3, 'months').toISOString(),
-            end: dayjs().add(1, 'year').endOf('year').toISOString(),
+            end: dayjs().add(5, 'months').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -124,7 +123,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
           })
         );
         await dispatch(
@@ -132,7 +131,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
           })
         );
 
@@ -217,8 +216,6 @@ const Appointments: React.FC = (): React.ReactElement => {
           datePickerText={dateText}
           reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
-          // showNotifications
-          // showSearchOption
         />
         <IonContent fullscreen={true}>
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>

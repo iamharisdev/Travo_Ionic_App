@@ -8,9 +8,11 @@ export const getMe = async () => {
 
 export const getPractice = async (practiceId: string, providerId: string) => {
   return await providerApiInstance.get<Practice>(
-    `/practices/${practiceId}/providers/${providerId}/profile-information`
+    `/practices/${practiceId}/providers/${providerId}/profile-information?teamInfo=true`
   );
 };
+
+
 
 export const updatePractice = async (
   practiceId: string,
