@@ -5,6 +5,7 @@ import {
   getBusinessInformation,
   getCountries,
   getCurrencies,
+  getLookupCurrencies,
   getPhoneCodes,
   updateBusinessInformation,
 } from '../api/services/practice';
@@ -47,6 +48,27 @@ export interface Currencies {
   code: string;
   symbol: string;
 }
+export interface LookupCurrencies {
+  currency: string;
+  symbol: string;
+  name: string;
+}
+
+
+
+export interface LookupData {
+  currencies: LookupCurrencies[];
+  professions: any;
+}
+
+interface LookupCurrenciesResponse {
+  currencies: {
+    [key: string]: {
+      symbol: string;
+      name: string;
+    };
+  };
+}
 
 interface UpdatebusinessInformation {
   practiceId: string;
@@ -58,6 +80,8 @@ export interface ProviderState {
   countries: Array<Country>;
   phoneCodes: Array<PhoneCode>;
   currencies: Array<Currencies>;
+  lookupCurrencies: Array<LookupCurrencies>;
+  professions: string[];
   state: StatusState;
 }
 
@@ -66,6 +90,8 @@ const initialState: ProviderState = {
   countries: [],
   phoneCodes: [],
   currencies: [],
+  lookupCurrencies: [],
+  professions: [],
   state: {
     success: false,
   },
@@ -76,7 +102,6 @@ export const getBusinessInformationAction = createAsyncThunk(
   async (practiceId: string): Promise<BusinessInformation | null> => {
     try {
       const response = await getBusinessInformation(practiceId);
-
       return response.data;
     } catch (error: any) {
       console.error('[getBusinessInformation]: ', error);
@@ -141,6 +166,38 @@ export const getCurrenciesAction = createAsyncThunk(
     } catch (error: any) {
       console.error('[getCurrencies]: ', error);
       return [];
+    }
+  }
+);
+
+export const getLookupCurrenciesAction = createAsyncThunk(
+  'practice/getCurrenciesFromLookup',
+  async (lang: string): Promise<LookupData> => {
+    try {
+      const response = await getLookupCurrencies(lang);
+
+      // Cast response to expected type
+      const currency = (response.data as unknown as LookupCurrenciesResponse)?.currencies;
+      const professions = (response?.data as any).professions;
+
+      const currencyArray: LookupCurrencies[] = Object.entries(currency).map(([code, value]) => ({
+        currency: code,
+        symbol: value.symbol,
+        name: value.name,
+      }));
+
+      let obj = {
+        currencies: currencyArray, // ✅ correct key
+        professions: professions,
+      };
+
+      return obj;
+    } catch (error) {
+      console.error('[getCurrencies]: ', error);
+      return {
+        currencies: [],
+        professions: {},
+      };
     }
   }
 );
@@ -248,6 +305,31 @@ const practiceSlice = createSlice({
         };
       })
       .addCase(getCurrenciesAction.rejected, state => {
+        state.businessInformation = state.businessInformation;
+        state.state = {
+          ...state.state,
+          success: false,
+          message: 'error at get currencies state',
+        };
+      })
+      .addCase(getLookupCurrenciesAction.pending, () => console.log('pending get currencies'))
+      .addCase(getLookupCurrenciesAction.fulfilled, (state, action: any) => {
+        state.lookupCurrencies = action.payload.currencies;
+
+        const temp: string[] = Object.entries(action.payload.professions).map(
+          ([_, value]) => value as string
+        );
+
+        state.professions = temp;
+
+        state.state = {
+          ...state.state,
+          success: true,
+          error: null,
+          message: '',
+        };
+      })
+      .addCase(getLookupCurrenciesAction.rejected, state => {
         state.businessInformation = state.businessInformation;
         state.state = {
           ...state.state,
