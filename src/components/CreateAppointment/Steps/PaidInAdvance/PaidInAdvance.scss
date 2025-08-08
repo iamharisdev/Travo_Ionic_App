@@ -49,6 +49,7 @@
     font-style: normal;
     font-weight: 600;
     line-height: normal;
+    margin-right: 16px;
   }
 
   &-info-icon {
@@ -64,7 +65,7 @@
     position: absolute;
     left: 78vw;
     top: 26px;
-    color: var(--ion-trova-black)
+    color: var(--ion-trova-black);
   }
 
   &-schedule-button {
@@ -100,7 +101,7 @@
     }
 
     ion-select::part(placeholder) {
-      color: #AAA;
+      color: #aaa;
       font-size: 16px;
       font-style: normal;
       font-weight: 400;
@@ -153,65 +154,45 @@
     display: flex;
     justify-content: space-between;
     flex-direction: column;
-    padding-bottom: 150px;
+    padding-bottom: 50px !important;
   }
 }
 
-.paid-in-advance-footer {
+.footer {
+  padding: 0 16px;
+}
+
+.footer-container {
   display: flex;
-  width: 100%;
-  height: auto;
-  max-height: 126px;
-  padding: 16px;
   justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid var(--Divider, #D1D3D4);
-  background: var(--White, #FFF);
-  position: fixed;
-  bottom: 0;
-  z-index: 999;
+  margin-bottom: 8px;
+}
 
-  &-wrapper {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-  }
+.footer-button {
+  margin-bottom: 100px;
+  margin-top: 50px;
 
-  &-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
+ 
+}
 
-  &-button-container {
-    display: flex;
-    width: 50%;
-    height: auto;
-    padding-left: 20px;
+.subtotal {
+  color: var(--ion-trova-gray-text);
+  text-align: right;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
 
-    ion-button {
-      width: 100%;
-    }
-  }
-
-  &-subtotal {
-    color: var(--ion-trova-gray-text);
-    text-align: right;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-  }
-
-  &-total {
-    color: var(--ion-trova-gray-text);
-    text-align: right;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    padding-left: 4px;
-  }
+.total {
+  color: var(--ion-trova-gray-text);
+  text-align: right;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  padding-left: 0px !important;
+  margin-top: 5px !important;
 }
 
 .no-border {

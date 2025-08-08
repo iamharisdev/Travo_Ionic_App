@@ -176,7 +176,7 @@ const RescheduleAppointment: React.FC<RescheduleAppointmentProps> = ({
               practiceId: providerPractice.practiceId,
               providerId: providerPractice.providerId,
               start: dayjs(selectedDateTime.startTime).startOf('day').toISOString(),
-              end: dayjs(selectedDateTime.endTime).endOf('day').toISOString(),
+              end: dayjs(selectedDateTime.endTime).add(5,'month').endOf('day').toISOString(),
               pageNumber: 0,
               pageSize: 999,
             })
