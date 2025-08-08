@@ -41,14 +41,25 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   setStep,
   rescheduleHandler,
 }) => {
-  const { provider } = useSelector((state: RootState) => state);
+  const { provider , practice: { lookupCurrencies }} = useSelector((state: RootState) => state);
   const { t } = useTranslation();
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
-  const [presentToast] = usePresentToast();
+
+ const currency = useMemo(() => {
+    if (provider?.practice?.preferredCurrency) {
+      return provider.practice.preferredCurrency;
+    }
+
+    return '';
+  }, [provider.practice]);
 
 
+const currencySymbol = useMemo(() => {
+    let res = lookupCurrencies.find(i => i.currency == currency);
 
+    return res?.symbol;
+  }, [provider.practice]);
 
   const date = {
     startTime: selectedDateTime?.startTime,
@@ -126,7 +137,7 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
 
       <div className="custom-input-container">
         <label className="custom-label">{t('scheduling_adjusted_price')}</label>
-        <span className="custom-value">{`$${price.toFixed(2)}`}</span>
+        <span className="custom-value">{`${currencySymbol}${price.toFixed(2)}`}</span>
       </div>
 
       <div className="custom-input-container">

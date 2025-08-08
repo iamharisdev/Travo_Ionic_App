@@ -31,7 +31,6 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
 
   const { isCountry } = useSelector((state: RootState) => state.white);
 
-
   const [showingAnimation, setShowingAnimation] = useState<undefined | boolean>();
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -49,9 +48,9 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
   //   setCountries(res?.payload);
   // };
 
-  useEffect(()=>{
+  useEffect(() => {
     setSelectedCountry(isCountry || '');
-  },[isCountry])
+  }, [isCountry]);
 
   const getFlagEmoji = (countryCode: any) => {
     return countryCode
@@ -62,51 +61,52 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <div
-          className={`${
-            showingAnimation === true ? 'transition-container' : `${CSSprefix}-main-container`
-          } ion-padding`}
-        >
-          <IonItem
-            lines="none"
-            slot="start"
-            id={showingAnimation ? 'float' : ''}
-            className={showingAnimation ? 'transition-logo-item' : `${CSSprefix}-logo-item`}
+        <div className="safe-area-wrapper">
+          <div
+            className={`${
+              showingAnimation === true ? 'transition-container' : `${CSSprefix}-main-container`
+            } ion-padding`}
           >
-            <IonImg className={`${CSSprefix}-logo`} src={TrovaLogo} alt="Trova Logo" />
-          </IonItem>
+            <IonItem
+              lines="none"
+              slot="start"
+              id={showingAnimation ? 'float' : ''}
+              className={showingAnimation ? 'transition-logo-item' : `${CSSprefix}-logo-item`}
+            >
+              <IonImg className={`${CSSprefix}-logo`} src={TrovaLogo} alt="Trova Logo" />
+            </IonItem>
 
-          {showingAnimation === false && (
-            <>
-              <IonItem lines="none" className="ion-no-padding">
-                <IonText className={`${CSSprefix}-sign-in`}>{t('select_country')}</IonText>
-              </IonItem>
-              <IonItem lines="none" className="ion-no-padding ion-margin-bottom">
-                <IonText color="dark" className={`${CSSprefix}-welcome`}>
-                  {t('please_select_your_country')}
-                </IonText>
-              </IonItem>
+            {showingAnimation === false && (
+              <>
+                <IonItem lines="none" className="ion-no-padding">
+                  <IonText className={`${CSSprefix}-sign-in`}>{t('select_country')}</IonText>
+                </IonItem>
+                <IonItem lines="none" className="ion-no-padding ion-margin-bottom">
+                  <IonText color="dark" className={`${CSSprefix}-welcome`}>
+                    {t('please_select_your_country')}
+                  </IonText>
+                </IonItem>
 
-              <IonItem
-                lines="none"
-                className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}
-              >
-                <IonLabel position="stacked" class="custom-input">
-                  {t('country')}
-                </IonLabel>
-                {loading ? (
-                  <IonSpinner name="dots" />
-                ) : (
-                  <IonSelect
-                    interface="popover"
-                    value={selectedCountry}
-                    placeholder={t('select_country')}
-                    onIonChange={e => {
-                      setSelectedCountry(e.detail.value);
-                      dispatch(setCountryFlag(e.detail.value));
-                    }}
-                  >
-                    {/* {countries && Object.keys(countries).length > 0 ? (
+                <IonItem
+                  lines="none"
+                  className={`custom-input ion-margin-bottom ${CSSprefix}-sign-in-item`}
+                >
+                  <IonLabel position="stacked" class="custom-input">
+                    {t('country')}
+                  </IonLabel>
+                  {loading ? (
+                    <IonSpinner name="dots" />
+                  ) : (
+                    <IonSelect
+                      interface="popover"
+                      value={selectedCountry}
+                      placeholder={t('select_country')}
+                      onIonChange={e => {
+                        setSelectedCountry(e.detail.value);
+                        dispatch(setCountryFlag(e.detail.value));
+                      }}
+                    >
+                      {/* {countries && Object.keys(countries).length > 0 ? (
                       Object.entries(countries).map(([code, name]) => (
                         <IonSelectOption key={code} value={code}>
                           {getFlagEmoji(code)} {name}
@@ -115,35 +115,36 @@ const CountryPickerScreen: React.FC = (): React.ReactElement => {
                     ) : (
                       <IonSpinner name="dots" />
                     )} */}
-                    {countries?.map(({ code, name }: any) => (
-                      <IonSelectOption key={code} value={code}>
-                        {getFlagEmoji(code)} {name}
-                      </IonSelectOption>
-                    ))}
-                  </IonSelect>
-                )}
-              </IonItem>
+                      {countries?.map(({ code, name }: any) => (
+                        <IonSelectOption key={code} value={code}>
+                          {getFlagEmoji(code)} {name}
+                        </IonSelectOption>
+                      ))}
+                    </IonSelect>
+                  )}
+                </IonItem>
 
-              <IonButton
-                className="login-button"
-                color="primary"
-                disabled={!selectedCountry}
-                expand="block"
-                onClick={() => {
-                  dispatch(
-                    setEnvByCountry({
-                      countryCode: selectedCountry,
-                      mode: BUILD_MOOD,
-                    })
-                  );
+                <IonButton
+                  className="login-button"
+                  color="primary"
+                  disabled={!selectedCountry}
+                  expand="block"
+                  onClick={() => {
+                    dispatch(
+                      setEnvByCountry({
+                        countryCode: selectedCountry,
+                        mode: BUILD_MOOD,
+                      })
+                    );
 
-                  history.push(SING_IN);
-                }}
-              >
-                {t('continue')}
-              </IonButton>
-            </>
-          )}
+                    history.push(SING_IN);
+                  }}
+                >
+                  {t('continue')}
+                </IonButton>
+              </>
+            )}
+          </div>
         </div>
       </IonContent>
     </IonPage>

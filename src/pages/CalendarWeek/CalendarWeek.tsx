@@ -47,6 +47,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate, selectedDates },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
   const { t } = useTranslation();
@@ -93,7 +94,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
 
     return externalCalendarEvents
       .filter(
-        ({ startTime}) =>
+        ({ startTime }) =>
           dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
           dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
       )
@@ -122,7 +123,6 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     if (selectedDate) {
