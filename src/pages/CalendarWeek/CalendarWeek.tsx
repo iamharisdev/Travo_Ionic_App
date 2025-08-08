@@ -47,6 +47,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate, selectedDates },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const calendarWeekRef = useRef();
   const { t } = useTranslation();
@@ -55,9 +56,10 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
 
     return events.events
       .filter(
-        ({ startTime }) =>
+        ({ startTime, status }) =>
           dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
+          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
+          status !== AppointmentStatusEnum.CANCELLED
       )
       .map(event => ({
         id: event?.id,
@@ -92,10 +94,9 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
 
     return externalCalendarEvents
       .filter(
-        ({ startTime, busy }) =>
+        ({ startTime }) =>
           dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
-          busy
+          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
       )
       .map(event => ({
         id: event?.id,
@@ -122,7 +123,6 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     if (selectedDate) {
@@ -154,7 +154,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5, 'months').endOf('day').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -164,7 +164,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5, 'months').endOf('day').toISOString(),
           })
         );
         await dispatch(
@@ -172,7 +172,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5, 'months').endOf('day').toISOString(),
           })
         );
       }
@@ -201,6 +201,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
   }, [state.loading, location.pathname, isCreateAppointmentOpen]);
 
   useIonViewWillEnter(() => {
+    getAppointmentsHandler();
     const start = dayjs().startOf('week').format('YYYY-MM-DD');
     const end = dayjs().endOf('week').format('YYYY-MM-DD');
     dispatch(setDates({ selectedDates: [start, end] }));
@@ -217,6 +218,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
           menuId={CALENDAR_WEEK_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
+          reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>

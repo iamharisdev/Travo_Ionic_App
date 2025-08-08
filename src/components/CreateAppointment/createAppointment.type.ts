@@ -1,4 +1,5 @@
 import { SlotInfo } from "react-big-calendar";
+import { IAppointment } from "../../shared/types/appointment.type";
 
 export interface CreateAppointmentProps {
   isOpen: boolean;
@@ -6,4 +7,6 @@ export interface CreateAppointmentProps {
   selectedSlot?: SlotInfo;
   currentDate?: string;
   view?: 'month' | 'week' | 'day' | 'appointments';
+  currentStep?:number;
+  appointment? :IAppointment;
 }

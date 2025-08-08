@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   IonCol,
   IonContent,
@@ -15,98 +15,142 @@ import {
   IonRow,
   IonText,
   RefresherEventDetail,
-} from "@ionic/react";
-import Header from "../../components/Header/Header";
-import Menu from "../../components/Menu/Menu";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../state/store";
-import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
-import dayjs from "dayjs";
-import Badge from "../../components/Badge/Badge";
-import DatePicker from "../../components/DatePicker/DatePicker";
-import { months } from "../../shared/constants/dates";
-import { APPOINTMENTS_MENU_ID } from "../../shared/constants/menu";
-import { AppointmentStatusEnum } from "../../shared/types/appointment.type";
-import UseSwipeGesture from "../../hooks/useSwipeGesture";
-import { closeMenuHandler, openMenuHandler } from "../../shared/utils/menu.util";
-import SwipeHandler from "../../components/SwipeHandler/SwipeHandler";
-import { addOutline } from "ionicons/icons";
-import CreateAppointment from "../../components/CreateAppointment/CreateAppointment";
-import { setDate } from "../../state/calendarSlice";
-import { getEventsAction } from "../../state/schedulingSlice";
-import { APPOINTMENTS } from "../../shared/routes/routes";
-import { setLoading } from "../../state/loadingSlice";
+  useIonViewDidEnter,
+} from '@ionic/react';
+import Header from '../../components/Header/Header';
+import Menu from '../../components/Menu/Menu';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../state/store';
+import AppointmentCard from '../../components/AppointmentCard/AppointmentCard';
+import dayjs from 'dayjs';
+import Badge from '../../components/Badge/Badge';
+import DatePicker from '../../components/DatePicker/DatePicker';
+import { months } from '../../shared/constants/dates';
+import { APPOINTMENTS_MENU_ID } from '../../shared/constants/menu';
+import { AppointmentStatusEnum } from '../../shared/types/appointment.type';
+import UseSwipeGesture from '../../hooks/useSwipeGesture';
+import { closeMenuHandler, openMenuHandler } from '../../shared/utils/menu.util';
+import SwipeHandler from '../../components/SwipeHandler/SwipeHandler';
+import { addOutline } from 'ionicons/icons';
+import CreateAppointment from '../../components/CreateAppointment/CreateAppointment';
+import { setDate } from '../../state/calendarSlice';
+import {
+  getEventsAction,
+  getGoogleEventsAction,
+  getMicrosoftEventsAction,
+  getServicesAction,
+} from '../../state/schedulingSlice';
+import { APPOINTMENTS } from '../../shared/routes/routes';
+import { setLoading } from '../../state/loadingSlice';
 
-import "./Appointments.scss";
-import { useTranslation } from "react-i18next";
+import './Appointments.scss';
+import { useTranslation } from 'react-i18next';
 
 const CSSprefix = 'appointments';
 
 const Appointments: React.FC = (): React.ReactElement => {
   const pageRef = useRef<any>();
-  const { provider, scheduling: { events, microsoftEvents, googleEvents, state }, calendar: { selectedDate } } = useSelector((state: RootState) => state);
+  const {
+    provider,
+    scheduling: { events, microsoftEvents, googleEvents, state },
+    calendar: { selectedDate },
+    white: { lang },
+  } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
-  const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => { };
+
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
   const { t } = useTranslation();
-  const sortedEvents = useMemo(() => [...events?.events, ...microsoftEvents, ...googleEvents || []].sort(
-    (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-  ).filter(({ status, endTime }) => (
-    status === AppointmentStatusEnum.CONFIRMEND
-    || status === AppointmentStatusEnum.BUSY
-    || status === AppointmentStatusEnum.OCCURRENCE
-    || status === AppointmentStatusEnum.SINGLE_INSTANCE
-  )
-    && dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')),
-    [events?.events, selectedDate, state.loading]);
+  const sortedEvents = useMemo(
+    () =>
+      [...events?.events, ...microsoftEvents, ...(googleEvents || [])]
+        .sort((a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf())
+        .filter(
+          ({ status, endTime }) =>
+            (status === AppointmentStatusEnum.CONFIRMEND ||
+              status === AppointmentStatusEnum.BUSY ||
+              status === AppointmentStatusEnum.OCCURRENCE ||
+              status === AppointmentStatusEnum.SINGLE_INSTANCE) &&
+            dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD')
+        ),
+    [events?.events, selectedDate, state.loading]
+  );
 
+  const dateText = useMemo(() => {
+    dayjs.locale(lang); // Ensure the locale is set before formatting
 
-    const dateText = useMemo(() => {
-      const lang = localStorage.getItem("language") || "en";
-      dayjs.locale(lang); // Ensure the locale is set before formatting
-    
-      return dayjs(selectedDate).format("MMMM");
-    }, [selectedDate]);
+    return dayjs(selectedDate).format('MMMM');
+  }, [selectedDate]);
 
-    const fromToDateText = useMemo(() => {
-      const lang = localStorage.getItem("language") || "en";
-      dayjs.locale(lang); // Set the locale dynamically
-    
-      if (selectedDate) {
-        return dayjs(selectedDate).format("MMMM D"); // e.g., "June 17" or localized equivalent
-      }
-    
-      return '';
-    }, [selectedDate]);
+  const fromToDateText = useMemo(() => {
+    dayjs.locale(lang); // Set the locale dynamically
 
-  const openDatePickerHandler = useCallback((e: any) => {
-    if (datePickerRef.current) {
-      datePickerRef.current!.event = e;
+    if (selectedDate) {
+      return dayjs(selectedDate).format('MMMM D'); // e.g., "June 17" or localized equivalent
     }
-    setDatePickerOpen(true);
-  }, [datePickerRef.current]);
+
+    return '';
+  }, [selectedDate]);
+
+  const openDatePickerHandler = useCallback(
+    (e: any) => {
+      if (datePickerRef.current) {
+        datePickerRef.current!.event = e;
+      }
+      setDatePickerOpen(true);
+    },
+    [datePickerRef.current]
+  );
 
   const getAppointmentsHandler = async () => {
     try {
-      setDatePickerOpen(false);
+      const [providerPractice] = provider?.providerPractices;
 
-      const [providerPractice] = provider.providerPractices;
       if (providerPractice) {
-        await dispatch(getEventsAction({
-          practiceId: providerPractice.practiceId,
-          providerId: providerPractice.providerId,
-          start: dayjs(selectedDate).startOf('day').toISOString(),
-          end: dayjs(selectedDate).endOf('day').toISOString(),
-          pageNumber: 0,
-          pageSize: 999,
-        }));
+        await dispatch(
+          getEventsAction({
+            practiceId: providerPractice.practiceId,
+            providerId: providerPractice.providerId,
+            start: dayjs().subtract(3, 'months').toISOString(),
+            end: dayjs().add(5, 'months').toISOString(),
+            pageNumber: 0,
+            pageSize: 999,
+          })
+        );
+        await dispatch(
+          getMicrosoftEventsAction({
+            practiceId: providerPractice.practiceId,
+            providerId: providerPractice.providerId,
+            start: dayjs(selectedDate).startOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
+          })
+        );
+        await dispatch(
+          getGoogleEventsAction({
+            practiceId: providerPractice.practiceId,
+            providerId: providerPractice.providerId,
+            start: dayjs(selectedDate).startOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
+          })
+        );
+
+        dispatch(
+          getServicesAction({
+            practiceId: providerPractice.practiceId,
+            providerId: providerPractice.providerId,
+            pageNumber: 0,
+            pageSize: 999,
+          })
+        );
       }
     } catch (error) {
       console.error('error at load appointments by date: ', error);
     }
-  }
+  };
+  const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
+    getAppointmentsHandler();
+  };
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: pageRef,
@@ -115,10 +159,14 @@ const Appointments: React.FC = (): React.ReactElement => {
     onSwipedDown: () => getAppointmentsHandler(),
   });
 
+  useIonViewDidEnter(() => {
+    getAppointmentsHandler(); // Called once the screen is fully entered and interactive
+  });
+
   useEffect(() => {
     if (location.pathname === APPOINTMENTS && !isCreateAppointmentOpen) {
       if (state.loading) {
-        dispatch(setLoading({ loading: true, message: `${t("loading_appointments")}` }));
+        dispatch(setLoading({ loading: true, message: `${t('loading_appointments')}` }));
       }
 
       if (!state.loading) {
@@ -133,7 +181,7 @@ const Appointments: React.FC = (): React.ReactElement => {
         <div className={`${CSSprefix}-no-appointments-container`}>
           <IonItem lines="none">
             <IonText className={`${CSSprefix}-no-appointments ion-text-center`}>
-               {t("You_have_no_scheduled_appointments_yet")}
+              {t('You_have_no_scheduled_appointments_yet')}
             </IonText>
           </IonItem>
         </div>
@@ -147,7 +195,7 @@ const Appointments: React.FC = (): React.ReactElement => {
             <Badge appointmentDate={dayjs(sortedEvents[0].endTime).toISOString()} />
           </IonCol>
           <IonCol>
-            {sortedEvents.map((event) => (
+            {sortedEvents.map(event => (
               <AppointmentCard key={event?.id} appointment={event} />
             ))}
           </IonCol>
@@ -166,9 +214,8 @@ const Appointments: React.FC = (): React.ReactElement => {
           menuId={APPOINTMENTS_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
+          reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
-          // showNotifications
-          // showSearchOption
         />
         <IonContent fullscreen={true}>
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
@@ -198,9 +245,9 @@ const Appointments: React.FC = (): React.ReactElement => {
           <IonContent fullscreen={true}>
             <DatePicker
               date={selectedDate}
-              onSelectedDate={(date) => {
+              onSelectedDate={date => {
                 if (date) {
-                  dispatch(setDate(date))
+                  dispatch(setDate(date));
                 }
               }}
               onTriggerAction={() => setDatePickerOpen(false)}

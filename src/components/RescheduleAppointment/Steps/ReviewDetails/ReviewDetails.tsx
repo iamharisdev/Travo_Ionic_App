@@ -2,12 +2,17 @@ import React, { useMemo } from 'react';
 import { IonButton, IonIcon, IonItem, IonLabel, IonText } from '@ionic/react';
 import { AppointmentDateTime } from '../../RescheduleAppointment';
 import dayjs from 'dayjs';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../state/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../state/store';
 import { caretDownOutline, informationCircle } from 'ionicons/icons';
 
 import './ReviewDetails.scss';
 import { useTranslation } from 'react-i18next';
+import { editAppointmentAction } from '../../../../state/schedulingSlice';
+import { APPOINTMENTS } from '../../../../shared/routes/routes';
+import { useHistory } from 'react-router';
+import { setLoading } from '../../../../state/loadingSlice';
+import usePresentToast from '../../../../hooks/usePresentToast';
 
 const CSSPrefix = 'review-details';
 
@@ -19,6 +24,7 @@ interface ReviewDetailsProps {
   selectedDateTime?: AppointmentDateTime;
   paymentType: string;
   disableSaveChanges: boolean;
+  event: any;
   setStep: (step: number) => void;
   rescheduleHandler: () => void;
 }
@@ -31,14 +37,41 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   selectedDateTime,
   paymentType,
   disableSaveChanges,
+  event,
   setStep,
   rescheduleHandler,
 }) => {
-  const {
-    provider,
-  } = useSelector((state: RootState) => state);
-  const {t} = useTranslation();
-  
+  const { provider , practice: { lookupCurrencies }} = useSelector((state: RootState) => state);
+  const { t } = useTranslation();
+  const history = useHistory();
+  const dispatch = useDispatch<AppDispatch>();
+
+ const currency = useMemo(() => {
+    if (provider?.practice?.preferredCurrency) {
+      return provider.practice.preferredCurrency;
+    }
+
+    return '';
+  }, [provider.practice]);
+
+
+const currencySymbol = useMemo(() => {
+    let res = lookupCurrencies.find(i => i.currency == currency);
+
+    return res?.symbol;
+  }, [provider.practice]);
+
+  const date = {
+    startTime: selectedDateTime?.startTime,
+    endTime: selectedDateTime?.endTime,
+  };
+
+  if (date.startTime) {
+    date.startTime = new Date(date.startTime).toISOString();
+  }
+  if (date.endTime) {
+    date.endTime = new Date(date.endTime).toISOString();
+  }
 
   const dateTime = useMemo(() => {
     let format = 'MMMM D, hh:mm A';
@@ -48,84 +81,98 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
     }
 
     if (selectedDateTime) {
-      return dayjs(selectedDateTime.startTime).format(format)
+      return dayjs(selectedDateTime.startTime).format(format);
     }
 
     return '';
   }, [selectedDateTime, provider?.practice?.displayTwentyFourHourTime]);
 
+  const editAppointment = async () => {
+    const response = await dispatch(
+      editAppointmentAction({
+        practiceId: event?.practiceId,
+        providerId: event?.providerId,
+        appointmentId: event?.id,
+        payload: {
+          patientName: event?.patientName,
+          patientNumber: event?.patientNumber,
+          patientEmail: event?.patientEmail,
+          location: event?.location,
+          patientServiceId: event?.patientServiceId,
+          startTime: date?.startTime || '',
+          endTime: date?.endTime || '',
+          frequency: null,
+          count: null,
+          recurring: false,
+        },
+      })
+    );
+    if (response.type == 'scheduling/editAppointment/fulfilled') {
+      dispatch(setLoading({ loading: false, message: '' }));
+
+      setStep(0);
+      history.push(APPOINTMENTS);
+    } else {
+      dispatch(setLoading({ loading: false, message: '' }));
+    }
+  };
 
   return (
     <div className={CSSPrefix}>
-      <IonItem lines="none">
-        <IonText className={`${CSSPrefix}-title`}>
-        {t("scheduling_reschedule_appointment")}
-        </IonText>
-      </IonItem>
-      <IonItem lines="none" className={`${CSSPrefix}-subtitle`}>
-        <IonText>
-          {t("scheduling_edit_appointment_details")}
-        </IonText>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
-      >
-        <IonLabel position="stacked">{t("scheduling_client")}</IonLabel>
-        <IonLabel position="stacked">{patientName}</IonLabel>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
-      >
-        <IonLabel position="stacked">{t("scheduling_service")}</IonLabel>
-        <IonLabel position="stacked">{patientServiceName}</IonLabel>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
-      >
-        <IonLabel position="stacked">{t("scheduling_adjusted_price")}</IonLabel>
-        <IonLabel position="stacked">{`$${price.toFixed(2)}`}</IonLabel>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
-      >
-        <IonLabel position="stacked">{t("scheduling_location")}</IonLabel>
-        <IonLabel position="stacked">{location}</IonLabel>
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
-        onClick={() => setStep(1)}
-      >
-        <IonLabel position="stacked">{t("schedule_appointment_date_and_time")}</IonLabel>
-        <IonLabel position="stacked">{dateTime}</IonLabel>
-        <IonIcon className={`${CSSPrefix}-caret-down`} icon={caretDownOutline} slot="end" />
-      </IonItem>
-      <IonItem
-        lines="none"
-        className={`custom-input ion-margin-vertical ion-padding-horizontal`}
-      >
-        <IonLabel position="stacked">
-          {t("scheduling_payment_type")}
+      <p className="title"> {t('scheduling_reschedule_appointment')}</p>
+
+      <div className={`${CSSPrefix}-subtitle`}>
+        <IonText> {t('scheduling_edit_appointment_details')}</IonText>
+      </div>
+
+      <div className="custom-input-container">
+        <label className="custom-label">{t('scheduling_client')}</label>
+        <span className="custom-value">{patientName}</span>
+      </div>
+
+      <div className="custom-input-container">
+        <label className="custom-label">{t('scheduling_service')}</label>
+        <span className="custom-value">{patientServiceName}</span>
+      </div>
+
+      <div className="custom-input-container">
+        <label className="custom-label">{t('scheduling_adjusted_price')}</label>
+        <span className="custom-value">{`${currencySymbol}${price.toFixed(2)}`}</span>
+      </div>
+
+      <div className="custom-input-container">
+        <label className="custom-label">{t('scheduling_location')}</label>
+        <span className="custom-value">{location}</span>
+      </div>
+
+      <div className="custom-input-container" onClick={() => setStep(1)}>
+        <label className="custom-label">{t('schedule_appointment_date_and_time')}</label>
+        <div className="custom-value-wrapper">
+          <span className="custom-value">{dateTime}</span>
+          <IonIcon className={`${CSSPrefix}-caret-down`} icon={caretDownOutline} slot="end" />
+        </div>
+      </div>
+
+      <div className="custom-input-container">
+        <div className="custom-value-wrapper2">
+          <label className="custom-label"> {t('scheduling_payment_type')}</label>
           <IonIcon className={`${CSSPrefix}-info-icon`} icon={informationCircle} />
-        </IonLabel>
-        <IonLabel position="stacked">{paymentType}</IonLabel>
-      </IonItem>
-      <div className={`${CSSPrefix}-button-container ion-padding-horizontal`}>
+        </div>
+        <span className="custom-value">{paymentType}</span>
+      </div>
+
+      <div className={`button-container ion-padding-horizontal`}>
         <IonButton
           color="primary"
           expand="block"
           disabled={disableSaveChanges}
           onClick={rescheduleHandler}
         >
-          {t("scheduling_save_changes")}
+          {t('scheduling_save_changes')}
         </IonButton>
       </div>
     </div>
   );
-}
+};
 
 export default ReviewDetails;

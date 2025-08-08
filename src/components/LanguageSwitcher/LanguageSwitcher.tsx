@@ -6,13 +6,7 @@ const LanguageToggle: React.FC = () => {
   const { i18n } = useTranslation();
   const [currentLang, setCurrentLang] = useState(i18n.language);
 
-  // useEffect(() => {
-  //   const savedLang = localStorage.getItem("language") || "en";
-  //   console.log({ lang: savedLang});
 
-  //   i18n.changeLanguage(savedLang);
-  //   setCurrentLang(savedLang);
-  // }, [i18n]);
 
   const toggleLanguage = () => {
     // const newLang = currentLang === 'en' ? 'pt' : 'en';

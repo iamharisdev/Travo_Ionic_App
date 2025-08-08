@@ -1,5 +1,6 @@
 export interface AppointmentDetailsEditState {
   appointmentId: string;
+  selected:string;
   patientServiceId: string;
   patientName: string;
   patientServiceName: string;
@@ -8,4 +9,5 @@ export interface AppointmentDetailsEditState {
   duration: string;
   startTime: string;
   endTime: string;
+  event:any;
 }

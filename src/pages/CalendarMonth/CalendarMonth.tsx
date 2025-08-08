@@ -5,8 +5,6 @@ import {
   IonIcon,
   IonPage,
   IonPopover,
-  IonRefresher,
-  IonRefresherContent,
   IonText,
   RefresherEventDetail,
   useIonViewWillEnter,
@@ -17,6 +15,7 @@ import 'dayjs/locale/pt'; // Portuguese
 import { addOutline } from 'ionicons/icons';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router';
 import CreateAppointment from '../../components/CreateAppointment/CreateAppointment';
@@ -25,6 +24,7 @@ import EventCard from '../../components/EventCard/EventCard';
 import Header from '../../components/Header/Header';
 import HeaderCalendar from '../../components/HeaderCalendar/HeaderCalendar';
 import Menu from '../../components/Menu/Menu';
+import usePresentToast from '../../hooks/usePresentToast';
 import UseSwipeGesture from '../../hooks/useSwipeGesture';
 import { CALENDAR_MONTH_MENU_ID } from '../../shared/constants/menu';
 import { CALENDAR_DAY, CALENDAR_MONTH } from '../../shared/routes/routes';
@@ -38,8 +38,6 @@ import {
   getMicrosoftEventsAction,
 } from '../../state/schedulingSlice';
 import { AppDispatch, RootState } from '../../state/store';
-import { useTranslation } from 'react-i18next';
-import usePresentToast from '../../hooks/usePresentToast';
 import './CalendarMonth.scss';
 
 const CSSprefix = 'calendar-month';
@@ -49,11 +47,14 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate, selectedDates },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
   const { t } = useTranslation();
   const history = useHistory();
-  const lang = localStorage.getItem('language') || 'en';
+
+  const isDraggingRef = useRef(false);
+  const dragStartPos = useRef<{ x: number; y: number } | null>(null);
 
   const setDayjsLocale = () => {
     dayjs.locale(lang); // Set global Day.js locale
@@ -61,7 +62,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   };
 
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     return dayjs(selectedDates[0]).format('MMMM');
@@ -74,9 +74,10 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
 
     return [...events.events, ...microsoftEvents, ...googleEvents]
       .filter(
-        ({ startTime }) =>
+        ({ startTime, status }) =>
           dayjs(startTime).valueOf() >= dayjs(selectedDates[0]).valueOf() &&
-          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf()
+          dayjs(startTime).valueOf() <= dayjs(selectedDates[1]).endOf('day').valueOf() &&
+          status !== AppointmentStatusEnum.CANCELLED
       )
       .map(event => ({
         id: event?.id,
@@ -98,7 +99,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       }))
       .sort((a: any, b: any) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
   }, [events.events, microsoftEvents, googleEvents, state.loading, selectedDates]);
-  const [presentToast] = usePresentToast();
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -150,14 +150,14 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   const getAppointmentsHandler = async () => {
     try {
       const [providerPractice] = provider?.providerPractices;
-      console.log('getAppointmentsHandler', providerPractice);
+
       if (providerPractice) {
         await dispatch(
           getEventsAction({
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs().subtract(3, 'months').toISOString(),
-            end: dayjs().add(1, 'year').endOf('year').toISOString(),
+            end: dayjs().add(5, 'months').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -167,7 +167,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5, 'months').endOf('day').toISOString(),
           })
         );
         await dispatch(
@@ -175,7 +175,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5, 'months').endOf('day').toISOString(),
           })
         );
       }
@@ -188,7 +188,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     parentRef: calendarMonthRef,
     onSwipedLeft: () => dispatch(setNextMonth()),
     onSwipedRight: () => dispatch(setPrevMonth()),
-    onSwipedDown: () => getAppointmentsHandler(),
+    onSwipedDown: () => console.log('Swipe down'),
   });
 
   useEffect(() => {
@@ -209,17 +209,83 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     dispatch(setDates({ selectedDates: [start, end] }));
     setSelectedSlot(undefined);
   }, []);
-  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-    getAppointmentsHandler()
-      .then(() => {
-        event.detail.complete();
-      })
-      .catch(error => {
-        console.error('Error refreshing appointments:', error);
-        presentToast(`!${t('toast_messages_error_something_went_wrong')}!`, 1000, 'top', 'danger');
-        event.detail.complete();
-      });
-  }
+
+  const renderEventWrapper = useCallback(
+    (props: any) => {
+      const startDate = dayjs(props.event.start).format('YYYY-MM-DD');
+      const currentDate = eventsInSameDate.find(({ date }) => date === startDate);
+      const index = currentDate?.ids.findIndex((id: string) => id === props.event.id);
+      const eventsLeft = currentDate?.ids?.length! - index! || 0;
+
+      // Skip rendering if event data is missing/invalid
+      if (!props.event || !props.event.id) {
+        console.log('okay');
+        return null;
+      }
+
+      return (
+        <EventCard
+          {...props}
+          isMonth={true}
+          loading={state.loading}
+          index={index}
+          eventsLeft={eventsLeft}
+        />
+      );
+    },
+    [eventsInSameDate, state.loading]
+  );
+
+  useEffect(() => {
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      const point =
+        'touches' in e
+          ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+          : { x: e.clientX, y: e.clientY };
+
+      dragStartPos.current = point;
+      isDraggingRef.current = false;
+    };
+
+    const handlePointerMove = (e: MouseEvent | TouchEvent) => {
+      if (!dragStartPos.current) return;
+
+      const point =
+        'touches' in e
+          ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+          : { x: e.clientX, y: e.clientY };
+
+      const dx = Math.abs(point.x - dragStartPos.current.x);
+      const dy = Math.abs(point.y - dragStartPos.current.y);
+
+      if (dx > 10 || dy > 10) {
+        isDraggingRef.current = true;
+      }
+    };
+
+    const handlePointerUp = () => {
+      dragStartPos.current = null;
+    };
+
+    window.addEventListener('mousedown', handlePointerDown);
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('mouseup', handlePointerUp);
+
+    window.addEventListener('touchstart', handlePointerDown);
+    window.addEventListener('touchmove', handlePointerMove);
+    window.addEventListener('touchend', handlePointerUp);
+
+    return () => {
+      window.removeEventListener('mousedown', handlePointerDown);
+      window.removeEventListener('mousemove', handlePointerMove);
+      window.removeEventListener('mouseup', handlePointerUp);
+
+      window.removeEventListener('touchstart', handlePointerDown);
+      window.removeEventListener('touchmove', handlePointerMove);
+      window.removeEventListener('touchend', handlePointerUp);
+    };
+  }, []);
+
   return (
     <>
       <Menu menuId={CALENDAR_MONTH_MENU_ID} contentId="calendar-month-content" />
@@ -230,16 +296,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           menuId={CALENDAR_MONTH_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
+          reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>
-          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-            <IonRefresherContent
-              pullingIcon="chevron-down-circle-outline"
-              refreshingSpinner="circles"
-            ></IonRefresherContent>
-          </IonRefresher>
           <Calendar
+            key={selectedDates[0]}
             defaultDate={selectedDates[0]}
             date={selectedDates[0]}
             defaultView={Views.MONTH}
@@ -252,22 +314,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             }}
             timeslots={2}
             components={{
-              eventWrapper: props => {
-                const startDate = dayjs(props.event.start).format('YYYY-MM-DD');
-                const currentDate = eventsInSameDate.find(({ date }) => date === startDate);
-                const index = currentDate?.ids.findIndex((id: string) => id === props.event.id);
-                const eventsLeft = currentDate?.ids?.length! - index! || 0;
-
-                return (
-                  <EventCard
-                    {...props}
-                    isMonth={true}
-                    loading={state.loading}
-                    index={index}
-                    eventsLeft={eventsLeft}
-                  />
-                );
-              },
+              eventWrapper: renderEventWrapper,
               header: props => <HeaderCalendar {...props} type="month" />,
               month: {
                 dateHeader: props => (
@@ -287,8 +334,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             selectable={true}
             longPressThreshold={0}
             onSelectSlot={slot => {
-              dispatch(setDate(dayjs(slot.start).toISOString()));
-              history.push(CALENDAR_DAY);
+              if (isDraggingRef.current) {
+                getAppointmentsHandler();
+              } else {
+                dispatch(setDate(dayjs(slot.start).toISOString()));
+                history.push(CALENDAR_DAY);
+              }
             }}
           />
         </IonContent>

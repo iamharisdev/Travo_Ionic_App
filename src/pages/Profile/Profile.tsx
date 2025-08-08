@@ -10,7 +10,8 @@ import {
 import Header from "../../components/Header/Header";
 import { caretForwardOutline, exitOutline } from "ionicons/icons";
 import {
-  CONFIGRATION,
+  
+  CONFIGURATION,
   MY_PROFILE,
   SING_IN,
   SUBSCRIPTION_DETAILS,
@@ -83,7 +84,7 @@ const Profile: React.FC = (): React.ReactElement => {
 
           <div
             className="custom-item"
-            onClick={() => history.push(CONFIGRATION)}
+            onClick={() => history.push(CONFIGURATION)}
           >
             <IonText className="custom-text">{t("configuration")}</IonText>
             <IonIcon icon={caretForwardOutline} className="custom-icon" />

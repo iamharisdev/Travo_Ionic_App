@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import {
   IonButton,
   IonCol,
@@ -11,13 +11,13 @@ import {
   IonSkeletonText,
   IonText,
   useIonViewDidEnter,
-} from "@ionic/react";
-import Header from "../../components/Header/Header";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../state/store";
-import dayjs from "dayjs";
-import { useHistory, useLocation } from "react-router";
-import { months, weekday } from "../../shared/constants/dates";
+} from '@ionic/react';
+import Header from '../../components/Header/Header';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../state/store';
+import dayjs from 'dayjs';
+import { useHistory, useLocation } from 'react-router';
+import { months, weekday } from '../../shared/constants/dates';
 import {
   callOutline,
   copyOutline,
@@ -26,29 +26,28 @@ import {
   pricetagOutline,
   timerOutline,
   videocamOutline,
-} from "ionicons/icons";
-import { getAppointmentColor } from "../../shared/utils/appointments.util";
+} from 'ionicons/icons';
+import { getAppointmentColor } from '../../shared/utils/appointments.util';
 import {
   AppointmentDetailTypeEnum,
   AppointmentStatusEnum,
   CALENDAR_SLOTS,
-} from "../../shared/types/appointment.type";
-import { Clipboard } from "@capacitor/clipboard";
-import {
-  APPOINTMENT_CANCEL,
-  APPOINTMENT_DETAILS_EDIT,
-} from "../../shared/routes/routes";
-import usePresentToast from "../../hooks/usePresentToast";
-import { setLoading } from "../../state/loadingSlice";
-import { confirmAppointmentAction } from "../../state/schedulingSlice";
-import RescheduleAppointment from "../../components/RescheduleAppointment/RescheduleAppointment";
-import Recurring from "../../components/Recurring/Recurring";
-import { patientApiInstance } from "../../api/axios.instance";
+} from '../../shared/types/appointment.type';
+import { Clipboard } from '@capacitor/clipboard';
+import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS_EDIT } from '../../shared/routes/routes';
+import usePresentToast from '../../hooks/usePresentToast';
+import { setLoading } from '../../state/loadingSlice';
+import { confirmAppointmentAction } from '../../state/schedulingSlice';
+import RescheduleAppointment from '../../components/RescheduleAppointment/RescheduleAppointment';
+import Recurring from '../../components/Recurring/Recurring';
 
-import "./AppointmentDetails.scss";
-import { useTranslation } from "react-i18next";
+import { patientApiInstance } from '../../api/axios.instance';
 
-const CSSprefix = "appointment-details";
+import './AppointmentDetails.scss';
+import { useTranslation } from 'react-i18next';
+import RecurringAppointmentModal from '../../components/RescheduleAppointment/Steps/RecurringAppointmentModal/RecurringAppointmentModal';
+
+const CSSprefix = 'appointment-details';
 
 interface EventData {
   eventId?: string;
@@ -59,43 +58,49 @@ interface PatientContactInfo {
   mobileNumber: string;
   mobileNumberPrefix: string;
   email: string;
+  chiefComplaint: string;
 }
 
 const AppointmentDetails: React.FC = (): React.ReactElement => {
   const location = useLocation<EventData>();
+
   const dispatch = useDispatch<AppDispatch>();
   const [presentToast] = usePresentToast();
   const history = useHistory();
   const {
     provider,
     scheduling: { events },
+    practice: { currencies, lookupCurrencies },
   } = useSelector((state: RootState) => state);
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
+  const [eventType, setEventType] = useState<string>('');
   const [eventData, setEventData] = useState<EventData>();
   const [isRecurringOpen, setIsRecurringOpen] = useState(false);
   const [patientContactInfo, setPatientContactInfo] = useState<PatientContactInfo | null>(null);
   const { t } = useTranslation();
 
-  const event = useMemo(
-    () =>
-      events?.events?.find(({ id, status, ...rest }) => {
-        if (
-          eventData?.type === AppointmentDetailTypeEnum.RESCHEDULE &&
-          id === eventData?.eventId
-        ) {
-          return { id, status, ...rest };
-        }
+  const event = useMemo(() => {
+    if (!events?.events || !location?.state) return undefined;
 
-        if (
-          eventData?.type === AppointmentDetailTypeEnum.ACCEPT &&
-          id === eventData?.eventId &&
-          status === AppointmentStatusEnum.PENDING
-        ) {
-          return { id, status, ...rest };
-        }
-      }),
-    [events?.events, eventData]
-  );
+    return events.events.find(({ id, status }) => {
+      if (
+        location.state.type === AppointmentDetailTypeEnum.RESCHEDULE &&
+        id === location.state.eventId
+      ) {
+        return true;
+      }
+
+      if (
+        location.state.type === AppointmentDetailTypeEnum.ACCEPT &&
+        id === location.state.eventId &&
+        status === AppointmentStatusEnum.PENDING
+      ) {
+        return true;
+      }
+
+      return false;
+    });
+  }, [events?.events, location?.state]);
 
   const {
     startTime,
@@ -112,16 +117,16 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     month: string;
     duration: string;
   } = useMemo(() => {
-    let startTime = "";
-    let endTime = "";
-    let day = "";
-    let date = "";
-    let month = "";
-    let duration = "";
-    let format = "hh:mm A";
+    let startTime = '';
+    let endTime = '';
+    let day = '';
+    let date = '';
+    let month = '';
+    let duration = '';
+    let format = 'hh:mm A';
 
     if (provider.practice?.displayTwentyFourHourTime) {
-      format = "HH:mm";
+      format = 'HH:mm';
     }
 
     if (event?.startTime) {
@@ -136,8 +141,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
 
     if (event?.startTime && event?.endTime) {
       const seconds = Math.floor(
-        (dayjs(event.endTime).valueOf() - dayjs(event.startTime).valueOf()) /
-          1000
+        (dayjs(event.endTime).valueOf() - dayjs(event.startTime).valueOf()) / 1000
       );
       const minutes = Math.floor(seconds / 60);
       const hours = Math.floor(minutes / 60);
@@ -156,22 +160,23 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
 
     return { startTime, endTime, day, date, month, duration };
-  }, [
-    event?.startTime,
-    event?.endTime,
-    provider.practice?.displayTwentyFourHourTime,
-  ]);
+  }, [event?.startTime, event?.endTime, provider.practice?.displayTwentyFourHourTime]);
 
   const currency = useMemo(() => {
     if (provider?.practice?.preferredCurrency) {
       return provider.practice.preferredCurrency;
     }
 
-    return "";
+    return '';
+  }, [provider.practice]);
+
+  const currencySymbol = useMemo(() => {
+    let res = lookupCurrencies.find(i => i.currency == currency);
+    return res?.symbol;
   }, [provider.practice]);
 
   const isOnline = useMemo(
-    () => event?.location === "Online",
+    () => event?.location === 'Online' || event?.location === 'Virtual',
     [event?.location]
   );
 
@@ -180,52 +185,48 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     [event?.color]
   );
 
-  const {
-    positiveLabel,
-    negativeLabel,
-  }: { positiveLabel: string; negativeLabel: string } = useMemo(() => {
-    if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
-      return {
-        positiveLabel: `${t("appointment_request_accept_appointment")}`,
-        negativeLabel: `${t("appointment_request_decline_appointment")}`,
-      };
-    }
-
-    if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
-      return {
-        positiveLabel: `${t("scheduling_reschedule_appointment")}`,
-        negativeLabel: `${t("scheduling_cancel_appointment")}`,
-      };
-    }
-
-    return {
-      positiveLabel: `${t("scheduling_reschedule_appointment")}`,
-      negativeLabel: `${t("scheduling_cancel_appointment")}`,
-    };
-  }, [location?.state?.type]);
-
-  const { practiceId, providerId }: { practiceId: string; providerId: string } =
+  const { positiveLabel, negativeLabel }: { positiveLabel: string; negativeLabel: string } =
     useMemo(() => {
-      let practiceId = "";
-      let providerId = "";
-
-      if (provider.providerPractices.length > 0) {
-        const [providerPractice] = provider.providerPractices;
-
+      if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
         return {
-          practiceId: providerPractice.practiceId,
-          providerId: providerPractice.providerId,
+          positiveLabel: `${t('appointment_request_accept_appointment')}`,
+          negativeLabel: `${t('appointment_request_decline_appointment')}`,
         };
       }
 
-      return { practiceId, providerId };
-    }, [provider.providerPractices]);
+      if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
+        return {
+          positiveLabel: `${t('scheduling_reschedule_appointment')}`,
+          negativeLabel: `${t('scheduling_cancel_appointment')}`,
+        };
+      }
+
+      return {
+        positiveLabel: `${t('scheduling_reschedule_appointment')}`,
+        negativeLabel: `${t('scheduling_cancel_appointment')}`,
+      };
+    }, [location?.state?.type]);
+
+  const { practiceId, providerId }: { practiceId: string; providerId: string } = useMemo(() => {
+    let practiceId = '';
+    let providerId = '';
+
+    if (provider.providerPractices.length > 0) {
+      const [providerPractice] = provider.providerPractices;
+
+      return {
+        practiceId: providerPractice.practiceId,
+        providerId: providerPractice.providerId,
+      };
+    }
+
+    return { practiceId, providerId };
+  }, [provider.providerPractices]);
 
   const showEdit = useMemo(() => {
     const isBefore = dayjs().isBefore(event?.startTime);
-
+    if (event?.status === AppointmentStatusEnum.PENDING) return false;
     if (isBefore) return true;
-
     return false;
   }, [event]);
 
@@ -235,25 +236,40 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     });
   };
 
-  const editAppointmentHandler = () =>
-    history.push(`${APPOINTMENT_DETAILS_EDIT}/${event?.id}`, {
-      appointmentId: location.state.eventId,
-      patientServiceId: event?.patientServiceId || "",
-      patientName: event?.patientName || "",
-      patientServiceName: event?.patientServiceName || "",
-      price: event?.price || "",
-      location: event?.location || "",
-      startTime: event?.startTime || "",
-      endTime: event?.endTime || "",
-      duration,
-    });
+  const editAppointmentHandler = () => {
+    if (event?.recurring) {
+      setIsRecurringOpen(true);
+      setEventType('edit recurring');
+    } else {
+      history.push(`${APPOINTMENT_DETAILS_EDIT}/${event?.id}`, {
+        appointmentId: location.state.eventId,
+        patientServiceId: event?.patientServiceId || '',
+        patientName: event?.patientName || '',
+        patientServiceName: event?.patientServiceName || '',
+        price: event?.price || '',
+        location: event?.location || '',
+        startTime: event?.startTime || '',
+        endTime: event?.endTime || '',
+        event: event,
+        duration,
+      });
+    }
+  };
 
   const negativeHandler = useCallback(async () => {
-    history.push(APPOINTMENT_CANCEL, {
-      appointmentId: location?.state?.eventId,
-      type: location?.state?.type,
-    });
-  }, [location?.state?.type, location?.state?.eventId]);
+    if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
+      if (event?.recurring) {
+        setIsRecurringOpen(true);
+        setEventType('cancel');
+      } else {
+        history.push(APPOINTMENT_CANCEL, {
+          appointmentId: location?.state?.eventId,
+          type: location?.state?.type,
+          isRecurring: event?.recurring,
+        });
+      }
+    }
+  }, [location?.state?.type, location?.state?.eventId, event?.recurring]);
 
   const positiveHandler = useCallback(async () => {
     if (location?.state?.type === AppointmentDetailTypeEnum.ACCEPT) {
@@ -270,42 +286,33 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
             })
           );
 
-          if (response.meta.requestStatus === "fulfilled") {
+          if (response.meta.requestStatus === 'fulfilled') {
             dispatch(setLoading({ loading: false, message: undefined }));
           }
 
-          if (response.meta.requestStatus === "rejected") {
+          if (response.meta.requestStatus === 'rejected') {
             presentToast(
-              `!${t("toast_messages_error_confirm_appointment")}!`,
+              `!${t('toast_messages_error_confirm_appointment')}!`,
               1000,
-              "top",
-              "danger"
+              'top',
+              'danger'
             );
           }
 
           dispatch(setLoading({ loading: false, message: undefined }));
-          presentToast(
-            `${t("toast_messages_appointment_confirmed")}`,
-            1000,
-            "top",
-            "success"
-          );
+          presentToast(`${t('toast_messages_appointment_confirmed')}`, 1000, 'top', 'success');
           history.goBack();
         }
       } catch (error) {
         dispatch(setLoading({ loading: false, message: undefined }));
-        presentToast(
-          `!${t("toast_messages_error_cancel_appointment")}!`,
-          1000,
-          "top",
-          "danger"
-        );
+        presentToast(`!${t('toast_messages_error_cancel_appointment')}!`, 1000, 'top', 'danger');
       }
     }
 
     if (location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE) {
       if (event?.recurring) {
         setIsRecurringOpen(true);
+        setEventType('reschedule');
       } else {
         setRescheduleOpen(true);
       }
@@ -327,7 +334,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
   }, []);
 
-  useEffect(() => {
+  https: useEffect(() => {
     const fetchPatientContactInfo = async () => {
       if (event?.patientId) {
         try {
@@ -344,16 +351,9 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     fetchPatientContactInfo();
   }, [event?.patientId]);
 
-  console.log('event', event);
-
   return (
     <IonPage className={CSSprefix}>
-      <Header
-        showBack
-        showEdit={showEdit}
-        showMenu={false}
-        editCB={editAppointmentHandler}
-      />
+      <Header showBack showEdit={showEdit} showMenu={false} editCB={editAppointmentHandler} />
       <IonContent fullscreen={true}>
         {event && (
           <>
@@ -361,10 +361,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
               <IonRow>
                 <IonCol size="auto">
                   <IonItem lines="none">
-                    <div
-                      className={`${CSSprefix}-bar`}
-                      style={{ background: barColor }}
-                    />
+                    <div className={`${CSSprefix}-bar`} style={{ background: barColor }} />
                   </IonItem>
                 </IonCol>
                 <IonCol>
@@ -389,123 +386,123 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
             <IonItem lines="none" className="ion-margin-top">
               <IonIcon
                 icon={personCircleOutline}
-                style={{ color: "var(--ion-trova-medium-gray)" }}
+                style={{ color: 'var(--ion-trova-medium-gray)' }}
               />
-              <IonText className={`${CSSprefix}-details`}>
-                {event?.patientName}
-              </IonText>
+              <IonText className={`${CSSprefix}-details`}>{event?.patientName}</IonText>
             </IonItem>
             <IonItem lines="none">
-              <IonIcon
-                icon={timerOutline}
-                style={{ color: "var(--ion-trova-medium-gray)" }}
-              />
+              <IonIcon icon={timerOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-details`}>
                 {`${event?.location}, ${duration}`}
               </IonText>
             </IonItem>
-            <IonItem lines="none">
-              <IonIcon
-                icon={pricetagOutline}
-                style={{ color: "var(--ion-trova-medium-gray)" }}
+            {event.frequency && (
+              <RecurringAppointmentModal
+                recurringFrequency={event.frequency}
+                event={event}
+                recurringCount={event.count || 0}
+                startTime={event.startTime}
+                practiceId={event.practiceId}
+                providerId={event.providerId}
               />
+            )}
+            <IonItem lines="none">
+              <IonIcon icon={pricetagOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-details`}>
-                {`$${event?.price?.toFixed(2)} ${currency}`}
+                {`${currencySymbol}${event?.price?.toFixed(2)} ${currency}`}
               </IonText>
             </IonItem>
             <IonItem lines="none">
-              <IonIcon
-                icon={callOutline}
-                style={{ color: "var(--ion-trova-medium-gray)" }}
-              />
+              <IonIcon icon={callOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-link`}>
-                <a style={{ textDecoration: 'none' }} href={`tel:${patientContactInfo?.mobileNumberPrefix} ${patientContactInfo?.mobileNumber}`}>
-                  {`${patientContactInfo?.mobileNumberPrefix} ${patientContactInfo?.mobileNumber}`}
+                <a
+                  style={{ textDecoration: 'none' }}
+                  href={`tel:${
+                    patientContactInfo?.mobileNumberPrefix
+                      ? patientContactInfo.mobileNumberPrefix + ' '
+                      : ''
+                  }${patientContactInfo?.mobileNumber}`}
+                >
+                  {`${
+                    patientContactInfo?.mobileNumberPrefix
+                      ? patientContactInfo.mobileNumberPrefix + ' '
+                      : ''
+                  }${patientContactInfo?.mobileNumber}`}
                 </a>
               </IonText>
             </IonItem>
             <IonItem lines="none">
-              <IonIcon
-                icon={mailOutline}
-                style={{ color: "var(--ion-trova-medium-gray)" }}
-              />
+              <IonIcon icon={mailOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-link`}>
                 <a style={{ textDecoration: 'none' }} href={`mailto:${patientContactInfo?.email}`}>
-                  {`${patientContactInfo?.email}`}
+                  {`${patientContactInfo?.email ? patientContactInfo?.email : ''}`}
                 </a>
               </IonText>
             </IonItem>
+
             {isOnline && (
               <IonItem lines="none">
-                <IonIcon
-                  icon={videocamOutline}
-                  style={{ color: "var(--ion-trova-medium-gray)" }}
-                />
+                <IonIcon icon={videocamOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
                 <IonText className={`${CSSprefix}-link`}>
-                  <a
-                    style={{ textDecoration: "none" }}
-                    href={event?.onlineMeetUrl}
-                    target="_blank"
-                  >
-                    {`${event?.onlineMeetUrl}`}
+                  <a style={{ textDecoration: 'none' }} href={event?.onlineMeetUrl} target="_blank">
+                    {`${event?.onlineMeetUrl ? event?.onlineMeetUrl : ''}`}
                   </a>
                 </IonText>
                 <IonIcon
                   icon={copyOutline}
                   slot="end"
-                  style={{ color: "var(--ion-trova-medium-gray)" }}
+                  style={{ color: 'var(--ion-trova-medium-gray)' }}
                   onClick={copyOnlineMeetUrl}
                 />
               </IonItem>
             )}
-            {location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE &&
-              isOnline && (
-                <>
-                  <IonButton
-                    className="ion-padding"
-                    expand="block"
-                    href={event?.onlineMeetUrl}
-                    target="_blank"
-                  >
-                    {t("scheduling_start")}
-                  </IonButton>
-                  <div className={`${CSSprefix}-divider`} />
-                </>
-              )}
-            <IonButton
-              className="ion-padding"
-              expand="block"
-              fill={
-                location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE
-                  ? "outline"
-                  : "solid"
-              }
-              color="primary"
-              onClick={positiveHandler}
-            >
-              {positiveLabel}
-            </IonButton>
-            <IonButton
-              className="ion-padding ion-no-margin"
-              expand="block"
-              fill={
-                location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE
-                  ? "clear"
-                  : "outline"
-              }
-              color="danger"
-              onClick={negativeHandler}
-            >
-              {negativeLabel}
-            </IonButton>
+
+            {location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE && isOnline && (
+              <>
+                <IonButton
+                  className="ion-padding"
+                  expand="block"
+                  href={event?.onlineMeetUrl}
+                  target="_blank"
+                >
+                  {t('scheduling_start')}
+                </IonButton>
+                <div className={`${CSSprefix}-divider`} />
+              </>
+            )}
+            {event?.status === AppointmentStatusEnum.PENDING ? null : (
+              <>
+                <IonButton
+                  className="ion-padding"
+                  expand="block"
+                  fill={
+                    location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE
+                      ? 'outline'
+                      : 'solid'
+                  }
+                  color="primary"
+                  onClick={positiveHandler}
+                >
+                  {positiveLabel}
+                </IonButton>
+                <IonButton
+                  className="ion-padding ion-no-margin"
+                  expand="block"
+                  fill={
+                    location?.state?.type === AppointmentDetailTypeEnum.RESCHEDULE
+                      ? 'clear'
+                      : 'outline'
+                  }
+                  color="danger"
+                  onClick={negativeHandler}
+                >
+                  {negativeLabel}
+                </IonButton>
+              </>
+            )}
           </>
         )}
-        {!event && (
-          <IonSkeletonText
-            animated={true}
-            style={{ width: "100%", height: "100%" }}
-          />
-        )}
+        {!event && <IonSkeletonText animated={true} style={{ width: '100%', height: '100%' }} />}
       </IonContent>
       <RescheduleAppointment
         isOpen={rescheduleOpen}
@@ -514,6 +511,10 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
       />
       <Recurring
         isOpen={isRecurringOpen}
+        appointment={event}
+        type={eventType}
+        duration={duration}
+        locationType={location?.state?.type}
         close={() => setIsRecurringOpen(false)}
       />
     </IonPage>

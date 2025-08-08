@@ -14,11 +14,18 @@ import Menu from '../../components/Menu/Menu';
 import { CALENDAR_DAY_MENU_ID } from '../../shared/constants/menu';
 import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';
 import dayjs from 'dayjs';
+
+//Implement for time slots 12AM to 11PM
+
+// import utc from 'dayjs/plugin/utc';
+// import timezone from 'dayjs/plugin/timezone';
+
+// dayjs.extend(utc);
+// dayjs.extend(timezone);
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../state/store';
 import EventCard from '../../components/EventCard/EventCard';
 import DatePicker from '../../components/DatePicker/DatePicker';
-import { months } from '../../shared/constants/dates';
 import { setLoading } from '../../state/loadingSlice';
 import {
   getEventsAction,
@@ -37,10 +44,8 @@ import {
 } from '../../shared/types/appointment.type';
 import { useHistory, useLocation } from 'react-router';
 import { getDefaultDates } from '../../shared/utils/dates.util';
-
 import './CalendarDay.scss';
 import { useTranslation } from 'react-i18next';
-
 const localizer = dayjsLocalizer(dayjs);
 
 const CSSprefix = 'calendar-day';
@@ -52,16 +57,18 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const { t } = useTranslation();
 
   const mappedEvents: Array<Event & { id?: string }> = useMemo(() => {
     if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day');
 
-    return events.events
+    return [...events.events, ...microsoftEvents, ...googleEvents]
       .filter(
-        ({ endTime}) =>
-          dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') 
+        ({ startTime, status }) =>
+          dayjs(startTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') &&
+          status !== AppointmentStatusEnum.CANCELLED
       )
       .map(event => ({
         id: event?.id,
@@ -89,47 +96,10 @@ const CalendarDay: React.FC = (): React.ReactElement => {
       }));
   }, [events.events, selectedDate, state.loading]);
 
-  const mappedBackgroundEvents: Array<Event & { id?: string }> = useMemo(() => {
-    if (state.loading) return getDefaultDates(selectedDate, selectedDate, 'day');
-
-    const externalCalendarEvents = [...microsoftEvents, ...googleEvents];
-
-    return externalCalendarEvents
-      .filter(
-        ({ endTime, busy }) =>
-          dayjs(endTime).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') && busy
-      )
-      .map(event => ({
-        id: event?.id,
-        title: JSON.stringify({
-          id: event?.id,
-          service: event?.patientServiceName || event?.title,
-          patient: event?.patientName || event?.providerName,
-          color: event?.color,
-          start: event?.allDay
-            ? dayjs(event.endTime).startOf('day').toDate()
-            : dayjs(event?.startTime || '').toDate(),
-          end: event?.allDay
-            ? dayjs(event.endTime).endOf('day').toDate()
-            : dayjs(event.endTime || '').toDate(),
-          redirect: false,
-          isMeetingEvent: event?.status === AppointmentStatusEnum.BUSY,
-        }),
-        start: event?.allDay
-          ? dayjs(event.endTime).startOf('day').toDate()
-          : dayjs(event?.startTime || '').toDate(),
-        end: event?.allDay
-          ? dayjs(event.endTime).endOf('day').toDate()
-          : dayjs(event.endTime || '').toDate(),
-        allDay: event?.allDay,
-      }));
-  }, [microsoftEvents, googleEvents, selectedDate, state.loading]);
-
   const dispatch = useDispatch<AppDispatch>();
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     if (selectedDate) {
@@ -163,7 +133,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -173,7 +143,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
           })
         );
         await dispatch(
@@ -181,9 +151,11 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDate).startOf('day').toISOString(),
-            end: dayjs(selectedDate).endOf('day').toISOString(),
+            end: dayjs(selectedDate).add(5, 'months').endOf('day').toISOString(),
           })
         );
+        //Implement for time slots 12AM to 11PM
+        // forceCalendarReRenderBySwipe();
       }
     } catch (error) {
       console.error('error at load appointments by date: ', error);
@@ -201,7 +173,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     (value: SlotInfo) => {
       if (value && tapped && !scrollingUpOrDown) {
         if ('start' in value && 'end' in value) {
-          const eventExist = [...mappedEvents, ...mappedBackgroundEvents].find(event => {
+          const eventExist = [...mappedEvents].find(event => {
             if (
               dayjs(event.start).valueOf() <= dayjs(value.start).valueOf() &&
               dayjs(value.start).valueOf() <= dayjs(event.end).valueOf() &&
@@ -229,26 +201,40 @@ const CalendarDay: React.FC = (): React.ReactElement => {
             setIsCreateAppointmentOpen(true);
             setSelectedSlot(value);
           }
-
-          if (eventExist && 'id' in eventExist && 'title' in eventExist) {
-            const redirect = JSON.parse((eventExist?.title as string) || '').redirect;
-            if (redirect) {
-              history.push(`${APPOINTMENT_DETAILS}/${eventExist.id}`, {
-                eventId: eventExist.id,
-                type: AppointmentDetailTypeEnum.RESCHEDULE,
-              });
-            }
-          }
         }
       }
     },
-    [mappedEvents, mappedBackgroundEvents, isCreateAppointmentOpen, tapped, scrollingUpOrDown]
+    [mappedEvents, isCreateAppointmentOpen, tapped, scrollingUpOrDown]
+  );
+  const handleSelectEvent = useCallback(
+    (event: any) => {
+      const redirect = JSON.parse((event.title as string) || '').redirect;
+
+      if (redirect) {
+        const targetPath = `${APPOINTMENT_DETAILS}/${event.id}`;
+
+        if (history.location.pathname === targetPath) {
+          return;
+        } else {
+          history.push(targetPath, {
+            eventId: event.id,
+            type: AppointmentDetailTypeEnum.RESCHEDULE,
+          });
+        }
+      }
+    },
+    [history]
   );
 
   useIonViewWillEnter(() => {
+    getAppointmentsHandler();
     if (!selectedDate) {
       dispatch(setDate(dayjs().format('YYYY-MM-DD')));
     }
+    //Implement for time slots 12AM to 11PM
+    // } else {
+    //   forceCalendarReRenderBySwipe();
+    // }
     setSelectedSlot(undefined);
   }, []);
 
@@ -274,22 +260,23 @@ const CalendarDay: React.FC = (): React.ReactElement => {
           menuId={CALENDAR_DAY_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
+          reloadClick={getAppointmentsHandler}
           datePickerCB={openDatePickerHandler}
         />
-        <IonContent {...handlers} ref={refPassthrough}>
+        <IonContent {...handlers} ref={refPassthrough} scrollEvents={true}>
           <Calendar
+            key={`calendar-${selectedDate}`}
             defaultDate={selectedDate}
             date={selectedDate}
             defaultView={Views.DAY}
             events={mappedEvents}
-            backgroundEvents={mappedBackgroundEvents}
             localizer={localizer}
             toolbar={false}
             views={{
               day: true,
             }}
             timeslots={2}
-            dayLayoutAlgorithm="no-overlap"
+            dayLayoutAlgorithm="overlap"
             showAllEvents={true}
             components={{
               timeGutterHeader: () => (
@@ -300,11 +287,22 @@ const CalendarDay: React.FC = (): React.ReactElement => {
                   <IonText className={`${CSSprefix}-day`}>{dayjs(selectedDate).date()}</IonText>
                 </div>
               ),
-              eventWrapper: props => <EventCard {...props} loading={state.loading} />,
+
+              eventWrapper: props => {
+                const handleClick = () => {
+                  handleSelectEvent(props.event);
+                };
+
+                return (
+                  <div onClick={handleClick} onTouchStart={handleClick}>
+                    <EventCard {...props} loading={state.loading} />
+                  </div>
+                );
+              },
             }}
             onNavigate={() => {}}
             selectable={true}
-            longPressThreshold={60}
+            longPressThreshold={0}
             onSelectSlot={handleSelectSlot}
           />
         </IonContent>

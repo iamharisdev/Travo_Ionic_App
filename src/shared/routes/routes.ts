@@ -25,5 +25,6 @@ export const BRANDING = '/dashboard/profile/my-profile/branding';
 export const SUBSCRIPTION_DETAILS = '/dashboard/profile/subscription-details';
 export const NOTIFICATIONS_DETAILS = '/dashboard/appointments/notifications';
 
-export const CONFIGRATION = '/dashboard/profile/configration';
-export const LANGUAGE = '/dashboard/profile/configration/language';
+export const CONFIGURATION = '/dashboard/profile/configuration';
+export const LANGUAGE = '/dashboard/profile/configuration/language';
+

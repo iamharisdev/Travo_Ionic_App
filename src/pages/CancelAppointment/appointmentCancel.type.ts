@@ -1,6 +1,8 @@
-import { AppointmentDetailTypeEnum } from "../../shared/types/appointment.type";
+import { AppointmentDetailTypeEnum } from '../../shared/types/appointment.type';
 
 export interface CancelAppointmentState {
   appointmentId: string;
-  type: AppointmentDetailTypeEnum;
+  selected: string;
+  isRecurring: string;
+  type:string;
 }

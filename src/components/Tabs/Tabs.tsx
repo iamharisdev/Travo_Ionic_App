@@ -1,38 +1,50 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
+import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
+import { calendarOutline, clipboardOutline, personCircleOutline } from 'ionicons/icons';
+import { Redirect, Route, useLocation } from 'react-router-dom';
 import {
-  IonIcon,
-  IonLabel,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
-} from "@ionic/react";
-import { calendarOutline, clipboardOutline, personCircleOutline } from "ionicons/icons";
-import { Redirect, Route, useLocation } from "react-router-dom";
-import { APPOINTMENT_CANCEL, APPOINTMENT_DETAILS, APPOINTMENT_DETAILS_EDIT, APPOINTMENT_REQUESTS, APPOINTMENTS, BRANDING, BUSINESS_INFORMATION, CALENDAR_DAY, CALENDAR_MONTH, CALENDAR_WEEK, DASHBOARD, MY_PROFILE, NOTIFICATIONS_DETAILS, PROFILE, PROFILE_INFORMATION, SUBSCRIPTION_DETAILS, CONFIGRATION, LANGUAGE } from "../../shared/routes/routes";
-import Appointments from "../../pages/Appointments/Appointments";
-import Profile from "../../pages/Profile/Profile";
-import MyProfile from "../../pages/MyProfile/MyProfile";
-import ProfileInformation from "../../pages/ProfileInformation/ProfileInformation";
-import BusinessInformation from "../../pages/BusinessInformation/BusinessInformation";
-import Branding from "../../pages/Branding/Branding";
-import SubscriptionDetails from "../../pages/SubscriptionDetails/SubscriptionDetails";
-import AppointmentDetails from "../../pages/AppointmentDetails/AppointmentDetails";
-import AppointmentDetailsEdit from "../../pages/AppointmentDetailsEdit/AppointmentDetailsEdit";
-import AppointmentRequests from "../../pages/AppointmentRequests/AppointmentRequests";
-import AppointmentCancel from "../../pages/CancelAppointment/AppointmentCancel";
-import CalendarDay from "../../pages/CalendarDay/CalendarDay";
-import CalendarWeek from "../../pages/CalendarWeek/CalendarWeek";
-import CalendarMonth from "../../pages/CalendarMonth/CalendarMonth";
-import useBiometrics from "../../hooks/useBiometrics";
-import { App } from "@capacitor/app";
-import { isNative } from "../../shared/utils/native.util";
+  APPOINTMENT_CANCEL,
+  APPOINTMENT_DETAILS,
+  APPOINTMENT_DETAILS_EDIT,
+  APPOINTMENT_REQUESTS,
+  APPOINTMENTS,
+  BRANDING,
+  BUSINESS_INFORMATION,
+  CALENDAR_DAY,
+  CALENDAR_MONTH,
+  CALENDAR_WEEK,
+  DASHBOARD,
+  MY_PROFILE,
+  NOTIFICATIONS_DETAILS,
+  PROFILE,
+  PROFILE_INFORMATION,
+  SUBSCRIPTION_DETAILS,
+  CONFIGURATION,
+  LANGUAGE,
+} from '../../shared/routes/routes';
+import Appointments from '../../pages/Appointments/Appointments';
+import Profile from '../../pages/Profile/Profile';
+import MyProfile from '../../pages/MyProfile/MyProfile';
+import ProfileInformation from '../../pages/ProfileInformation/ProfileInformation';
+import BusinessInformation from '../../pages/BusinessInformation/BusinessInformation';
+import Branding from '../../pages/Branding/Branding';
+import SubscriptionDetails from '../../pages/SubscriptionDetails/SubscriptionDetails';
+import AppointmentDetails from '../../pages/AppointmentDetails/AppointmentDetails';
+import AppointmentDetailsEdit from '../../pages/AppointmentDetailsEdit/AppointmentDetailsEdit';
+import AppointmentRequests from '../../pages/AppointmentRequests/AppointmentRequests';
+import AppointmentCancel from '../../pages/CancelAppointment/AppointmentCancel';
+import CalendarDay from '../../pages/CalendarDay/CalendarDay';
+import CalendarWeek from '../../pages/CalendarWeek/CalendarWeek';
+import CalendarMonth from '../../pages/CalendarMonth/CalendarMonth';
+import useBiometrics from '../../hooks/useBiometrics';
+import { App } from '@capacitor/app';
+import { isNative } from '../../shared/utils/native.util';
 
-import "./Tabs.scss";
-import { useTranslation } from "react-i18next";
-import ConfigrationPage from "../../pages/Configration/Configration";
-import LanguagePage from "../../pages/Language/Language";
-import NotificationsPage from "../../pages/Notifications/NotificationsPage";
+import './Tabs.scss';
+import { useTranslation } from 'react-i18next';
+import ConfigrationPage from '../../pages/Configration/Configration';
+import LanguagePage from '../../pages/Language/Language';
+import NotificationsPage from '../../pages/Notifications/NotificationsPage';
 
 const Tabs: React.FC = (): React.ReactElement => {
   const location = useLocation();
@@ -40,29 +52,29 @@ const Tabs: React.FC = (): React.ReactElement => {
   const [comesFromForeground, setComesFromForeground] = useState(false);
   const [checking, setChecking] = useState(false);
   const [paused, setPaused] = useState(false);
-    const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const onResumeCheckHandler = useCallback(async () => {
     if (
-      (location.pathname === APPOINTMENTS
-        || location.pathname === CALENDAR_DAY
-        || location.pathname === CALENDAR_WEEK
-        || location.pathname === CALENDAR_MONTH
-        || location.pathname === PROFILE
-        || location.pathname === MY_PROFILE
-        || location.pathname === PROFILE_INFORMATION
-        || location.pathname === BUSINESS_INFORMATION
-        || location.pathname === BRANDING
-        || location.pathname === SUBSCRIPTION_DETAILS
-        || location.pathname === CONFIGRATION
-        || location.pathname === LANGUAGE
-        || location.pathname === NOTIFICATIONS_DETAILS
-        || location.pathname.includes(APPOINTMENT_DETAILS)
-        || location.pathname.includes(APPOINTMENT_DETAILS_EDIT)
-        || location.pathname === APPOINTMENT_REQUESTS
-        || location.pathname === APPOINTMENT_CANCEL)
-      && comesFromForeground
-      && !checking
+      (location.pathname === APPOINTMENTS ||
+        location.pathname === CALENDAR_DAY ||
+        location.pathname === CALENDAR_WEEK ||
+        location.pathname === CALENDAR_MONTH ||
+        location.pathname === PROFILE ||
+        location.pathname === MY_PROFILE ||
+        location.pathname === PROFILE_INFORMATION ||
+        location.pathname === BUSINESS_INFORMATION ||
+        location.pathname === BRANDING ||
+        location.pathname === SUBSCRIPTION_DETAILS ||
+        location.pathname === CONFIGURATION ||
+        location.pathname === LANGUAGE ||
+        location.pathname === NOTIFICATIONS_DETAILS ||
+        location.pathname.includes(APPOINTMENT_DETAILS) ||
+        location.pathname.includes(APPOINTMENT_DETAILS_EDIT) ||
+        location.pathname === APPOINTMENT_REQUESTS ||
+        location.pathname === APPOINTMENT_CANCEL) &&
+      comesFromForeground &&
+      !checking
     ) {
       setChecking(true);
       await onResumeCheck();
@@ -71,7 +83,7 @@ const Tabs: React.FC = (): React.ReactElement => {
   }, [location.pathname, comesFromForeground, checking]);
 
   useEffect(() => {
-    isNative().then((isNative) => {
+    isNative().then(isNative => {
       if (isNative) {
         App.addListener('pause', () => {
           console.log('app state pause');
@@ -97,7 +109,7 @@ const Tabs: React.FC = (): React.ReactElement => {
   }, [comesFromForeground, paused]);
 
   useEffect(() => {
-    isNative().then((isNative) => {
+    isNative().then(isNative => {
       if (isNative) {
         onResumeCheckHandler();
       }
@@ -118,27 +130,30 @@ const Tabs: React.FC = (): React.ReactElement => {
         <Route exact path={BUSINESS_INFORMATION} component={BusinessInformation} />
         <Route exact path={BRANDING} component={Branding} />
         <Route exact path={SUBSCRIPTION_DETAILS} component={SubscriptionDetails} />
-        <Route exact path={CONFIGRATION} component={ConfigrationPage} />
+        <Route exact path={CONFIGURATION} component={ConfigrationPage} />
         <Route exact path={LANGUAGE} component={LanguagePage} />
         <Route exact path={`${APPOINTMENT_DETAILS}/:id`} component={AppointmentDetails} />
         <Route exact path={`${APPOINTMENT_DETAILS_EDIT}/:id`} component={AppointmentDetailsEdit} />
         <Route exact path={APPOINTMENT_REQUESTS} component={AppointmentRequests} />
         <Route exact path={APPOINTMENT_CANCEL} component={AppointmentCancel} />
         <Route exact path={NOTIFICATIONS_DETAILS} component={NotificationsPage} />
-
       </IonRouterOutlet>
       <IonTabBar slot="bottom" defaultValue="appointments">
         <IonTabButton tab="calendar" href={CALENDAR_MONTH}>
           <IonIcon icon={calendarOutline} />
-          <IonLabel>{t("scheduling_calendar")}</IonLabel>
+          <IonLabel>{t('scheduling_calendar')}</IonLabel>
         </IonTabButton>
-        <IonTabButton tab="appointments" href={APPOINTMENTS}>
+        <IonTabButton
+          tab="appointments"
+          href={APPOINTMENTS}
+          
+        >
           <IonIcon icon={clipboardOutline} />
-          <IonLabel>{t("scheduling_appointments")}</IonLabel>
+          <IonLabel>{t('scheduling_appointments')}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="profile" href={PROFILE}>
           <IonIcon icon={personCircleOutline} />
-          <IonLabel>{t("scheduling_profile")}</IonLabel>
+          <IonLabel>{t('scheduling_profile')}</IonLabel>
         </IonTabButton>
       </IonTabBar>
     </IonTabs>

@@ -8,23 +8,24 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
-} from "@ionic/react";
-import React, { useEffect, useRef, useState } from "react";
-import { HeaderProps } from "./header.type";
-import { useHistory } from "react-router";
+} from '@ionic/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { HeaderProps } from './header.type';
+import { useHistory } from 'react-router';
 import {
   caretDownOutline,
   menu,
   notifications,
   searchOutline,
-} from "ionicons/icons";
-import { menuController } from "@ionic/core/components";
+  reloadOutline,
+} from 'ionicons/icons';
+import { menuController } from '@ionic/core/components';
 
-import "./Header.scss";
-import { useTranslation } from "react-i18next";
-import { NOTIFICATIONS_DETAILS } from "../../shared/routes/routes";
+import './Header.scss';
+import { useTranslation } from 'react-i18next';
+import { NOTIFICATIONS_DETAILS } from '../../shared/routes/routes';
 
-const CSSPrefix = "header";
+const CSSPrefix = 'header';
 
 const Header: React.FC<HeaderProps> = ({
   className,
@@ -44,6 +45,7 @@ const Header: React.FC<HeaderProps> = ({
   leftLabel,
   showNotifications,
   showSearchOption,
+  reloadClick,
   editCB,
   cancelCB,
   datePickerCB,
@@ -80,24 +82,16 @@ const Header: React.FC<HeaderProps> = ({
             <IonButton
               className="header-button"
               color="primary"
-              onClick={() =>
-                customBackRoute
-                  ? history.push(customBackRoute)
-                  : history.goBack()
-              }
+              onClick={() => (customBackRoute ? history.push(customBackRoute) : history.goBack())}
             >
-              {t("scheduling_back")}
+              {t('scheduling_back')}
             </IonButton>
           </IonButtons>
         )}
         {showCancel && (
           <IonButtons slot="start">
-            <IonButton
-              className="header-button"
-              color="primary"
-              onClick={cancelCB}
-            >
-              {t("log_out_cancel")}
+            <IonButton className="header-button" color="primary" onClick={cancelCB}>
+              {t('log_out_cancel')}
             </IonButton>
           </IonButtons>
         )}
@@ -111,12 +105,8 @@ const Header: React.FC<HeaderProps> = ({
         <IonTitle />
         {showEdit && (
           <IonButtons slot="end">
-            <IonButton
-              className="header-button"
-              color="primary"
-              onClick={editCB}
-            >
-              {t("scheduling_edit")}
+            <IonButton className="header-button" color="primary" onClick={editCB}>
+              {t('scheduling_edit')}
             </IonButton>
           </IonButtons>
         )}
@@ -124,11 +114,11 @@ const Header: React.FC<HeaderProps> = ({
           <IonButtons slot="end">
             <IonButton
               className="header-button"
-              color={selectedLang === newLang ? "medium" : "primary"}
+              color={selectedLang === newLang ? 'medium' : 'primary'}
               disabled={selectedLang === newLang}
               onClick={saveCB}
             >
-              {t("configuration_save")}
+              {t('configuration_save')}
             </IonButton>
           </IonButtons>
         )}
@@ -157,21 +147,18 @@ const Header: React.FC<HeaderProps> = ({
             )}
           </>
         )}
+        {reloadClick && (
+          <IonButtons slot="end">
+            <IonButton className="header-button" color="dark" onClick={reloadClick}>
+              <IonIcon icon={reloadOutline} />
+            </IonButton>
+          </IonButtons>
+        )}
         {showDatePicker && (
           <IonButtons slot="end">
-            <IonButton
-              className="header-button"
-              color="dark"
-              onClick={datePickerCB}
-            >
-              <IonText className={`${CSSPrefix}-date-text`}>
-                {datePickerText}
-              </IonText>
-              <IonIcon
-                className={`${CSSPrefix}-date-icon`}
-                icon={caretDownOutline}
-                size="small"
-              />
+            <IonButton className="header-button" color="dark" onClick={datePickerCB}>
+              <IonText className={`${CSSPrefix}-date-text`}>{datePickerText}</IonText>
+              <IonIcon className={`${CSSPrefix}-date-icon`} icon={caretDownOutline} size="small" />
             </IonButton>
           </IonButtons>
         )}
@@ -185,26 +172,18 @@ const Header: React.FC<HeaderProps> = ({
             <IonIcon className="notifications-icon" icon={notifications} />
             <IonBadge
               className={`notifications-badge ${
-                count >= 99
-                  ? "notifications-badge-text"
-                  : "notifications-badge-text-small"
+                count >= 99 ? 'notifications-badge-text' : 'notifications-badge-text-small'
               }`}
               color="danger"
             >
-              {count >= 99 ? "99+" : count}
+              {count >= 99 ? '99+' : count}
             </IonBadge>
           </IonButtons>
         )}
         {leftLabel && (
           <IonButtons slot="end">
-            <IonButton
-              className="header-button"
-              color="dark"
-              onClick={datePickerCB}
-            >
-              <IonText className={`${CSSPrefix}-date-text`}>
-                {leftLabel}
-              </IonText>
+            <IonButton className="header-button" color="dark" onClick={datePickerCB}>
+              <IonText className={`${CSSPrefix}-date-text`}>{leftLabel}</IonText>
             </IonButton>
           </IonButtons>
         )}

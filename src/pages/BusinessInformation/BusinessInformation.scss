@@ -64,8 +64,18 @@
   }
 
   &-copy-icon {
-    position: relative;
-    top: 38px;
-    left: 6px;
+    position: absolute;
+    right: 16px;
+    bottom: 15px;
+    font-size: 20px;
   }
+}
+
+.input-icon-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
 }
