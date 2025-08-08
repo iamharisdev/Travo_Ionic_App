@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
       // port: 5173,
      
       cors: {
-        origin: ['http://localhost', 'capacitor://localhost','http://192.168.0.189:5173'],
+        origin: ['http://localhost', 'capacitor://localhost','http://192.168.18.29:5173'],
         methods: ['GET', 'POST', 'PUT', 'PATH', 'DELETE'],
         allowedHeaders: ['Content-Type']
       },

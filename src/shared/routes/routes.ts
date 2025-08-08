@@ -27,3 +27,4 @@ export const NOTIFICATIONS_DETAILS = '/dashboard/appointments/notifications';
 
 export const CONFIGURATION = '/dashboard/profile/configuration';
 export const LANGUAGE = '/dashboard/profile/configuration/language';
+

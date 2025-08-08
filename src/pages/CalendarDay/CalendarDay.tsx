@@ -57,6 +57,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const { t } = useTranslation();
 
@@ -99,7 +100,6 @@ const CalendarDay: React.FC = (): React.ReactElement => {
   const datePickerRef = useRef<HTMLIonPopoverElement>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     if (selectedDate) {
@@ -173,7 +173,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     (value: SlotInfo) => {
       if (value && tapped && !scrollingUpOrDown) {
         if ('start' in value && 'end' in value) {
-          const eventExist = [...mappedEvents, ...mappedBackgroundEvents].find(event => {
+          const eventExist = [...mappedEvents].find(event => {
             if (
               dayjs(event.start).valueOf() <= dayjs(value.start).valueOf() &&
               dayjs(value.start).valueOf() <= dayjs(event.end).valueOf() &&

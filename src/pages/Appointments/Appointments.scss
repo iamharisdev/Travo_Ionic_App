@@ -10,13 +10,14 @@
   }
 
   &-from-to-date {
+    font-family: Poppins;
+    font-weight: 500;
+    font-style: var(--ion-trova-medium-gray);
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 1px;
     color: var(--ion-trova-black);
     text-align: center;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    letter-spacing: 1px;
     align-content: center;
     position: relative;
     float: left;
