@@ -9,27 +9,30 @@ import './Badge.scss';
 const CSSPrefix = 'badge';
 
 const Badge: React.FC<BadgeProps> = ({ appointmentDate }) => {
-  const { day, date, isToday }:
-    {
-      day: string,
-      date: string,
-      isToday: boolean,
-    } = useMemo(() => {
-      let startTime = '';
-      let endTime = '';
-      let day = '';
-      let date = '';
-      let isToday = false;
+  const {
+    day,
+    date,
+    isToday,
+  }: {
+    day: string;
+    date: string;
+    isToday: boolean;
+  } = useMemo(() => {
+    let startTime = '';
+    let endTime = '';
+    let day = '';
+    let date = '';
+    let isToday = false;
 
-      if (appointmentDate) {
-        startTime = dayjs(appointmentDate).format('hh:mm A');
-        day = weekday[dayjs(appointmentDate).day()].substring(0, 3);
-        date = dayjs(appointmentDate).date().toString();
-        isToday = dayjs(appointmentDate).date() === dayjs().date();
-      }
+    if (appointmentDate) {
+      startTime = dayjs(appointmentDate).format('hh:mm A');
+      day = weekday[dayjs(appointmentDate).day()].substring(0, 3);
+      date = dayjs(appointmentDate).date().toString();
+      isToday = dayjs(appointmentDate).date() === dayjs().date();
+    }
 
-      return { startTime, endTime, day, date, isToday };
-    }, [appointmentDate]);
+    return { startTime, endTime, day, date, isToday };
+  }, [appointmentDate]);
 
   return (
     <IonGrid fixed={true}>
@@ -45,6 +48,6 @@ const Badge: React.FC<BadgeProps> = ({ appointmentDate }) => {
       </IonRow>
     </IonGrid>
   );
-}
+};
 
 export default Badge;

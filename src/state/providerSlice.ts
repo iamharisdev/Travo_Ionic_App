@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { resetAll } from "./common.actions";
-import { StatusState } from "../shared/types/state.type";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { resetAll } from './common.actions';
+import { StatusState } from '../shared/types/state.type';
 import {
   getCountriesForRegion,
   getMe,
@@ -82,16 +82,14 @@ export const getCountriesForRegionAction = createAsyncThunk(
     try {
       const response = await getCountriesForRegion();
 
-
       const countriesRaw = response?.data?.countries;
-      const countries: NewModalCountry = typeof countriesRaw === 'string'
-        ? JSON.parse(countriesRaw)
-        : countriesRaw;
+      const countries: NewModalCountry =
+        typeof countriesRaw === 'string' ? JSON.parse(countriesRaw) : countriesRaw;
 
       return countries;
     } catch (error: any) {
       console.error('[getCountries]: ', error);
-      return {}; 
+      return {};
     }
   }
 );
@@ -110,7 +108,7 @@ export const getMeAction = createAsyncThunk('provider/getMe', async (): Promise<
       principal: response.data.principal,
       providerPractices: response.data.providerPractices,
       practice,
-      countries:{},
+      countries: {},
       state: {
         success: true,
       },
@@ -129,14 +127,14 @@ export const getMeAction = createAsyncThunk('provider/getMe', async (): Promise<
 });
 
 export const getPracticeAction = createAsyncThunk(
-  "provider/getPractice",
+  'provider/getPractice',
   async ({ practiceId, providerId }: GetProfile): Promise<Practice | null> => {
     try {
       const response = await getPractice(practiceId, providerId);
 
       return response.data;
     } catch (error: any) {
-      console.error("[getPractice]: ", error);
+      console.error('[getPractice]: ', error);
       return null;
     }
   }
@@ -150,7 +148,7 @@ export const updatePracticeAction = createAsyncThunk(
 
       return practice;
     } catch (error: any) {
-      console.error("[updatePractice]: ", error);
+      console.error('[updatePractice]: ', error);
 
       return null;
     }
@@ -158,21 +156,18 @@ export const updatePracticeAction = createAsyncThunk(
 );
 
 const providerSlice = createSlice({
-  name: "provider",
+  name: 'provider',
   initialState,
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getMeAction.pending, () => console.log("pending get profile"))
-      .addCase(
-        getMeAction.fulfilled,
-        (state, action: PayloadAction<ProviderState>) => {
-          state.principal = action.payload.principal;
-          state.providerPractices = action.payload.providerPractices;
-          state.practice = action.payload.practice;
-          state.state = { ...action.payload.state };
-        }
-      )
+      .addCase(getMeAction.pending, () => console.log('pending get profile'))
+      .addCase(getMeAction.fulfilled, (state, action: PayloadAction<ProviderState>) => {
+        state.principal = action.payload.principal;
+        state.providerPractices = action.payload.providerPractices;
+        state.practice = action.payload.practice;
+        state.state = { ...action.payload.state };
+      })
       .addCase(resetAll, () => initialState)
       .addCase(getMeAction.rejected, state => {
         state = initialState;

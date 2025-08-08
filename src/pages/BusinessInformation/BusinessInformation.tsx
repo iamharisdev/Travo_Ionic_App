@@ -141,19 +141,22 @@ const BusinessInformation: React.FC = (): React.ReactElement => {
             <IonLabel position="stacked" class="custom-input">
               {t('profile_settings_auto_booking_page_personalized_url')}
             </IonLabel>
-            <IonInput
-              disabled
-              class="custom"
-              type="text"
-              placeholder={t('profile_settings_enter_page_name_above_to_generate')}
-              value={formik.values.fqDomain}
-            />
-            <IonIcon
-              className={`${CSSprefix}-copy-icon`}
-              slot="end"
-              icon={copyOutline}
-              onClick={copyPersonalizedUrl}
-            />
+            <div className="input-icon-row">
+              <IonInput
+                disabled
+                class="custom"
+                type="text"
+                placeholder={t('profile_settings_enter_page_name_above_to_generate')}
+                value={formik.values.fqDomain}
+              />
+              <IonIcon
+                className={`${CSSprefix}-copy-icon`}
+                slot="end"
+                size="25px"
+                icon={copyOutline}
+                onClick={copyPersonalizedUrl}
+              />
+            </div>
           </IonItem>
           <IonItem
             lines="none"
