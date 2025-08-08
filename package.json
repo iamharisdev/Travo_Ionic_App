@@ -10,6 +10,7 @@
     "test.e2e": "cypress run",
     "test.unit": "vitest",
     "lint": "eslint",
+    "clean": "rm -rf node_modules package-lock.json .vite",
     "deploy:test:version:ios": "ionic cap sync && cd ios/App && fastlane beta"
   },
   "dependencies": {
