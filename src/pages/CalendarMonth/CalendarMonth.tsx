@@ -47,11 +47,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate, selectedDates },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
   const { t } = useTranslation();
   const history = useHistory();
-  const lang = localStorage.getItem('language') || 'en';
+
   const isDraggingRef = useRef(false);
   const dragStartPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -61,7 +62,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
   };
 
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     return dayjs(selectedDates[0]).format('MMMM');
@@ -157,7 +157,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs().subtract(3, 'months').toISOString(),
-            end: dayjs().add(1, 'year').endOf('year').toISOString(),
+            end: dayjs().add(5, 'months').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
@@ -167,7 +167,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5, 'months').endOf('day').toISOString(),
           })
         );
         await dispatch(
@@ -175,7 +175,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs(selectedDates[0]).startOf('day').toISOString(),
-            end: dayjs(selectedDates[1]).endOf('day').toISOString(),
+            end: dayjs(selectedDates[1]).add(5, 'months').endOf('day').toISOString(),
           })
         );
       }
@@ -216,6 +216,12 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
       const currentDate = eventsInSameDate.find(({ date }) => date === startDate);
       const index = currentDate?.ids.findIndex((id: string) => id === props.event.id);
       const eventsLeft = currentDate?.ids?.length! - index! || 0;
+
+      // Skip rendering if event data is missing/invalid
+      if (!props.event || !props.event.id) {
+        console.log('okay');
+        return null;
+      }
 
       return (
         <EventCard
@@ -328,7 +334,6 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
             selectable={true}
             longPressThreshold={0}
             onSelectSlot={slot => {
-          
               if (isDraggingRef.current) {
                 getAppointmentsHandler();
               } else {

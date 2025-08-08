@@ -32,6 +32,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events },
     calendar: { selectedDate },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
@@ -48,7 +49,6 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   const [presentToast] = usePresentToast();
   const { t } = useTranslation();
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     if (selectedDate) {
@@ -200,7 +200,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,
             start: dayjs().subtract(3, 'months').toISOString(),
-            end: dayjs().add(1, 'year').endOf('year').toISOString(),
+            end: dayjs().add(5, 'month').endOf('year').toISOString(),
             pageNumber: 0,
             pageSize: 999,
           })
