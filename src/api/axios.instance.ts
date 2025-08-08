@@ -40,6 +40,7 @@ const setAuthHeadersAndBaseUrl = async (config: any, apiName: ApiName) => {
 
   config.baseURL = baseURLs[apiName];
 
+
   if (token) {
     config.headers = {
       ...config.headers,

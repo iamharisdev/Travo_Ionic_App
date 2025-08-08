@@ -6,6 +6,8 @@ import { personCircleOutline } from 'ionicons/icons';
 import dayjs from 'dayjs';
 import './EventCard.scss';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../state/store';
 
 const CSSprefix = 'event-card';
 
@@ -19,7 +21,7 @@ const EventCard: React.FC<any> = ({
   ...rest
 }): React.ReactElement | null => {
   const { t } = useTranslation();
-  const lang = localStorage.getItem('language') || 'en';
+  const { lang } = useSelector((state: RootState) => state.white);
 
   // Defensive: skip if event or event.title missing
   if (!rest?.event?.title) {
@@ -39,10 +41,7 @@ const EventCard: React.FC<any> = ({
     return null;
   }
 
-  const eventColor = useMemo(
-    () => getAppointmentColor(eventProps.color),
-    [eventProps.color]
-  );
+  const eventColor = useMemo(() => getAppointmentColor(eventProps.color), [eventProps.color]);
 
   const showExtraInformation = useMemo(() => {
     if (eventProps?.start && eventProps?.end) {
@@ -98,17 +97,15 @@ const EventCard: React.FC<any> = ({
                   {eventProps.patient && (
                     <>
                       <IonIcon icon={personCircleOutline} color="dark" />
-                      <IonText className={`${CSSprefix}-patient`}>
-                        {eventProps.patient}
-                      </IonText>
+                      <IonText className={`${CSSprefix}-patient`}>{eventProps.patient}</IonText>
                     </>
                   )}
                 </>
               ) : (
                 <IonText className={`${CSSprefix}-patient ion-no-margin`}>
-                  {`${dayjs(eventProps.start).format('HH:mm A')} - ${dayjs(
-                    eventProps.end
-                  ).format('HH:mm A')}`}
+                  {`${dayjs(eventProps.start).format('HH:mm A')} - ${dayjs(eventProps.end).format(
+                    'HH:mm A'
+                  )}`}
                 </IonText>
               )}
             </div>
