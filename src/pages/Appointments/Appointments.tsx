@@ -54,6 +54,7 @@ const Appointments: React.FC = (): React.ReactElement => {
     provider,
     scheduling: { events, microsoftEvents, googleEvents, state },
     calendar: { selectedDate },
+    white: { lang },
   } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -77,14 +78,12 @@ const Appointments: React.FC = (): React.ReactElement => {
   );
 
   const dateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     return dayjs(selectedDate).format('MMMM');
   }, [selectedDate]);
 
   const fromToDateText = useMemo(() => {
-    const lang = localStorage.getItem('language') || 'en';
     dayjs.locale(lang); // Set the locale dynamically
 
     if (selectedDate) {

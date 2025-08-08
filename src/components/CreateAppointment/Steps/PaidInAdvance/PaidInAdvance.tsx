@@ -230,10 +230,11 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                         {selectedService?.location}, {duration}
                       </p>
                     </IonLabel>
-                    <IonText
+                    
+                  </IonItem>
+                  <IonText
                       className={`${CSSPrefix}-price`}
                     >{`${currency?.symbol!!}${preview?.total?.toFixed(2)}`}</IonText>
-                  </IonItem>
                   <FieldArray name="lines">
                     {({ push, remove, form: { setFieldValue } }) => (
                       <>

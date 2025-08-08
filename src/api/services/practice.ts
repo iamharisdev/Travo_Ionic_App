@@ -47,6 +47,7 @@ export const getCurrencies = async () => {
   return await practiceApiInstance.get<Array<Currencies>>('/anonymous/global-data/currencies');
 };
 
-export const getLookupCurrencies = async () => {
-  return await providerApiInstance.get<Array<Currencies>>('/lookups/en');
+export const getLookupCurrencies = async (lang: string) => {
+ 
+  return await providerApiInstance.get<Array<Currencies>>(`/lookups/${lang}`);
 };
