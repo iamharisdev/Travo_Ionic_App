@@ -69,8 +69,8 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const history = useHistory();
   const {
     provider,
-    scheduling: { events },
-    practice: { currencies, lookupCurrencies },
+    scheduling: { events, services },
+    practice: { lookupCurrencies },
   } = useSelector((state: RootState) => state);
   const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
   const [eventType, setEventType] = useState<string>('');
@@ -163,17 +163,14 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   }, [event?.startTime, event?.endTime, provider.practice?.displayTwentyFourHourTime]);
 
   const currency = useMemo(() => {
-    if (provider?.practice?.preferredCurrency) {
-      return provider.practice.preferredCurrency;
-    }
-
-    return '';
-  }, [provider.practice]);
+    const svc = services?.patientServiceRequestDtos?.find(s => s.id === event?.patientServiceId);
+    return svc?.currency ?? '';
+  }, [event?.patientServiceId, services?.patientServiceRequestDtos]);
 
   const currencySymbol = useMemo(() => {
-    let res = lookupCurrencies.find(i => i.currency == currency);
-    return res?.symbol;
-  }, [provider.practice]);
+    const hit = lookupCurrencies.find(i => i.currency === currency);
+    return hit?.symbol ?? '';
+  }, [lookupCurrencies, currency]);
 
   const isOnline = useMemo(
     () => event?.location === 'Online' || event?.location === 'Virtual',
@@ -334,7 +331,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     }
   }, []);
 
-  https: useEffect(() => {
+  useEffect(() => {
     const fetchPatientContactInfo = async () => {
       if (event?.patientId) {
         try {
@@ -409,7 +406,7 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
             <IonItem lines="none">
               <IonIcon icon={pricetagOutline} style={{ color: 'var(--ion-trova-medium-gray)' }} />
               <IonText className={`${CSSprefix}-details`}>
-                {`${currencySymbol}${event?.price?.toFixed(2)} ${currency}`}
+                {`${currencySymbol} ${event?.price?.toFixed(2)}`}
               </IonText>
             </IonItem>
             <IonItem lines="none">
@@ -417,17 +414,13 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
               <IonText className={`${CSSprefix}-link`}>
                 <a
                   style={{ textDecoration: 'none' }}
-                  href={`tel:${
-                    patientContactInfo?.mobileNumberPrefix
-                      ? patientContactInfo.mobileNumberPrefix + ' '
-                      : ''
-                  }${patientContactInfo?.mobileNumber}`}
+                  href={`tel:${patientContactInfo?.mobileNumberPrefix ?? ''}${
+                    patientContactInfo?.mobileNumber ?? ''
+                  }`}
                 >
-                  {`${
-                    patientContactInfo?.mobileNumberPrefix
-                      ? patientContactInfo.mobileNumberPrefix + ' '
-                      : ''
-                  }${patientContactInfo?.mobileNumber}`}
+                  {`${patientContactInfo?.mobileNumberPrefix ?? ''}${
+                    patientContactInfo?.mobileNumber ?? ''
+                  }`}
                 </a>
               </IonText>
             </IonItem>

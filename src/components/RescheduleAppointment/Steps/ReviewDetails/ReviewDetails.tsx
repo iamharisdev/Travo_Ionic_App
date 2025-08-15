@@ -41,25 +41,29 @@ const ReviewDetails: React.FC<ReviewDetailsProps> = ({
   setStep,
   rescheduleHandler,
 }) => {
-  const { provider , practice: { lookupCurrencies }} = useSelector((state: RootState) => state);
+  // const { provider , practice: { lookupCurrencies }} = useSelector((state: RootState) => state);
+  const {
+    provider,
+    practice: { lookupCurrencies },
+    scheduling: {
+      services: { patientServiceRequestDtos },
+    },
+  } = useSelector((state: RootState) => state);
+  provider?.practice?.preferredCurrency;
+
   const { t } = useTranslation();
   const history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
 
- const currency = useMemo(() => {
-    if (provider?.practice?.preferredCurrency) {
-      return provider.practice.preferredCurrency;
-    }
+  const currency = useMemo(() => {
+    const svc = patientServiceRequestDtos?.find(s => s.id === event?.patientServiceId);
+    return svc?.currency ?? '';
+  }, [patientServiceRequestDtos, event?.patientServiceId]);
 
-    return '';
-  }, [provider.practice]);
-
-
-const currencySymbol = useMemo(() => {
-    let res = lookupCurrencies.find(i => i.currency == currency);
-
-    return res?.symbol;
-  }, [provider.practice]);
+  const currencySymbol = useMemo(() => {
+    const hit = lookupCurrencies.find(i => i.currency === currency);
+    return hit?.symbol ?? '';
+  }, [lookupCurrencies, currency]);
 
   const date = {
     startTime: selectedDateTime?.startTime,

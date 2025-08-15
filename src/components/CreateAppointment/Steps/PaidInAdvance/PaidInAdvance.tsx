@@ -13,8 +13,8 @@ import {
 } from '@ionic/react';
 import { Services } from '../../../../shared/types/appointment.type';
 import { addOutline, caretDownOutline, caretUpOutline, informationCircle } from 'ionicons/icons';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../state/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../state/store';
 import { AcceptInvoicePayload, Preview, Templates } from '../../../../shared/types/invoice.type';
 import InvoiceCard from '../../../InvoiceCard/InvoiceCard';
 import InvoiceDiscountCard from '../../../InvoiceDiscountCard/InvoiceDiscountCard';
@@ -30,6 +30,7 @@ import dayjs from 'dayjs';
 
 import './PaidInAdvance.scss';
 import { useTranslation } from 'react-i18next';
+import { setLoading } from '../../../../state/loadingSlice';
 
 const CSSPrefix = 'paid-in-advance';
 
@@ -52,6 +53,8 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
 }) => {
   const [preview, setPreview] = useState<Preview>();
   const [templates, setTemplates] = useState<Templates>();
+  const dispatch = useDispatch<AppDispatch>();
+
   const { provider, practice } = useSelector((state: RootState) => state);
   const { t } = useTranslation();
 
@@ -93,21 +96,23 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
     };
   }, [preview]);
 
-  const currency = practice.currencies.find(({ code }) => code === selectedService?.currency);
-  console.log('Currency:=>  ', practice.currencies);
+  const currency = practice.lookupCurrencies.find(
+    ({ currency }) => currency === selectedService?.currency
+  );
 
   const generateInvoicePreviewHandler = useCallback(async () => {
     try {
       const [providerPractice] = provider.providerPractices;
 
       if (providerPractice && selectedService) {
+        dispatch(setLoading({ loading: true, message: 'Loading invoice preview...' }));
         const res = await generateInvoicePreview(
           selectedService.practiceId,
           selectedService.providerId,
           selectedService.id,
           {
             patientId: selectedClient?.id!!,
-            currency: currency?.code!!,
+            currency: currency?.currency!!,
             currencySymbol: currency?.symbol!!,
             amount: selectedService.price,
             appointmentDate: dayjs(selectedDateTime?.startTime).toISOString()!!,
@@ -115,10 +120,12 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
         );
 
         if (res.status === 200) {
+          dispatch(setLoading({ loading: false, message: '' }));
           setPreview(res.data);
         }
       }
     } catch (error) {
+      dispatch(setLoading({ loading: false, message: '' }));
       console.error('[generate-invoice-handler]: ', error);
     }
   }, [selectedService, selectedClient, selectedDateTime, provider.providerPractices, currency]);
@@ -130,6 +137,7 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
         selectedService?.practiceId &&
         selectedService.providerId
       ) {
+        dispatch(setLoading({ loading: true, message: 'Loading invoice templates...' }));
         const res = await getInvoiceTemplates(
           selectedService.practiceId,
           selectedService.providerId,
@@ -139,10 +147,12 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
         );
 
         if (res.status === 200) {
+          dispatch(setLoading({ loading: false, message: '' }));
           setTemplates(res.data);
         }
       }
     } catch (error) {
+      dispatch(setLoading({ loading: false, message: '' }));
       console.error('[get-invoice-templates-handler]: ', error);
     }
   }, [practice.businessInformation?.country, selectedService]);
@@ -230,11 +240,15 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                         {selectedService?.location}, {duration}
                       </p>
                     </IonLabel>
-                    
                   </IonItem>
-                  <IonText
+                  {/* <IonText
                       className={`${CSSPrefix}-price`}
-                    >{`${currency?.symbol!!}${preview?.total?.toFixed(2)}`}</IonText>
+                    >{`${currency?.symbol!!}${preview?.total?.toFixed(2)}`}</IonText> */}
+                  <IonText className={`${CSSPrefix}-price`}>
+                    {currency?.symbol && preview?.total !== undefined
+                      ? `${currency.symbol}${preview.total.toFixed(2)}`
+                      : `${currency?.symbol} 0.00`}
+                  </IonText>
                   <FieldArray name="lines">
                     {({ push, remove, form: { setFieldValue } }) => (
                       <>
