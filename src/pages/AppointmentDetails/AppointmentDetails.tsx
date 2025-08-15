@@ -77,7 +77,8 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
   const [eventData, setEventData] = useState<EventData>();
   const [isRecurringOpen, setIsRecurringOpen] = useState(false);
   const [patientContactInfo, setPatientContactInfo] = useState<PatientContactInfo | null>(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  dayjs.locale(i18n.language);
 
   const event = useMemo(() => {
     if (!events?.events || !location?.state) return undefined;
@@ -132,8 +133,8 @@ const AppointmentDetails: React.FC = (): React.ReactElement => {
     if (event?.startTime) {
       const start = dayjs(event.startTime);
       startTime = start.format(format);
-      day = weekday[start.day()];
-      month = months[start.month()].substring(0, 3);
+      day = dayjs(start).locale(i18n.language).format('ddd');
+      month = dayjs(start).locale(i18n.language).format('MMM');
       date = start.date().toString();
     }
 

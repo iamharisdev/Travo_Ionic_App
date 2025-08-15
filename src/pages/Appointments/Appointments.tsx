@@ -78,20 +78,12 @@ const Appointments: React.FC = (): React.ReactElement => {
   );
 
   const dateText = useMemo(() => {
-    dayjs.locale(lang); // Ensure the locale is set before formatting
-
-    return dayjs(selectedDate).format('MMMM');
-  }, [selectedDate]);
+    return selectedDate ? dayjs(selectedDate).locale(lang).format('MMMM') : '';
+  }, [selectedDate, lang]);
 
   const fromToDateText = useMemo(() => {
-    dayjs.locale(lang); // Set the locale dynamically
-
-    if (selectedDate) {
-      return dayjs(selectedDate).format('MMMM D'); // e.g., "June 17" or localized equivalent
-    }
-
-    return '';
-  }, [selectedDate]);
+    return selectedDate ? dayjs(selectedDate).locale(lang).format('MMMM D') : '';
+  }, [selectedDate, lang]);
 
   const openDatePickerHandler = useCallback(
     (e: any) => {
