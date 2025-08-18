@@ -185,7 +185,7 @@ export const getLookupCurrenciesAction = createAsyncThunk(
         symbol: value.symbol,
         name: value.name,
       }));
-
+      
       let obj = {
         currencies: currencyArray, // ✅ correct key
         professions: professions,
@@ -313,14 +313,14 @@ const practiceSlice = createSlice({
         };
       })
       .addCase(getLookupCurrenciesAction.pending, () => console.log('pending get currencies'))
-      .addCase(getLookupCurrenciesAction.fulfilled, (state, action: any) => {
+      .addCase(getLookupCurrenciesAction.fulfilled, (state, action: any) => {        
         state.lookupCurrencies = action.payload.currencies;
 
-        const temp: string[] = Object.entries(action.payload.professions).map(
+        const temp: string[] = action.payload?.professions ? Object.entries(action?.payload?.professions)?.map(
           ([_, value]) => value as string
-        );
+        ) : [];
 
-        state.professions = temp;
+        state.professions = temp || [];
 
         state.state = {
           ...state.state,
