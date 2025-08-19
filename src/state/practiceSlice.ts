@@ -320,7 +320,7 @@ const practiceSlice = createSlice({
           ([_, value]) => value as string
         ) : [];
 
-        state.professions = temp || [];
+        state.professions = temp;
 
         state.state = {
           ...state.state,
