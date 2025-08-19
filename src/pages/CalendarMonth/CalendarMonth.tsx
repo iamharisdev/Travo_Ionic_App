@@ -12,6 +12,7 @@ import {
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import 'dayjs/locale/pt'; // Portuguese
+import 'dayjs/locale/es';
 import { addOutline } from 'ionicons/icons';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, dayjsLocalizer, Event, SlotInfo, Views } from 'react-big-calendar';

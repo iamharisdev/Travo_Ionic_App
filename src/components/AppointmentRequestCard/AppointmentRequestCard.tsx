@@ -26,7 +26,8 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({
     [appointment?.color]
   );
   const { provider } = useSelector((state: RootState) => state);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  dayjs.locale(i18n.language);
   const {
     startTime,
     endTime,
@@ -66,8 +67,8 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({
       }
 
       startTime = start.format(format);
-      day = weekday[dayjs(getDateWithoutTime(start.toISOString())).day()].substring(0, 3);
-      month = months[start.month()].substring(0, 3);
+      day = dayjs(start).locale(i18n.language).format('ddd');
+      month = dayjs(start).locale(i18n.language).format('MMM');
       date = dayjs(getDateWithoutTime(start.toISOString())).date().toString();
     }
 
