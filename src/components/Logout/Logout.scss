@@ -1,6 +1,8 @@
 ion-modal#logout-modal {
-  --height: 190px;
-  --width: 281px;
+  --height: 35vh;
+  --width: 75vw;
+  --max-width: 380px;
+  --max-height: 220px;
   --border-radius: 16px;
   --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
@@ -51,6 +53,9 @@ ion-modal#logout-modal::part(backdrop) {
   }
 
   &-buttons {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 0 1rem;
     ion-button {
       margin: auto;
       width: 108px;

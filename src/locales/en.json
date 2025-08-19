@@ -225,5 +225,7 @@
   "choose_photo": "Choose Photo",
   "more_events": "more",
   "online":"Virtual",
-  "in_person":"In Person"
+  "in_person":"In Person",
+  "today": "Today",
+  "tomorrow": "Tomorrow"
 }

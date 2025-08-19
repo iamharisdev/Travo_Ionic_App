@@ -114,7 +114,7 @@
     "Searching_client_loading": "Buscando cliente",
     "profile_settings": "Configuración del perfil",
     "profile_settings_my_profile": "Mi perfil",
-    "profile_settings_subscription_details": "Detalless de la suscripción",
+    "profile_settings_subscription_details": "Detalles de la suscripción",
     "profile_settings_subscription_Monthly": "Mensual",
     "profile_settings_my_profile_information": "Información de mi perfil",
     "profile_settings_upload_photo": "Subir foto",
@@ -225,5 +225,7 @@
     "choose_photo": "Elige foto",
     "more_events": "más",
     "online":"Virtual",
-    "in_person":"En persona"
+    "in_person":"En persona",
+    "today": "Hoy",
+    "tomorrow": "Mañana"
 } 

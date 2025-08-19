@@ -77,11 +77,11 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
     const preparedDate = dayjs(date).startOf('day').format('YYYY-MM-DD');
 
     if (today === preparedDate) {
-      return 'TODAY';
+      return t('today');
     }
 
     if (tomorrow === preparedDate) {
-      return 'TOMORROW';
+      return t('tomorrow');
     }
 
     return dayjs(date).format('dddd, MMMM, DD').toUpperCase();
