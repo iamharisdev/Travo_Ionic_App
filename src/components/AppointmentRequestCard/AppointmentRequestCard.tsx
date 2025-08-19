@@ -95,7 +95,7 @@ const AppointmentRequestCard: React.FC<AppointmentRequestProps> = ({
     }
 
     return { startTime, endTime, day, date, month, duration, showButtons };
-  }, [appointment?.startTime, appointment?.endTime]);
+  }, [appointment?.startTime, appointment?.endTime, i18n.language]);
 
   return (
     <IonGrid className="ion-margin-top ion-padding-top">
