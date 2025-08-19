@@ -72,6 +72,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
   }, [provider.providerPractices]);
 
   const getDateHandler = (date: string) => {
+    dayjs.locale(lang);
     const today = dayjs().format('YYYY-MM-DD');
     const tomorrow = dayjs().add(1, 'day').format('YYYY-MM-DD');
     const preparedDate = dayjs(date).startOf('day').format('YYYY-MM-DD');
@@ -182,7 +183,7 @@ const AppointmentRequests: React.FC = (): React.ReactElement => {
         ))}
       </div>
     ));
-  }, [appointmentsRequestInSameDate]);
+  }, [appointmentsRequestInSameDate, lang]);
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: appointmentRequestsRef,

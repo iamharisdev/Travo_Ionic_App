@@ -107,7 +107,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
     }
 
     return '';
-  }, [selectedDate]);
+  }, [selectedDate, lang]);
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
   const location = useLocation();
@@ -282,7 +282,7 @@ const CalendarDay: React.FC = (): React.ReactElement => {
               timeGutterHeader: () => (
                 <div className={`${CSSprefix}-date-container`}>
                   <IonText className={`${CSSprefix}-date`}>
-                    {dayjs(selectedDate).format('ddd')}
+                    {dayjs(selectedDate).locale(lang).format('ddd')}
                   </IonText>
                   <IonText className={`${CSSprefix}-day`}>{dayjs(selectedDate).date()}</IonText>
                 </div>

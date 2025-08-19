@@ -130,7 +130,7 @@ const CalendarWeek: React.FC = (): React.ReactElement => {
     }
 
     return '';
-  }, [selectedDate]);
+  }, [selectedDate, lang]);
   const [isCreateAppointmentOpen, setIsCreateAppointmentOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<SlotInfo>();
   const location = useLocation();
