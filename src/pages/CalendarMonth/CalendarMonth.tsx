@@ -66,7 +66,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     dayjs.locale(lang); // Ensure the locale is set before formatting
 
     return dayjs(selectedDates[0]).format('MMMM');
-  }, [selectedDates]);
+  }, [selectedDates, lang]);
 
   const localizer = useMemo(() => setDayjsLocale(), [lang]);
 

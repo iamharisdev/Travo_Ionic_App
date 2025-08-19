@@ -241,9 +241,6 @@ const PaidInAdvance: React.FC<PaidInAdvanceProps> = ({
                       </p>
                     </IonLabel>
                   </IonItem>
-                  {/* <IonText
-                      className={`${CSSPrefix}-price`}
-                    >{`${currency?.symbol!!}${preview?.total?.toFixed(2)}`}</IonText> */}
                   <IonText className={`${CSSPrefix}-price`}>
                     {currency?.symbol && preview?.total !== undefined
                       ? `${currency.symbol}${preview.total.toFixed(2)}`
