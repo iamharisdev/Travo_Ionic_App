@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import {
   IonContent,
   IonItem,
@@ -23,6 +23,7 @@ import { AppDispatch, RootState } from '../../state/store';
 import { setLang } from '../../state/persistSlice';
 import { updatePracticeAction } from '../../state/providerSlice';
 import { getLookupCurrenciesAction } from '../../state/practiceSlice';
+import { setLoading } from '../../state/loadingSlice';
 
 const CSSprefix = 'subscription-deatils';
 
@@ -42,6 +43,13 @@ const LanguagePage: React.FC = (): React.ReactElement => {
   const [selectedLang, setSelectedLang] = useState<string>(lang || 'en');
 
   const [newLang, setNewLang] = useState<string>(lang || 'en');
+
+  useEffect(() => {
+    if (lang) {
+      setSelectedLang(lang); // what’s currently saved
+      setNewLang(lang); // update radio if language changed elsewhere (pull-to-refresh)
+    }
+  }, [lang]);
 
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: subscriptionDetailsRef,
@@ -66,20 +74,29 @@ const LanguagePage: React.FC = (): React.ReactElement => {
     return {};
   }, [provider.providerPractices]);
 
-  const handleLanguageChange = (lang: string) => {
-    setNewLang(lang);
-  };
-
   const handleLanguageSave = async () => {
-    let res = await updateLanguage();
+    dispatch(
+      setLoading({
+        loading: true,
+        message: t('configuration_updating_language') || 'Updating language…',
+      })
+    );
 
-    if (res?.payload) {
+    try {
+      const res = await updateLanguage();
+      if (!res?.payload) throw new Error('updateLanguage failed');
+
       dispatch(setLang(newLang));
       dispatch(getLookupCurrenciesAction(newLang));
       localStorage.setItem('language', newLang);
       setSelectedLang(newLang);
-      i18n.changeLanguage(newLang);
-      history.goBack();
+
+      try {
+        await i18n.loadLanguages?.(newLang);
+        await i18n.changeLanguage(newLang);
+      } catch (e) {
+        console.log('i18n changeLanguage error', e);
+      }
       const token = await getStorageValue(STORAGE_TOKEN);
       try {
         await axios.get(`${currentEnv.providerApiBaseUrl}lookups/${newLang}`, {
@@ -91,8 +108,11 @@ const LanguagePage: React.FC = (): React.ReactElement => {
       } catch (error) {
         console.log(error);
       }
-    } else {
-      console.log('Something went wrong');
+      dispatch(setLoading({ loading: false, message: '' }));
+      history.goBack();
+    } catch (err) {
+      console.log(err);
+      dispatch(setLoading({ loading: false, message: '' }));
     }
   };
 
@@ -129,7 +149,7 @@ const LanguagePage: React.FC = (): React.ReactElement => {
           </IonText>
         </IonItem>
 
-        <IonRadioGroup value={newLang} onIonChange={e => handleLanguageChange(e.detail.value)}>
+        <IonRadioGroup value={newLang} onIonChange={e => setNewLang(e.detail.value)}>
           <IonItem lines="none">
             <IonLabel>{t('configuration_english')}</IonLabel>
             <IonRadio slot="end" value="en" mode="md" />

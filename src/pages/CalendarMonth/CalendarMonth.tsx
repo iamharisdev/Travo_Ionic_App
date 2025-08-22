@@ -33,6 +33,9 @@ import { AppointmentStatusEnum } from '../../shared/types/appointment.type';
 import { getDefaultDates } from '../../shared/utils/dates.util';
 import { setDate, setDates, setNextMonth, setPrevMonth } from '../../state/calendarSlice';
 import { setLoading } from '../../state/loadingSlice';
+import { getMeAction } from '../../state/providerSlice'; // same as Loading.tsx
+import { setLang } from '../../state/persistSlice';
+
 import {
   getEventsAction,
   getGoogleEventsAction,
@@ -51,7 +54,7 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     white: { lang },
   } = useSelector((state: RootState) => state);
   const calendarMonthRef = useRef();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const history = useHistory();
 
   const isDraggingRef = useRef(false);
@@ -185,11 +188,32 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
     }
   };
 
+  const refreshProfileLang = useCallback(async () => {
+    const res = await dispatch<any>(getMeAction());
+    const language = res?.payload?.practice?.preferredLanguage;
+    if (language && language !== i18n.language) {
+      dispatch(setLang(language));
+      try {
+        await i18n.loadLanguages?.(language);
+        await i18n.changeLanguage(language);
+      } catch (e) {
+        console.log('i18n changeLanguage error', e);
+      }
+    }
+  }, [dispatch, i18n]);
+
+  const doReload = useCallback(async () => {
+    await refreshProfileLang(); // 1) profile → language
+    await getAppointmentsHandler(); // 2) events/microsoft/google reload
+  }, [refreshProfileLang, getAppointmentsHandler]);
+
   const { handlers, refPassthrough } = UseSwipeGesture({
     parentRef: calendarMonthRef,
     onSwipedLeft: () => dispatch(setNextMonth()),
     onSwipedRight: () => dispatch(setPrevMonth()),
-    onSwipedDown: () => console.log('Swipe down'),
+    onSwipedDown: () => {
+      void doReload();
+    },
   });
 
   useEffect(() => {
@@ -297,7 +321,8 @@ const CalendarMonth: React.FC = (): React.ReactElement => {
           menuId={CALENDAR_MONTH_MENU_ID}
           showDatePicker={true}
           datePickerText={dateText}
-          reloadClick={getAppointmentsHandler}
+          // reloadClick={getAppointmentsHandler}
+          reloadClick={doReload}
           datePickerCB={openDatePickerHandler}
         />
         <IonContent {...handlers} ref={refPassthrough}>

@@ -127,7 +127,7 @@ const Appointments: React.FC = (): React.ReactElement => {
           })
         );
 
-        dispatch(
+        await dispatch(
           getServicesAction({
             practiceId: providerPractice.practiceId,
             providerId: providerPractice.providerId,

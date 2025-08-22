@@ -122,6 +122,7 @@
   "profile_settings_preferred_image_size": "Preferred image size: 240px x 240px @ 72dpi\n maximum size of 1mb.",
   "profile_settings_display_name": "Display name",
   "profile_settings_languages": "Languages",
+  "configuration_updating_language": "Updating language…",
   "profile_settings_qualifications_and_titles": "Qualifications and titles",
   "profile_settings_enter_qualifications_and_titles": "Enter qualifications and titles",
   "profile_settings_currency": "Currency",

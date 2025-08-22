@@ -23,25 +23,22 @@ const EventCard: React.FC<any> = ({
   const { t } = useTranslation();
   const { lang } = useSelector((state: RootState) => state.white);
 
-  // Defensive: skip if event or event.title missing
-  if (!rest?.event?.title) {
-    return null;
-  }
+  // Safely read child props/style (children can be undefined during RBC layout passes)
+  const childProps = (children as any)?.props ?? {};
+  const childStyle = childProps?.style ?? {};
 
-  let eventProps;
-  try {
-    eventProps = JSON.parse(rest.event.title);
-  } catch (err) {
-    console.error('Invalid event title JSON', err);
-    return null;
-  }
+  const eventTitle = rest?.event?.title ?? null;
 
-  // Defensive: skip if essential props missing
-  if (!eventProps?.id || !eventProps?.service) {
-    return null;
-  }
+  const eventProps = useMemo(() => {
+    if (!eventTitle) return null;
+    try {
+      return typeof eventTitle === 'string' ? JSON.parse(eventTitle) : eventTitle;
+    } catch {
+      return null;
+    }
+  }, [eventTitle]);
 
-  const eventColor = useMemo(() => getAppointmentColor(eventProps.color), [eventProps.color]);
+  const eventColor = useMemo(() => getAppointmentColor(eventProps?.color), [eventProps?.color]);
 
   const showExtraInformation = useMemo(() => {
     if (eventProps?.start && eventProps?.end) {
@@ -54,12 +51,12 @@ const EventCard: React.FC<any> = ({
     return false;
   }, [eventProps?.start, eventProps?.end]);
 
-  // Skip rendering if index > 4
-  if (index > 4) {
-    return null;
-  }
+  const isRenderableIndex = index <= 4;
 
   const content = useMemo(() => {
+    if (!isRenderableIndex) return null;
+    if (!eventProps?.id || !eventProps?.service) return null;
+
     if (index === 4) {
       return (
         <p className="more">
@@ -72,9 +69,9 @@ const EventCard: React.FC<any> = ({
 
     return (
       <div
-        {...children.props}
+        {...children?.props}
         style={{
-          ...children.props.style,
+          ...children.props?.style,
           backgroundColor: `${eventColor}`,
           border: 'none',
           height: isMonth ? '2vh' : children.props.style.height,
@@ -113,24 +110,41 @@ const EventCard: React.FC<any> = ({
         </div>
       </div>
     );
-  }, [children, eventColor, eventProps, index, eventsLeft, onClick, showExtraInformation]);
+  }, [
+    isRenderableIndex,
+    index,
+    lang,
+    eventsLeft,
+    t,
+    children,
+    eventColor,
+    isMonth,
+    onClick,
+    eventProps,
+    showExtraInformation,
+  ]);
 
-  return (
-    <>
-      {!loading && content}
-      {loading && (
-        <IonSkeletonText
-          animated={true}
-          style={{
-            ...children.props.style,
-            width: '100%',
-            height: '30px',
-            borderRadius: '8px',
-          }}
-        />
-      )}
-    </>
-  );
+  // Choose what to render AFTER all hooks have run (keeps hook order stable)
+  if (loading) {
+    return (
+      <IonSkeletonText
+        animated={true}
+        style={{
+          ...childStyle,
+          width: '100%',
+          height: '30px',
+          borderRadius: '8px',
+        }}
+      />
+    );
+  }
+
+  // If we lack minimum data or shouldn't render this index, render nothing
+  if (!eventTitle || !eventProps || !isRenderableIndex) {
+    return null;
+  }
+
+  return <>{content}</>;
 };
 
 export default EventCard;

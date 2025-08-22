@@ -9,7 +9,7 @@ import esTranslation from "./locales/es.json";
 const systemLang = navigator.language.split('-')[0];
 
 // Supported languages
-const supportedLangs = ['en', 'pt'];
+const supportedLangs = ['en', 'pt', 'es'];
 
 // Get saved language or fallback to system language
 const selectedLang =
